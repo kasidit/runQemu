@@ -1,0 +1,5 @@
+#!/bin/sh
+UID=99
+switch="data-br-$UID"
+/sbin/ifconfig $1 0.0.0.0 down 
+ovs-vsctl del-port ${switch} $1

@@ -1,0 +1,5 @@
+#!/bin/sh
+UID=99
+switch="manage-br-$UID"
+/sbin/ifconfig $1 0.0.0.0 up
+ovs-vsctl add-port ${switch} $1

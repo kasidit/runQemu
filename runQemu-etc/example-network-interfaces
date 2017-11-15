@@ -1,0 +1,28 @@
+# This file describes the network interfaces available on your system
+# and how to activate them. For more information, see interfaces(5).
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+# The primary network interface
+auto eth0
+iface eth0 inet manual 
+
+auto br0
+#iface br0 inet dhcp
+iface br0 inet static
+    address 10.100.20.133
+    netmask 255.255.255.0
+    gateway 10.100.20.1
+    bridge_ports    eth0
+    bridge_stp      off
+    bridge_maxwait  0
+    bridge_fd       0
+    dns-nameservers 8.8.8.8
+
+auto managegw-99 
+iface managegw-99 inet static
+address 10.1.10.1
+netmask 255.255.255.0
+network 10.1.10.0

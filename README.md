@@ -47,6 +47,8 @@ $ sudo qemu-system-x86_64 ... -cpu host ...
 <p><p>
 เราจะทดลองสร้าง disk image แบบต่างๆ แต่ก่อนอื่นเราต้องสร้าง disk เพื่อติดตั้ง guest OS ของ VM ในคำสั่งถัดไป นศ จะสร้าง disk image แบบ raw 
 <p><p>
+<h3>2.1 disk format แบบ raw</h3>
+<p><p>
 <pre>
 $ cd $HOME
 $ mkdir runQemu
@@ -64,6 +66,8 @@ total 844804
 $
 </pre>
 <p><p>
+<h3>2.2 disk format แบบ qcow2</h3>
+<p><p>
 disk แบบ raw image จะใช้พื้นที่บน disk จริงเท่ากับที่ นศ ขอด้วยคำสั่ง qemu-img 
 แต่ถ้าผมสร้าง image แบบ qcow2 นศ จะเห็นว่าขนาดของ disk เริ่มต้นจะไม่มากแต่จะขยายมากขึ้นเมื่อใช้งาน ข้อดีของ disk แบบ raw คือ performance 
 ในขณะที่ข้อดีของแบบ qcow2 คือใช้พื้นที่เท่าที่ใช้จริง
@@ -78,6 +82,14 @@ total 845000
 -rw-r--r-- 1 kasidit kasidit 17179869184 Nov 16 15:38 ubuntu1604raw.img
 $
 </pre>
+<p><p>
+<h2>3 การติดตั้ง ubuntu 16.04 บน virtual disks</h3>
+<p><p>
+<p><p>
+<h3>3.1 ติดตั้ง guest OS แบบใช้ ext4 file system บน raw disk</h3>
+<p><p>
+<p><p>
+<h3>3.2 สร้าง disk แบบ qcow2 overlay </h3>
 <p><p>
   
 

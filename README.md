@@ -1,7 +1,20 @@
 # runQemu
 <h1>การใช้ qemu-kvm สร้าง virtual machines บน ubuntu 16.04 server</h1>
-
-<h2>1. กำหนดให้ ubuntu 16.04 host สนับสนุนการทำงานแบบ nested virtualization</h2>
+<ul>
+ <li> <a href="#part1">1. กำหนดให้ ubuntu 16.04 host สนับสนุนการทำงานแบบ nested virtualization</a>
+ <li> <a href="#part2">2. สร้าง virtual hard disk ด้วย qemu-img</a> 
+      <ul>
+       <li> <a href="#part2-1">2.1 disk format แบบ raw</a>
+       <li> <a href="#part2-2">2.2 disk format แบบ qcow2</a>
+      </ul>
+<li> <a href="#part3">3 การติดตั้ง ubuntu 16.04 บน virtual disks</a> 
+      <ul>
+       <li> <a href="#part3-1">3.1 ติดตั้ง guest OS แบบใช้ ext4 file system บน raw disk</a>
+       <li> <a href="#part3-2">3.2 สร้าง disk แบบ qcow2 overlay</a>
+      </ul>
+</ul>
+<p><p>
+<a id="part1"><h2>1. กำหนดให้ ubuntu 16.04 host สนับสนุนการทำงานแบบ nested virtualization</h2></a>
 <p><p>
 ก่อนอื่นเรา assume ว่าเครื่อง host server ของ นศ มี hardware virtualization support สำหรับ kvm นศ สามารถเช็คได้ด้วยคำสั่ง 
 <pre>
@@ -43,11 +56,11 @@ $ sudo qemu-system-x86_64 ... -cpu host ...
 <p><p>
 ซึ่งควรจะเห็น บรรทัดที่มีคำว่า vmx หรือ svm
 <p><p>
-<h2>2. สร้าง virtual hard disk ด้วย qemu-img</h2>
+ <a id="part2"><h2>2. สร้าง virtual hard disk ด้วย qemu-img</h2></a>
 <p><p>
 เราจะทดลองสร้าง disk image แบบต่างๆ แต่ก่อนอื่นเราต้องสร้าง disk เพื่อติดตั้ง guest OS ของ VM ในคำสั่งถัดไป นศ จะสร้าง disk image แบบ raw 
 <p><p>
-<h3>2.1 disk format แบบ raw</h3>
+  <a id="part2-1"><h3>2.1 disk format แบบ raw</h3></a>
 <p><p>
 <pre>
 $ cd $HOME
@@ -66,7 +79,7 @@ total 844804
 $
 </pre>
 <p><p>
-<h3>2.2 disk format แบบ qcow2</h3>
+  <a id="part2-2"><h3>2.2 disk format แบบ qcow2</h3></a>
 <p><p>
 disk แบบ raw image จะใช้พื้นที่บน disk จริงเท่ากับที่ นศ ขอด้วยคำสั่ง qemu-img 
 แต่ถ้าผมสร้าง image แบบ qcow2 นศ จะเห็นว่าขนาดของ disk เริ่มต้นจะไม่มากแต่จะขยายมากขึ้นเมื่อใช้งาน ข้อดีของ disk แบบ raw คือ performance 
@@ -83,13 +96,13 @@ total 845000
 $
 </pre>
 <p><p>
-<h2>3 การติดตั้ง ubuntu 16.04 บน virtual disks</h3>
+  <a id="part3"><h2>3 การติดตั้ง ubuntu 16.04 บน virtual disks</h3></a>
 <p><p>
 <p><p>
-<h3>3.1 ติดตั้ง guest OS แบบใช้ ext4 file system บน raw disk</h3>
+<a id="part3-1"><h3>3.1 ติดตั้ง guest OS แบบใช้ ext4 file system บน raw disk</h3></a>
 <p><p>
 <p><p>
-<h3>3.2 สร้าง disk แบบ qcow2 overlay </h3>
+  <a id="part3-2"><h3>3.2 สร้าง disk แบบ qcow2 overlay</h3></a>
 <p><p>
   
 

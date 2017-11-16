@@ -64,5 +64,20 @@ total 844804
 $
 </pre>
 <p><p>
+disk แบบ raw image จะใช้พื้นที่บน disk จริงเท่ากับที่ นศ ขอด้วยคำสั่ง qemu-img 
+แต่ถ้าผมสร้าง image แบบ qcow2 นศ จะเห็นว่าขนาดของ disk เริ่มต้นจะไม่มากแต่จะขยายมากขึ้นเมื่อใช้งาน ข้อดีของ disk แบบ raw คือ performance 
+ในขณะที่ disk แบบ qcow2 จะมีข้อดีคือใช้พื้นที่เท่าที่ใช้จริง
+<p><p>
+<pre>
+$ qemu-img create -f qcow2 ubuntu1604qcow2.img 16G
+Formatting 'ubuntu1604qcow2.img', fmt=qcow2 size=17179869184 encryption=off cluster_size=65536 lazy_refcounts=off refcount_bits=16
+$ ls -l
+total 845000
+-rw-rw-r-- 1 kasidit kasidit   865075200 Sep 20 15:55 ubuntu-16.04.3-server-amd64.iso
+<b>-rw-r--r-- 1 kasidit kasidit      196864 Nov 16 15:49 ubuntu1604qcow2.img</b>
+-rw-r--r-- 1 kasidit kasidit 17179869184 Nov 16 15:38 ubuntu1604raw.img
+$
+</pre>
+<p><p>
   
 

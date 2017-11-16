@@ -55,12 +55,12 @@ $ mkdir runQemu-img
 $ cd runQemu-img
 $ wget http://releases.ubuntu.com/16.04/ubuntu-16.04.3-server-amd64.iso
 $ ls
-$ qemu-img create -f raw ubuntu1604raw.img 16G
+$ <b>qemu-img create -f raw ubuntu1604raw.img 16G</b>
 Formatting 'ubuntu1604raw.img', fmt=raw size=17179869184
 $ ls -l
 total 844804
 -rw-rw-r-- 1 kasidit kasidit   865075200 Sep 20 15:55 ubuntu-16.04.3-server-amd64.iso
--rw-r--r-- 1 kasidit kasidit 17179869184 Nov 16 15:38 ubuntu1604raw.img
+<b>-rw-r--r-- 1 kasidit kasidit 17179869184 Nov 16 15:38 ubuntu1604raw.img</b>
 $
 </pre>
 <p><p>
@@ -69,7 +69,7 @@ disk แบบ raw image จะใช้พื้นที่บน disk จร�
 ในขณะที่ disk แบบ qcow2 จะมีข้อดีคือใช้พื้นที่เท่าที่ใช้จริง
 <p><p>
 <pre>
-$ qemu-img create -f qcow2 ubuntu1604qcow2.img 16G
+$ <b>qemu-img create -f qcow2 ubuntu1604qcow2.img 16G</b>
 Formatting 'ubuntu1604qcow2.img', fmt=qcow2 size=17179869184 encryption=off cluster_size=65536 lazy_refcounts=off refcount_bits=16
 $ ls -l
 total 845000

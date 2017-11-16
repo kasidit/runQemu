@@ -41,3 +41,5 @@ $ sudo qemu-system-x86_64 ... -cpu host ...
 # egrep --color="auto" "vmx|svm" /proc/cpuinfo
 </pre>
 <p><p>
+ซึ่งควรจะเห็น บรรทัดที่มีคำว่า vmx หรือ svm
+

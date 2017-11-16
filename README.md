@@ -31,7 +31,7 @@ Y
 #
 </pre>
 <p><p>
-หลังจากนั้น เมื่อ นศ รัน kvm ด้วยคำสั่ง qemu-system-x86_64 จาก command line ให้กำหนด option "-cpu host" เครื่อง VM ที่ นศ รันด้วย option นี้ก็จะสามารถรัน kvm ได้อีกชั้นหนึ่ง สมมุติว่า นศ รัน qemu-kvm ด้วยคำสั่ง
+หลังจากนั้น เมื่อ นศ รัน kvm ด้วยคำสั่ง qemu-system-x86_64 จาก command line (เรา assume ว่ามี qemu-kvm software ติดตั้งอยู่บน host แล้ว) ให้กำหนด option "-cpu host" เครื่อง VM ที่ นศ รันด้วย option นี้ก็จะสามารถรัน kvm ได้อีกชั้นหนึ่ง สมมุติว่า นศ รัน qemu-kvm ด้วยคำสั่ง
 <pre>
 $ sudo qemu-system-x86_64 ... -cpu host ...
 </pre>
@@ -42,4 +42,7 @@ $ sudo qemu-system-x86_64 ... -cpu host ...
 </pre>
 <p><p>
 ซึ่งควรจะเห็น บรรทัดที่มีคำว่า vmx หรือ svm
-
+<p><p>
+<h2>2. สร้าง virtual hard disk ด้วย qemu-img</h2>
+<p><p>
+  

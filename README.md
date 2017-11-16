@@ -45,4 +45,24 @@ $ sudo qemu-system-x86_64 ... -cpu host ...
 <p><p>
 <h2>2. สร้าง virtual hard disk ด้วย qemu-img</h2>
 <p><p>
+เราจะทดลองสร้าง disk image แบบต่างๆ แต่ก่อนอื่นเราต้องสร้าง disk เพื่อติดตั้ง guest OS ของ VM ในคำสั่งถัดไป นศ จะสร้าง disk image แบบ raw 
+<p><p>
+<pre>
+$ cd $HOME
+$ mkdir runQemu
+$ cd runQemu
+$ mkdir runQemu-img 
+$ cd runQemu-img
+$ wget http://releases.ubuntu.com/16.04/ubuntu-16.04.3-server-amd64.iso
+$ ls
+$ qemu-img create -f raw ubuntu1604raw.img 16G
+Formatting 'ubuntu1604raw.img', fmt=raw size=17179869184
+$ ls -l
+total 844804
+-rw-rw-r-- 1 kasidit kasidit   865075200 Sep 20 15:55 ubuntu-16.04.3-server-amd64.iso
+-rw-r--r-- 1 kasidit kasidit 17179869184 Nov 16 15:38 ubuntu1604raw.img
+$
+</pre>
+<p><p>
   
+

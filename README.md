@@ -103,7 +103,7 @@ $
 $ cd $HOME/runQemu
 $ mkdir runQemu-scripts
 $ cd runQemu-scripts
-$ vi <a href="">runQemu-on-base-img-cdrom.sh</b>
+$ vi <a href="">runQemu-on-base-img-cdrom.sh</a>
 $ cat runQemu-on-base-img-cdrom.sh
 #!/bin/bash
 numsmp="8"

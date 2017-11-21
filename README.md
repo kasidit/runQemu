@@ -98,7 +98,34 @@ $
 <p><p>
   <a id="part3"><h2>3 การติดตั้ง Guest OS แบบ ubuntu 16.04 บน virtual disks</h3></a>
 <p><p>
-ในส่วนนี้ นศ จะเรียก kvm จาก command line และกำหนดให้ kvm ใช้ network แบบ NAT (่ผ่าน network ของเครื่อง host) เพื่อเชื่อมต่อกับ internet 
+ในส่วนนี้ นศ จะเรียก kvm จาก command line เพื่อสร้าง Guest OS บน disk image เปล่าๆ ที่สร้างขึ้น เพื่อความสะดวกผมเขียนคำสั่งลงใน bash shell script 
+<pre>
+$ cd $HOME/runQemu
+$ mkdir runQemu-scripts
+$ cd runQemu-scripts
+$ vi <a href="">runQemu-on-base-img-cdrom.sh</b>
+$ cat runQemu-on-base-img-cdrom.sh
+#!/bin/bash
+numsmp="8"
+memsize="4G"
+imgloc=${HOME}/"runQemu"/"runQemu-imgs"
+isoloc=${HOME}/"runQemu"/"runQemu-imgs"
+imgfile="ub1604raw.img"
+exeloc="/usr/local/bin"
+CPU_LIST="0-11"
+TASKSET="taskset -c ${CPU_LIST}"
+#
+sudo ${TASKSET} ${exeloc}/qemu-system-x86_64 -enable-kvm -cpu host -smp ${numsmp} \
+     -m ${memsize} -drive file=${imgloc}/${imgfile},format=raw \
+     -boot d -cdrom ${isoloc}/ubuntu-16.04.3-server-amd64.iso \
+     -vnc :95 \
+     -net nic -net user \
+     -monitor tcp::9666,server,nowait \
+     -localtime
+$
+</pre>
+นศ สามารถแทนค่า shell variable ในคำสั่งด้วยตนเองถ้าต้องการออกคำสั่งรัน kvm (qemu-system-x86_64) ด้วยตนเอง สำหรับ script ข้างต้น พารามีเตอร์ที่กำหนดใช้กับคำสั่ง qemu-system-x86_64 ใน script มีความหมายดังนี้ 
+และกำหนดให้ kvm ใช้ network แบบ NAT (่ผ่าน network ของเครื่อง host) เพื่อเชื่อมต่อกับ internet 
 <p><p>
 <a id="part3-1"><h3>3.1 ติดตั้ง guest OS แบบใช้ ext4 file system บน raw disk</h3></a>
 <p><p>

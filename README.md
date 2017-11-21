@@ -9,7 +9,7 @@
       </ul>
 <li> <a href="#part3">3 การติดตั้ง Guest OS แบบ ubuntu 16.04 บน virtual disks</a> 
       <ul>
-       <li> <a href="#part3-1">3.1 ติดตั้ง guest OS แบบใช้ ext4 file system บน raw disk</a>
+       <li> <a href="#part3-1">3.1 ติดตั้ง guest OS แบบใช้ btrfs file system บน raw disk</a>
        <li> <a href="#part3-2">3.2 สร้าง disk แบบ qcow2 overlay</a>
       </ul>
 </ul>
@@ -103,7 +103,7 @@ $
 $ cd $HOME/runQemu
 $ mkdir runQemu-scripts
 $ cd runQemu-scripts
-$ vi <a href="">runQemu-on-base-img-cdrom.sh</a>
+$ vi <a href="https://github.com/kasidit/runQemu/blob/master/runQemu-scripts/runQemu-on-base-img-cdrom.sh">runQemu-on-base-img-cdrom.sh</a>
 $ cat runQemu-on-base-img-cdrom.sh
 #!/bin/bash
 numsmp="8"
@@ -124,10 +124,30 @@ sudo ${TASKSET} ${exeloc}/qemu-system-x86_64 -enable-kvm -cpu host -smp ${numsmp
      -localtime
 $
 </pre>
-นศ สามารถแทนค่า shell variable ในคำสั่งด้วยตนเองถ้าต้องการออกคำสั่งรัน kvm (qemu-system-x86_64) ด้วยตนเอง สำหรับ script ข้างต้น พารามีเตอร์ที่กำหนดใช้กับคำสั่ง qemu-system-x86_64 ใน script มีความหมายดังนี้ 
-และกำหนดให้ kvm ใช้ network แบบ NAT (่ผ่าน network ของเครื่อง host) เพื่อเชื่อมต่อกับ internet 
+นศ สามารถแทนค่า shell variable ในคำสั่งด้วยตนเองถ้าต้องการออกคำสั่งรัน kvm (qemu-system-x86_64) ด้วยตนเอง สำหรับ script ข้างต้น พารามีเตอร์ที่กำหนดใช้กับคำสั่ง qemu-system-x86_64 ใน script มีความหมายดังนี้
+<ul>
+ <li> "-enable-kvm" : เรียก qemu ใน mode "kvm" คือให้ qemu ใช้ kvm driver บน linux เพื่อใช้ CPU virtualization supports
+ <li> "-cpu host" : ให้ใช้ features ของ CPU ชอง host 
+ <li> "-smp 8" : ให้ vm มี virtual cpu cores จำนวน 8 cores (qemu จะสร้าง threads  ขึ้น 8 threads เพื่อรองรับการประมวลผลของ vm)
+ <li> "-m 4G" : vm มี memory 4 GiB
+ <li> "-drive file..." : vm ใช้ไฟล์ ub1604raw.img เป็น harddisk drive ที่ 1 ผู้ใช้ต้องระบุว่าไฟล์เป็นแบบ raw format เพราะ qemu ต้องการ make sure ว่าผู้ใช้รู้จัวว่ากำลังใช้ raw format image อยู่ (ถ้าไม่ระบุ qemu จะเตือน)
+ <li> "-boot d" : boot จาก cdrom
+ <li> "-cdrom <file...>" : ไฟล์ iso ถ้าจะใช้ cdrom drive จริงต้องระบุ device (ขอให้ดูคู่มือ qemu)
+ <li> "-vnc :95" : vm จะรัน vnc server เป็น console ที่ vnc port 95 (port จริง 5900+95)
+ <li> "-net nic -net user" : กำหนดให้ network interface ที่ 1 ของ vm ใช้ NAT network
+ <li> "-monitor tcp::9666..." : ให้ผู้ใช้เข้า qemu monitor ได้ที่ port 9666 บนเครื่อง localhost
+ <li> "-localtime" : กำหนดให้ vm ใช้เวลาเดียวกับเครื่อง host 
+</ul>
+ขอให้ นศ สังเกตุว่า script นี้้จะรันคำสั่ง qemu-system-x86_64 ด้วย sudo 
 <p><p>
-<a id="part3-1"><h3>3.1 ติดตั้ง guest OS แบบใช้ ext4 file system บน raw disk</h3></a>
+นศ รัน script ด้วยคำสั่ง 
+<pre>
+$ ./runQemu-on-base-img-cdrom.sh &
+$
+</pre>
+
+<p><p>
+<a id="part3-1"><h3>3.1 ติดตั้ง guest OS แบบ btrfs file system บน raw disk</h3></a>
 <p><p>
 <p><p>
   <a id="part3-2"><h3>3.2 สร้าง disk แบบ qcow2 overlay</h3></a>

@@ -7,7 +7,7 @@
        <li> <a href="#part2-1">2.1 disk format แบบ raw</a>
        <li> <a href="#part2-2">2.2 disk format แบบ qcow2</a>
       </ul>
-<li> <a href="#part3">3 การติดตั้ง ubuntu 16.04 บน virtual disks</a> 
+<li> <a href="#part3">3 การติดตั้ง Guest OS แบบ ubuntu 16.04 บน virtual disks</a> 
       <ul>
        <li> <a href="#part3-1">3.1 ติดตั้ง guest OS แบบใช้ ext4 file system บน raw disk</a>
        <li> <a href="#part3-2">3.2 สร้าง disk แบบ qcow2 overlay</a>
@@ -96,8 +96,9 @@ total 845000
 $
 </pre>
 <p><p>
-  <a id="part3"><h2>3 การติดตั้ง ubuntu 16.04 บน virtual disks</h3></a>
+  <a id="part3"><h2>3 การติดตั้ง Guest OS แบบ ubuntu 16.04 บน virtual disks</h3></a>
 <p><p>
+ในส่วนนี้ นศ จะเรียก kvm จาก command line และกำหนดให้ kvm ใช้ network แบบ NAT (่ผ่าน network ของเครื่อง host) เพื่อเชื่อมต่อกับ internet 
 <p><p>
 <a id="part3-1"><h3>3.1 ติดตั้ง guest OS แบบใช้ ext4 file system บน raw disk</h3></a>
 <p><p>

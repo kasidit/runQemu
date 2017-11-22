@@ -1,5 +1,4 @@
-# runQemu
-<h1>การใช้ qemu-kvm สร้าง virtual machines บน ubuntu 16.04 server</h1>
+<h1>Tutorial: การใช้ qemu-kvm สร้าง virtual machines บน ubuntu 16.04 server</h1>
 <ul>
  <li> <a href="#part1">1. กำหนดให้ ubuntu 16.04 host สนับสนุนการทำงานแบบ nested virtualization</a>
  <li> <a href="#part2">2. สร้าง virtual hard disk ด้วย qemu-img</a> 
@@ -12,6 +11,12 @@
        <li> <a href="#part3-1">3.1 ติดตั้ง guest OS แบบใช้ btrfs file system บน raw disk</a>
        <li> <a href="#part3-2">3.2 สร้าง disk แบบ qcow2 overlay</a>
       </ul>
+</ul>
+<p><p>
+ใน Tutorial นี้เราสมมุติว่า นศ มีเครื่องจริงหรือ host computer (หรือ server) ที่ติดตั้ง ubuntu 16.04 และ นศ ต้องการจะติดตั้งและใช้ kvm เพื่อสร้าง virtual machine (vm) ที่มี Guest OS เป็น ubuntu 16.04 เช่นกัน Guide line ในการอ่าน tutorial นี้มีดังนี้ 
+<ul>
+<li>ในกรณีที่ นศ ต้องการให้ vm ที่ นศ สร้างขึ้นสามารถรัน kvm ได้อีกชั้นหนึ่ง ขอให้ นศ อ่านวิธีการกำหนดค่าบนเครื่อง host ในส่วนที่ 1 มิเช่นนั้น ถ้า นศ ไม่ได้ต้องการ feature ดังกล่าวก็ข้ามไปดูส่วนที่ 2 ได้เลย  
+<li>ในส่วนที่ 3 นศ ต้องเลือกว่าจะติดตั้ง guest OS บน vm โดยใช้ ext4 หรือ btrfs
 </ul>
 <p><p>
 <a id="part1"><h2>1. กำหนดให้ ubuntu 16.04 host สนับสนุนการทำงานแบบ nested virtualization</h2></a>

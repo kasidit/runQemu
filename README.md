@@ -73,7 +73,7 @@ $ sudo qemu-system-x86_64 ... -cpu host ...
 <p><p>
 เราจะทดลองสร้าง disk image แบบต่างๆ แต่ก่อนอื่นเราต้องสร้าง disk เพื่อติดตั้ง guest OS ของ VM ในคำสั่งถัดไป นศ จะสร้าง disk image แบบ raw 
 <p><p>
-disk แบบ raw image จะใช้พื้นที่บน disk จริงเท่ากับปริมาณเ้อที่ๆ นศ ขอและอ่านเขียนข้อมูลได้เร็ว
+disk แบบ raw นี้ มีค่าใช้จ่ายคือมันจะใช้พื้นที่บน disk จริงเท่ากับปริมาณที่ นศ ขอไม่ว่า นศ จะใช้พื้นที่เก็บข้อมูลจริงเท่าไร แต่มีข้อดีอ่านเขียนข้อมูลได้เร็ว
 <p><p>
 <pre>
 $ cd $HOME
@@ -93,7 +93,7 @@ $
 </pre>
 <p><p>
   <a id="part2-2"><h3>2.2 disk format แบบ qcow2</h3></a>
-ถ้าผมสร้าง image แบบ qemu's copy on write (qcow2) ซึ่ง qemu-kvm จะเขียนข้อมูลลงสู่ disk จริงก็ต่อเมือมีการเพิ่มหรือ modify เนื้อหาเดิมเท่านั้น ใน virtual disk format แบบนี้ นศ จะเห็นว่าขนาดของ disk เริ่มต้นจะไม่มากแต่จะขยายมากขึ้นเมื่อมีการเขียนข้อมูลสู่ disk จริง ข้อดีของ disk แบบ raw คือ performance 
+ถ้าผมสร้าง image แบบ qemu's copy on write (qcow2) ซึ่ง qemu-kvm จะเขียนข้อมูลลงสู่ disk จริงก็ต่อเมือมีการเพิ่มข้อมูลหรือ modify ข้อมูลเท่านั้น นศ จะเห็นว่าขนาดของ qcow2 disk เริ่มต้นจะไม่ใหญ่มากแต่จะขยายมากขึ้นเมื่อมีการเขียนข้อมูลสู่ disk จริง ข้อดีของ disk แบบ raw คือ performance 
 ในขณะที่ข้อดีของแบบ qcow2 คือใช้พื้นที่เท่าที่ใช้จริง
 <p><p>
 <pre>
@@ -142,7 +142,7 @@ $
  <li> "-cpu host" : ให้ใช้ features ของ CPU ชอง host 
  <li> "-smp 8" : ให้ vm มี virtual cpu cores จำนวน 8 cores (qemu จะสร้าง threads  ขึ้น 8 threads เพื่อรองรับการประมวลผลของ vm)
  <li> "-m 4G" : vm มี memory 4 GiB
- <li> "-drive file..." : vm ใช้ไฟล์ ub1604raw.img เป็น harddisk drive ที่ 1 ผู้ใช้ต้องระบุว่าไฟล์เป็นแบบ raw format เพราะ qemu ต้องการ make sure ว่าผู้ใช้รู้จัวว่ากำลังใช้ raw format image อยู่ (ถ้าไม่ระบุ qemu จะเตือน)
+ <li> "-drive file..." : vm ใช้ไฟล์ ub1604raw.img เป็น harddisk drive ที่ 1 ผู้ใช้ต้องระบุว่าไฟล์เป็นแบบ raw format เพราะ qemu ต้องการ make sure ว่าผู้ใช้รู้จัวว่ากำลังใช้ raw format image อยู่ (ถ้าไม่ระบุ qemu จะเตือน) ในกรณีที่ นศ ใช้ qcow2 ก็ให้เปลี่ยน format=raw เป็น format=qcow2
  <li> "-boot d" : boot จาก cdrom
  <li> "-cdrom <file...>" : ไฟล์ iso ถ้าจะใช้ cdrom drive จริงต้องระบุ device (ขอให้ดูคู่มือ qemu)
  <li> "-vnc :95" : vm จะรัน vnc server เป็น console ที่ vnc port 95 (port จริง 5900+95)

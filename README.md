@@ -63,9 +63,11 @@ $ sudo qemu-system-x86_64 ... -cpu host ...
 <p><p>
  <a id="part2"><h2>2. สร้าง virtual hard disk ด้วย qemu-img</h2></a>
 <p><p>
+  <a id="part2-1"><h3>2.1 disk format แบบ raw</h3></a>
+<p><p>
 เราจะทดลองสร้าง disk image แบบต่างๆ แต่ก่อนอื่นเราต้องสร้าง disk เพื่อติดตั้ง guest OS ของ VM ในคำสั่งถัดไป นศ จะสร้าง disk image แบบ raw 
 <p><p>
-  <a id="part2-1"><h3>2.1 disk format แบบ raw</h3></a>
+disk แบบ raw image จะใช้พื้นที่บน disk จริงเท่ากับปริมาณเ้อที่ๆ นศ ขอและอ่านเขียนข้อมูลได้เร็ว
 <p><p>
 <pre>
 $ cd $HOME
@@ -85,9 +87,7 @@ $
 </pre>
 <p><p>
   <a id="part2-2"><h3>2.2 disk format แบบ qcow2</h3></a>
-<p><p>
-disk แบบ raw image จะใช้พื้นที่บน disk จริงเท่ากับที่ นศ ขอด้วยคำสั่ง qemu-img 
-แต่ถ้าผมสร้าง image แบบ qcow2 นศ จะเห็นว่าขนาดของ disk เริ่มต้นจะไม่มากแต่จะขยายมากขึ้นเมื่อใช้งาน ข้อดีของ disk แบบ raw คือ performance 
+ถ้าผมสร้าง image แบบ qemu's copy on write (qcow2) ซึ่ง qemu-kvm จะเขียนข้อมูลลงสู่ disk จริงก็ต่อเมือมีการเพิ่มหรือ modify เนื้อหาเดิมเท่านั้น ใน virtual disk format แบบนี้ นศ จะเห็นว่าขนาดของ disk เริ่มต้นจะไม่มากแต่จะขยายมากขึ้นเมื่อมีการเขียนข้อมูลสู่ disk จริง ข้อดีของ disk แบบ raw คือ performance 
 ในขณะที่ข้อดีของแบบ qcow2 คือใช้พื้นที่เท่าที่ใช้จริง
 <p><p>
 <pre>
@@ -100,6 +100,7 @@ total 845000
 -rw-r--r-- 1 kasidit kasidit 17179869184 Nov 16 15:38 ubuntu1604raw.img
 $
 </pre>
+disk แบบ qcow2 มี features ที่เราจะกล่าวถึงอีกประการคือแบบการสร้าง virtual disk แบบ qcow2 overlay 
 <p><p>
   <a id="part3"><h2>3 การติดตั้ง Guest OS แบบ ubuntu 16.04 บน virtual disks</h3></a>
 <p><p>

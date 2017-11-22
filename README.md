@@ -63,6 +63,12 @@ $ sudo qemu-system-x86_64 ... -cpu host ...
 <p><p>
  <a id="part2"><h2>2. สร้าง virtual hard disk ด้วย qemu-img</h2></a>
 <p><p>
+<table>
+<tr><td>
+<b>สำหรับวิชา คพ. 449:</b> ขอให้ นศสร้าง virtual disk แบบ qcow2 เพื่อประหยัดพื้นที่ disk  
+</td></tr>
+</table>
+<p><p>
   <a id="part2-1"><h3>2.1 disk format แบบ raw</h3></a>
 <p><p>
 เราจะทดลองสร้าง disk image แบบต่างๆ แต่ก่อนอื่นเราต้องสร้าง disk เพื่อติดตั้ง guest OS ของ VM ในคำสั่งถัดไป นศ จะสร้าง disk image แบบ raw 

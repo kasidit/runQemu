@@ -199,7 +199,57 @@ promt sign ของ qemu monitor คือ (qemu) ถ้า นศ กด help 
 ในอับดับถัดไป ขอให้ นศ กลับไปพิจารณา vnc console และติดตั้ง ubuntu 16.04 server ถ้า นศ ต้องการติดตั้งแบบกำหนดให้ vm ใช้ ext4 file system ก็ทำได้เลยโดยเลือกการ partition และ format disk ตาม default ของ ubuntu
 <p>
 แต่ถ้า นศ ต้องการใช้ btrfs file system นศ สามารถทำได้ดังนี้ 
-
+<ul>
+<li>
+<details>
+<summary>ภาพ setup btrfs ที่ 1 เลือก entire disk</summary> 
+  <p>
+  <img src="documents/btrfssetup1.png"> <br>
+</details>
+<li>
+<details>
+<summary>ภาพ setup btrfs ที่ 2</summary> 
+  <p>
+  <img src="documents/btrfssetup2.png"> <br>
+</details>
+<li>
+<details>
+<summary>ภาพ setup btrfs ที่ 3</summary> 
+  <p>
+  <img src="documents/btrfssetup3.png"> <br>
+</details>
+<li>
+<details>
+<summary>ภาพ setup btrfs ที่ 4</summary> 
+  <p>
+  <img src="documents/btrfssetup4.png"> <br>
+</details>
+<li>
+<details>
+<summary>ภาพ setup btrfs ที่ 5</summary> 
+  <p>
+  <img src="documents/btrfssetup5.png"> <br>
+</details>
+<li>
+<details>
+<summary>ภาพ setup btrfs ที่ 6</summary> 
+  <p>
+  <img src="documents/btrfssetup6.png"> <br>
+</details>
+<li>
+<details>
+<summary>ภาพ setup btrfs ที่ 7</summary> 
+  <p>
+  <img src="documents/btrfssetup7.png"> <br>
+</details>
+<li>
+<details>
+<summary>ภาพ setup btrfs ที่ 8</summary> 
+  <p>
+  <img src="documents/btrfssetup8.png"> <br>
+</details>
+</ul>
+หลังจากนั้นให้ นศ ติดตั้ง ubuntu ต่อตามปกติ
 <p><p>
 <a id="part3-2"><h3>3.4 สร้าง disk แบบ qcow2 overlay</h3></a>
 <p><p>

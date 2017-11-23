@@ -65,7 +65,7 @@ $ sudo qemu-system-x86_64 ... -cpu host ...
 <p><p>
 <table>
 <tr><td>
-<b>สำหรับวิชา คพ. 449:</b> ขอให้ นศสร้าง virtual disk แบบ qcow2 เพื่อประหยัดพื้นที่ disk  
+<b>สำหรับวิชา คพ. 449:</b> นศ แต่ละคนจะสร้าง virtual disk แบบ raw ขนาด 4G เพื่อประหยัดพื้นที่ disk บน host server  
 </td></tr>
 </table>
 <p><p>
@@ -83,12 +83,12 @@ $ mkdir runQemu-img
 $ cd runQemu-img
 $ wget http://releases.ubuntu.com/16.04/ubuntu-16.04.3-server-amd64.iso
 $ ls
-$ <b>qemu-img create -f raw ubuntu1604raw.img 16G</b>
-Formatting 'ubuntu1604raw.img', fmt=raw size=17179869184
+$ <b>qemu-img create -f raw ubuntu1604raw.img 4G</b>
+Formatting 'ubuntu1604raw.img', fmt=raw size=4294967296
 $ ls -l
 total 844804
 -rw-rw-r-- 1 kasidit kasidit   865075200 Sep 20 15:55 ubuntu-16.04.3-server-amd64.iso
-<b>-rw-r--r-- 1 kasidit kasidit 17179869184 Nov 16 15:38 ubuntu1604raw.img</b>
+<b>-rw-r--r-- 1 kasidit kasidit 4294967296 Nov 16 15:38 ubuntu1604raw.img</b>
 $
 </pre>
 <p><p>
@@ -103,7 +103,7 @@ $ ls -l
 total 845000
 -rw-rw-r-- 1 kasidit kasidit   865075200 Sep 20 15:55 ubuntu-16.04.3-server-amd64.iso
 <b>-rw-r--r-- 1 kasidit kasidit      196864 Nov 16 15:49 ubuntu1604qcow2.img</b>
--rw-r--r-- 1 kasidit kasidit 17179869184 Nov 16 15:38 ubuntu1604raw.img
+-rw-r--r-- 1 kasidit kasidit  4294967296 Nov 16 15:38 ubuntu1604raw.img
 $
 </pre>
 disk แบบ qcow2 มี features ที่เราจะกล่าวถึงอีกประการคือแบบการสร้าง virtual disk แบบ qcow2 overlay ซึ่งผมจะอธิบายอีกทีหลังจากส่วนที่ 3 
@@ -111,6 +111,11 @@ disk แบบ qcow2 มี features ที่เราจะกล่าวถ�
   <a id="part3"><h2>3 การติดตั้ง Guest OS แบบ ubuntu 16.04 บน virtual disks</h3></a>
 <p><p>
 ในส่วนนี้ นศ จะเรียก kvm จาก command line เพื่อสร้าง Guest OS บน disk image เปล่าๆ ที่สร้างขึ้น เพื่อความสะดวกผมเขียนคำสั่งลงใน bash shell script 
+<table>
+<tr><td>
+<b>สำหรับวิชา คพ. 449:</b> ขอให้ นศ เปลี่ยน -vnc :NN  และ -monitor tcp:NNNN ให้ NN และ NNNN เป็นเลขเฉพาะของแต่ละคน
+</td></tr>
+</table>
 <pre>
 $ cd $HOME/runQemu
 $ mkdir runQemu-scripts
@@ -118,7 +123,7 @@ $ cd runQemu-scripts
 $ vi <a href="https://github.com/kasidit/runQemu/blob/master/runQemu-scripts/runQemu-on-base-img-cdrom.sh">runQemu-on-base-img-cdrom.sh</a>
 $ cat runQemu-on-base-img-cdrom.sh
 #!/bin/bash
-numsmp="8"
+numsmp="4"
 memsize="4G"
 imgloc=${HOME}/"runQemu"/"runQemu-imgs"
 isoloc=${HOME}/"runQemu"/"runQemu-imgs"
@@ -140,7 +145,7 @@ $
 <ul>
  <li> "-enable-kvm" : เรียก qemu ใน mode "kvm" คือให้ qemu ใช้ kvm driver บน linux เพื่อใช้ CPU virtualization supports
  <li> "-cpu host" : ให้ใช้ features ของ CPU ชอง host 
- <li> "-smp 8" : ให้ vm มี virtual cpu cores จำนวน 8 cores (qemu จะสร้าง threads  ขึ้น 8 threads เพื่อรองรับการประมวลผลของ vm)
+ <li> "-smp 4" : ให้ vm มี virtual cpu cores จำนวน 8 cores (qemu จะสร้าง threads  ขึ้น 8 threads เพื่อรองรับการประมวลผลของ vm)
  <li> "-m 4G" : vm มี memory 4 GiB
  <li> "-drive file..." : vm ใช้ไฟล์ ub1604raw.img เป็น harddisk drive ที่ 1 ผู้ใช้ต้องระบุว่าไฟล์เป็นแบบ raw format เพราะ qemu ต้องการ make sure ว่าผู้ใช้รู้จัวว่ากำลังใช้ raw format image อยู่ (ถ้าไม่ระบุ qemu จะเตือน) ในกรณีที่ นศ ใช้ qcow2 ก็ให้เปลี่ยน format=raw เป็น format=qcow2
  <li> "-boot d" : boot จาก cdrom
@@ -157,12 +162,27 @@ $
 $ ./runQemu-on-base-img-cdrom.sh &
 $
 </pre>
-
 <p><p>
-<a id="part3-1"><h3>3.1 ติดตั้ง guest OS แบบ btrfs file system บน raw disk</h3></a>
+<a id="part3-1"><h3>3.1 การใช้ vnc console</h3></a>
+<p><p>
+ขอให้ นศ ติดตั้ง vnc client บนเครื่อง client computer ที่ นศ ใช้และกำหนด IP address ของเครื่อง host server (ในตัวอย่างของเราคือ 10.100.20.133) และ vnc port (จากที่กำหนดใน option "-vnc" ในตัวอย่างคือ 95) ดังภาพที่ 1 หลังจากกด connect แล้ว นศ จะเห็น vnc console ดังภาพที่ 2
+<p>
+  <img src="documents/vncclientl.png"> <br>
+<p>
+ภาพที่ 1
+<p>
+  <img src="documents/vncconsole1.png"> <br>
+<p>
+ภาพที่ 2
+<p><p>
+<a id="part3-1"><h3>3.2 แนะนำ qemu monitor</h3></a>
+<p><p>
+qemu monitor เป็น monitoring console ของ qemu ที่ใช้รอรับคำสั่งจากผู้ใช้ทาง keyboard เพื่อจัดการ vm เช่น ปิดเครื่อง สอบถามสถานะการทำงานและสถิติต่างๆ สั่งให้เครื่อง migrate หรือย้ายไปยังเครื่องอื่น และทำ snapshot ของ CPU และ Memory State เป็นต้น ปกติแล้ว ถ้าไม่ได้ระบุ option "-monitor tcp::9666..." นศ สามารถเข้าถึง qemu monitor ได้โดย กดปุ่ม ctrl-alt-2 บน vnc colnsole และ กดปุ่ม ctrl-alt-1 เพื่อเปลี่ยนกลับไปยัง console 
+<p><p>
+<a id="part3-1"><h3>3.3 ติดตั้ง guest OS แบบ btrfs file system บน raw disk</h3></a>
 <p><p>
 <p><p>
-  <a id="part3-2"><h3>3.2 สร้าง disk แบบ qcow2 overlay</h3></a>
+<a id="part3-2"><h3>3.4 สร้าง disk แบบ qcow2 overlay</h3></a>
 <p><p>
   
 

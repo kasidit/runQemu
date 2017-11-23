@@ -169,7 +169,7 @@ $
 <p><p>
 ขอให้ นศ ติดตั้ง vnc client บนเครื่อง client computer ที่ นศ ใช้และกำหนด IP address ของเครื่อง host server (ในตัวอย่างของเราคือ 10.100.20.133) และ vnc port (จากที่กำหนดใน option "-vnc" ในตัวอย่างคือ 95) ดังภาพที่ 1 หลังจากกด connect แล้ว นศ จะเห็น vnc console ดังภาพที่ 2
 <p>
-  <img src="documents/vncclientl.png"> <br>
+  <img src="documents/vncclient1.png"> <br>
 <p>
 ภาพที่ 1
 <p>

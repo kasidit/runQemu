@@ -1,9 +1,9 @@
 #!/bin/bash
-numsmp="8"
+numsmp="4"
 memsize="6G"
 imgloc=${HOME}/"runQemu"/"runQemu-imgs"
 isoloc=${HOME}/"runQemu"/"runQemu-imgs"
-imgfile="ub1604raw.img"
+imgfile="ubuntu1604raw.img"
 exeloc="/usr/local/bin"
 CPU_LIST="0-11"
 TASKSET="taskset -c ${CPU_LIST}"

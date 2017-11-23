@@ -202,7 +202,7 @@ promt sign ของ qemu monitor คือ (qemu) ถ้า นศ กด help 
 <ul>
 <li>
 <details>
-<summary>ภาพ setup btrfs ที่ 1 เลือก entire disk</summary> 
+<summary>ภาพ setup btrfs ที่ 1 </summary> 
   <p>
   <img src="documents/btrfssetup1.png"> <br>
 </details>
@@ -249,7 +249,7 @@ promt sign ของ qemu monitor คือ (qemu) ถ้า นศ กด help 
   <img src="documents/btrfssetup8.png"> <br>
 </details>
 </ul>
-หลังจากนั้นให้ นศ ติดตั้ง ubuntu ต่อตามปกติ
+หลังจากนั้นให้ นศ ติดตั้ง ubuntu ต่อตามปกติ นศ สามารถดูการสร้าง btrfs snapshot และการใช้งานได้ที่ <a href="https://www.youtube.com/playlist?list=PLmUxMbTCUhr57iyWg8UAZsEXQ9_lX3Ca5">youtube playlist นี้</a>
 <p><p>
 <a id="part3-2"><h3>3.4 สร้าง disk แบบ qcow2 overlay</h3></a>
 <p><p>

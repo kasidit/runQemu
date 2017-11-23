@@ -249,7 +249,22 @@ promt sign ของ qemu monitor คือ (qemu) ถ้า นศ กด help 
   <img src="documents/btrfssetup8.png"> <br>
 </details>
 </ul>
-หลังจากนั้นให้ นศ ติดตั้ง ubuntu ต่อตามปกติ นศ สามารถดูการสร้าง btrfs snapshot และการใช้งานได้ที่ <a href="https://www.youtube.com/playlist?list=PLmUxMbTCUhr57iyWg8UAZsEXQ9_lX3Ca5">youtube playlist นี้</a>
+หลังจากนั้นให้ นศ ติดตั้ง ubuntu ต่อตามปกติ หลังจากติดตั้งเสร็จ vm จะ reboot และกลับไปที่หน้าจอเริ่มต้นการติดตั้งใหม่ ให้ นศ ใช้คำสั่ง "quit" ใข qemu monitor เพื่อปิดเครื่อง vm
+<p><p>
+<pre>
+$ nc localhost 9666
+QEMU 2.9.0 monitor - type 'help' for more information
+(qemu) quit
+quit
+$
+[1]+  Done                    ./runQemu-on-base-img-cdrom.sh  (wd: ~/runQemu-temp/runQemu-scripts)
+$
+</pre>
+หลังจากนั้นให้ นศ เรียกรัน qemu-kvm ขึ้นมาใหม่ด้วยคำสั่งข้างล่าง (นศ สามารถดูการสร้าง btrfs snapshot และการใช้งานได้ที่ <a href="https://www.youtube.com/playlist?list=PLmUxMbTCUhr57iyWg8UAZsEXQ9_lX3Ca5">youtube playlist นี้</a>)
+<p><p>
+<pre>
+</pre>
+
 <p><p>
 <a id="part3-2"><h3>3.4 สร้าง disk แบบ qcow2 overlay</h3></a>
 <p><p>

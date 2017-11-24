@@ -249,9 +249,9 @@ promt sign ของ qemu monitor คือ (qemu) ถ้า นศ กด help 
 </details>
 </ul>
 หลังจากนั้นให้ นศ ติดตั้ง ubuntu ต่อตามปกติ 
-  หลังจากนั้นให้ นศ ติดตั้ง ubuntu ต่อตามปกติ 
 <details>
- <summary><h4>Click เพื่อศึกษาการสร้าง btrfs snapshot และ recover snashot</h4></summary>
+<summary>Click เพื่อศึกษาการสร้าง btrfs snapshot และ recover snashot</summary>
+ <p>
 เมื่อติดตั้งเสร็จแล้ว ให้ นศ login เข้าสู่เครื่องนั้นและดู btrfs subvolume ที่มีอยู่ในเครื่อง host ซึ่งหลังจากการติดตั้งข้างต้น ubuntu 16.04 จะสร้าง btrfs subvolmes สำหรับ / และ /home directory ให้ตั้งแต่เริ่มต้น
 <pre>
 $ sudo su
@@ -330,8 +330,7 @@ ID 265 gen 7813 top level 5 path @home_snapshot1
 # btrfs filesystem defrag /mnt
 </pre>
 ผม recommend ให้ นศ ทำ snapshot ของ /mnt/@ และ /mnt/@home เมื่อผ่านการติดตั้งที่สำคัญๆ เผื่อว่าการติดตั้งในอนาคตผิดพลาด นศ จะได้ recover snapshot ล่าสุดได้ (นศ สามารถดูการสร้าง btrfs snapshot และการใช้งานได้ที่ <a href="https://www.youtube.com/playlist?list=PLmUxMbTCUhr57iyWg8UAZsEXQ9_lX3Ca5">youtube playlist นี้</a>)
-  </details>
-  
+</details>
 หลังจากติดตั้งเสร็จ vm จะ reboot และกลับไปที่หน้าจอเริ่มต้นการติดตั้งใหม่ ให้ นศ ใช้คำสั่ง "quit" ใข qemu monitor เพื่อปิดเครื่อง vm
 <p><p>
 <pre>

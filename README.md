@@ -8,8 +8,10 @@
       </ul>
 <li> <a href="#part3">3 การติดตั้ง Guest OS แบบ ubuntu 16.04 บน virtual disks</a> 
       <ul>
-       <li> <a href="#part3-1">3.1 ติดตั้ง guest OS แบบใช้ btrfs file system บน raw disk</a>
-       <li> <a href="#part3-2">3.2 สร้าง disk แบบ qcow2 overlay</a>
+       <li> <a href="#part3-1">3.1 การใช้ vnc console</a>
+       <li> <a href="#part3-2">3.2 แนะนำ qemu monitor</a>
+       <li> <a href="#part3-3">3.3 รัน vm หลังจากการติดตั้ง</a>
+       <li> <a href="#part3-4">3.4 สร้าง disk แบบ qcow2 overlay</a>
       </ul>
 </ul>
 <p><p>
@@ -193,7 +195,7 @@ $
 </pre>
 promt sign ของ qemu monitor คือ (qemu) ถ้า นศ กด help และ info จะมีข้อมูลมากมายแสดงคำสั่งต่างๆซึ่งเราจะยังไม่กล่าวถึงในที่นี่ นศ สามารถศึกษาเพิ่มเติมได้จาก wiki ของ qemu เมื่อต้องการออกจาก monitor กลับมาที่ bash shell ให้กด ctrl C
 <p><p>
-<a id="part3-1"><h3>3.3 ติดตั้ง guest OS แบบ btrfs file system บน raw disk</h3></a>
+<a id="part3-1"><h3>3.1 ติดตั้ง guest OS แบบ btrfs file system บน raw disk</h3></a>
 <p><p>
 ในอับดับถัดไป ขอให้ นศ กลับไปพิจารณา vnc console และติดตั้ง ubuntu 16.04 server ถ้า นศ ต้องการติดตั้งแบบกำหนดให้ vm ใช้ ext4 file system ก็ทำได้เลยโดยเลือกการ partition และ format disk ตาม default ของ ubuntu
 <p>
@@ -342,7 +344,9 @@ $
 [1]+  Done                    ./runQemu-on-base-img-cdrom.sh  (wd: ~/runQemu-temp/runQemu-scripts)
 $
 </pre>
-
+<p><p>
+<a id="part3-3"><h3>3.3 รัน vm หลังจากการติดตั้ง</h3></a>
+<p><p>
 <p><p>
 <pre>
 $ cd $HOME/runQemu-scripts
@@ -375,7 +379,7 @@ $ ./runQemu-on-base-img.sh &
 $
 </pre>
 <p><p>
-<a id="part3-2"><h3>3.4 สร้าง disk แบบ qcow2 overlay</h3></a>
+<a id="part3-4"><h3>3.4 สร้าง disk แบบ qcow2 overlay</h3></a>
 <p><p>
   
 

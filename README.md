@@ -342,10 +342,10 @@ $
 [1]+  Done                    ./runQemu-on-base-img-cdrom.sh  (wd: ~/runQemu-temp/runQemu-scripts)
 $
 </pre>
-หลังจากนั้นให้ นศ เรียกรัน qemu-kvm ขึ้นมาใหม่ด้วยคำสั่งข้างล่าง 
+
 <p><p>
 <pre>
-$ cd $HOME/Qemu-scripts
+$ cd $HOME/runQemu-scripts
 $ vi <a href="runQemu-scripts/runQemu-on-base-img.sh">runQemu-on-base-img.sh</a>
 $ cat runQemu-on-base-img.sh
 #!/bin/bash
@@ -368,6 +368,12 @@ sudo ${TASKSET} ${exeloc}/qemu-system-x86_64 -enable-kvm -cpu host -smp ${numsmp
 $
 </pre>
 ขอให้ นศ สังเกตุว่า "-boot c" หมายถึง boot vm จาก hard disk image แทนที่จะเป็นจาก cdrom
+<p><p>
+ หลังจากนั้นให้ นศ รัน qemu-kvm ขึ้นมาใหม่ด้วยคำสั่งข้างล่าง 
+<pre>
+$ ./runQemu-on-base-img.sh &
+$
+</pre>
 <p><p>
 <a id="part3-2"><h3>3.4 สร้าง disk แบบ qcow2 overlay</h3></a>
 <p><p>

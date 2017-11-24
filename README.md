@@ -345,8 +345,29 @@ $
 หลังจากนั้นให้ นศ เรียกรัน qemu-kvm ขึ้นมาใหม่ด้วยคำสั่งข้างล่าง 
 <p><p>
 <pre>
+$ cd $HOME/Qemu-scripts
+$ vi <a href="runQemu-scripts/runQemu-on-base-img.sh">runQemu-on-base-img.sh</a>
+$ cat runQemu-on-base-img.sh
+#!/bin/bash
+numsmp="4"
+memsize="4G"
+imgloc=${HOME}/"runQemu"/"runQemu-imgs"
+isoloc=${HOME}/"runQemu"/"runQemu-imgs"
+imgfile="ubuntu1604raw.img"
+exeloc="/usr/local/bin"
+CPU_LIST="0-7"
+TASKSET="taskset -c ${CPU_LIST}"
+#
+sudo ${TASKSET} ${exeloc}/qemu-system-x86_64 -enable-kvm -cpu host -smp ${numsmp} \
+     -m ${memsize} -L pc-bios -drive file=${imgloc}/${imgfile},format=raw \
+     <b>-boot c</b> \
+     -vnc :95 \
+     -net nic -net user \
+     -monitor tcp::9666,server,nowait \
+     -localtime
+$
 </pre>
-
+ขอให้ นศ สังเกตุว่า "-boot c" หมายถึง boot vm จาก hard disk image แทนที่จะเป็นจาก cdrom
 <p><p>
 <a id="part3-2"><h3>3.4 สร้าง disk แบบ qcow2 overlay</h3></a>
 <p><p>

@@ -120,7 +120,7 @@ disk แบบ qcow2 มี features ที่เราจะกล่าวถ�
 $ cd $HOME/runQemu
 $ mkdir runQemu-scripts
 $ cd runQemu-scripts
-$ vi <a href="https://github.com/kasidit/runQemu/blob/master/runQemu-scripts/runQemu-on-base-img-cdrom.sh">runQemu-on-base-img-cdrom.sh</a>
+$ vi <a href="runQemu-scripts/runQemu-on-base-img-cdrom.sh">runQemu-on-base-img-cdrom.sh</a>
 $ cat runQemu-on-base-img-cdrom.sh
 #!/bin/bash
 numsmp="4"
@@ -182,7 +182,6 @@ $
 qemu monitor เป็น monitoring console ของ qemu ที่ใช้รอรับคำสั่งจากผู้ใช้ทาง keyboard เพื่อจัดการ vm เช่น ปิดเครื่อง สอบถามสถานะการทำงานและสถิติต่างๆ สั่งให้เครื่อง migrate หรือย้ายไปยังเครื่องอื่น และทำ snapshot ของ CPU และ Memory State เป็นต้น ปกติแล้ว ถ้า นศ <b>ไม่ได้</b>ระบุ option "-monitor tcp::9666..." นศ สามารถเข้าถึง qemu monitor ได้โดย กดปุ่ม ctrl-alt-2 บน vnc colnsole และ กดปุ่ม ctrl-alt-1 เพื่อเปลี่ยนหน้าจอกลับไปยัง console แต่เนื่องจาก นศ ได้ใช้ option ดังกล่าวแล้ว ก็จะใช้ ctrl-alt-2 บน vnc clnsole ไม่ได้ console จะแจ้งว่า "serial0 console" นศ ต้องใช้ nc utility บน bash command line บนเครื่อง host ของ นศ แทน (ในตัวอย่างนี้คือเครื่อง 10.100.20.133) 
 <p><p>
 <pre>
-$ nc localhost 9666
 $ nc localhost 9666
 QEMU 2.9.0 monitor - type 'help' for more information
 (qemu) help

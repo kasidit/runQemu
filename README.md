@@ -248,7 +248,93 @@ promt sign ของ qemu monitor คือ (qemu) ถ้า นศ กด help 
   <img src="documents/btrfssetup8.png"> <br>
 </details>
 </ul>
-หลังจากนั้นให้ นศ ติดตั้ง ubuntu ต่อตามปกติ หลังจากติดตั้งเสร็จ vm จะ reboot และกลับไปที่หน้าจอเริ่มต้นการติดตั้งใหม่ ให้ นศ ใช้คำสั่ง "quit" ใข qemu monitor เพื่อปิดเครื่อง vm
+หลังจากนั้นให้ นศ ติดตั้ง ubuntu ต่อตามปกติ 
+  หลังจากนั้นให้ นศ ติดตั้ง ubuntu ต่อตามปกติ 
+<details>
+ <summary><h4>Click เพื่อศึกษาการสร้าง btrfs snapshot และ recover snashot</h4></summary>
+<p><p>
+เมื่อติดตั้งเสร็จแล้ว ให้ นศ login เข้าสู่เครื่องนั้นและดู btrfs subvolume ที่มีอยู่ในเครื่อง host ซึ่งหลังจากการติดตั้งข้างต้น ubuntu 16.04 จะสร้าง btrfs subvolmes สำหรับ / และ /home directory ให้ตั้งแต่เริ่มต้น
+<pre>
+$ sudo su
+# df -h
+Filesystem      Size  Used Avail Use% Mounted on
+udev            2.0G     0  2.0G   0% /dev
+tmpfs           396M  5.5M  390M   2% /run
+/dev/sda1        10G  2.0G  6.3G  25% /
+tmpfs           2.0G     0  2.0G   0% /dev/shm
+tmpfs           5.0M     0  5.0M   0% /run/lock
+tmpfs           2.0G     0  2.0G   0% /sys/fs/cgroup
+/dev/sda1        10G  2.0G  6.3G  25% /home
+tmpfs           396M     0  396M   0% /run/user/1000
+# 
+# mount /dev/sda1 /mnt 
+#
+</pre>
+นศ ควร modify ไฟล์ /etc/fstab ด้วยการเพิ่มบรรทัดข้างล่าง เพื่อให้มีการสร้าง /mnt directory และ mount เข้ากับ /dev/sda1 device โดยอัตโนมัติเมื่อมีการ reboot
+<p><p>
+<pre>
+# vi /etc/fstab
+...
+/dev/sda1       /mnt            btrfs   defaults   0    1
+...
+(ให้เซฟไฟล์ และออกจาก vi)
+#
+</pre>
+ในอันดับถัดไป นศ list btrfs subvolume ซึ่ง ubuntu จะสร้าง subvolume /mnt/@ สำหรับ / directory และ /mnt/@home สำหรับ /home directory
+<p><p>
+<pre>
+# btrfs subvolume list /mnt
+ID 261 gen 7810 top level 5 path @
+ID 262 gen 7702 top level 5 path @home
+#
+</pre>
+นศ สามารถทำ defragmentation ด้วยคำสั่งต่อไปนี้
+<p><p>
+<pre>
+# btrfs filesystem defrag /mnt
+</pre>
+นศ สามารถทำ snapshot ของ /mnt/@ และ /mnt/@home ดังนี้
+<p><p>
+<pre>
+# <b>btrfs subvolume snapshot /mnt/@ /mnt/@_snapshot1</b>
+Create a snapshot of '/mnt/@' in '/mnt/@_snapshot1'
+# <b>btrfs subvolume snapshot /mnt/@home /mnt/@home_snapshot1</b>
+Create a snapshot of '/mnt/@home' in '/mnt/@home_snapshot1'
+# btrfs subvolume list /mnt
+ID 261 gen 7812 top level 5 path @
+ID 262 gen 7813 top level 5 path @home
+ID 264 gen 7812 top level 5 path @_snapshot1
+ID 265 gen 7813 top level 5 path @home_snapshot1
+#
+</pre>
+หลังจากนั้น ถ้า นศ ติดตั้ง openstack แล้วเกิดความผืดพลาดขึ้น นศ สามารถกู้คืน / และ /home ด้วยคำสั่งต่อไปนี้ 
+<p><p>
+<pre>
+# mv /mnt/@ /mnt/@_badroot
+# mv /mnt/@home /mnt/@_badhome
+# mv /mnt/@_snapshot1 /mnt/@
+# mv /mnt/@home_snapshot1 /mnt/@home
+#
+# reboot
+</pre>
+เมื่อ reboot เสร็จ ให้ login เข้าเครื่อง sudo เป็น root แล้ว ลบ /mnt/@_badroot และ /mnt/@_badhome
+<p><p>
+<pre>
+# btrfs subvolume delete /mnt/@_badroot
+# btrfs subvolume delete /mnt/@_badhome
+</pre>
+หลังจากนั้นให้สร้าง snapshot ของ /mnt/@ และ /mnt/@home อีกครั้งหนึ่ง
+<p><p>
+<pre>
+# btrfs subvolume snapshot /mnt/@ /mnt/@_snapshot1
+# btrfs subvolume snapshot /mnt/@home /mnt/@home_snapshot1
+# btrfs filesystem defrag /mnt
+</pre>
+ผม recommend ให้ นศ ทำ snapshot ของ /mnt/@ และ /mnt/@home เมื่อผ่านการติดตั้งที่สำคัญๆ เผื่อว่าการติดตั้งในอนาคตผิดพลาด นศ จะได้ recover snapshot ล่าสุดได้
+  </details>
+<p><p>  
+  
+หลังจากติดตั้งเสร็จ vm จะ reboot และกลับไปที่หน้าจอเริ่มต้นการติดตั้งใหม่ ให้ นศ ใช้คำสั่ง "quit" ใข qemu monitor เพื่อปิดเครื่อง vm
 <p><p>
 <pre>
 $ nc localhost 9666

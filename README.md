@@ -349,7 +349,7 @@ $
 <p><p>
 <p><p>
 <pre>
-$ cd $HOME/runQemu-scripts
+$ cd $HOME/runQemu/runQemu-scripts
 $ vi <a href="runQemu-scripts/runQemu-on-base-img.sh">runQemu-on-base-img.sh</a>
 $ cat runQemu-on-base-img.sh
 #!/bin/bash

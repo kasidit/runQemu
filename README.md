@@ -387,9 +387,33 @@ $
 <tr><td>
 <b>หมายเหตุ:</b> ที่ผ่านมา ผมเขียนคำสั่งต่างๆใน shell script เพื่อนำกลับมาเรียกใช้ใหม่ได้ แต่เพื่อความสะดวกผมจะเปลี่ยนเป็นใช้คำสั่งโดยตรงในส่วนที่เหลือของ tutorial นี้
 </td></tr>
+<tr><td>
+<b>ยกตัวอย่างเช่น:</b> ที่ผ่านมา คำสั่งที่ติดตั้ง ubuntu 16.04 บน guest OS บน raw image ก่อนหน้า ผมจะเขียนใหม่เป็น
+<pre>
+$ sudo qemu-system-x86_64 -enable-kvm -cpu host -smp 2 -m 2G \
+  -drive file=ubuntu1604raw.img,format=raw -boot d -cdrom ubuntu-16.04.3-server-amd64.iso \
+  -vnc :95 -net nic -net user -monitor tcp::9666,server,nowait -localtime &
+$
+</pre>
+</td></tr>
 </table>
 <p><p>
 <a id="part3-4"><h3>3.5 สร้าง disk แบบ qcow2 overlay</h3></a>
 <p><p>
+จากคำสั่งที่แล้ว ผมได้ติดตั้ง ubuntu 16.04 บน image ubuntu1604raw.img ในอันดับถัดไป ผมจะสร้าง image ชนิด qcow2 แบบที่เรียกว่า overlay image ซึ่งเป็นไฟล์ที่แตกต่างจากแบบ raw และ qcow2 ธรรมดา ก็คือมันเป็นไฟล์ที่เก็บส่วนต่างของ image ที่เป็น base ของมัน ในคำสั่งถัดไป ผมจะสร้าง overlay image ชื่อว่า ubuntu1604qcow2.ovl ขึ้นมา
+<p><p>
+<pre>
+$ qemu-img create -f qcow2 -b ubuntu1604raw.img ubuntu1604qcow2.ovl
+Formatting 'ubuntu1604qcow2.ovl', fmt=qcow2 size=4294967296 backing_file=ubuntu1604raw.img encryption=off cluster_size=65536 lazy_refcounts=off refcount_bits=16
+$
+</pre>
+จากคำสั่งข้างต้นไฟล์ ubuntu1604qcow2.ovl มี base image คือไฟล์ ubuntu1604raw.img นั่นหมายความว่า <b>กรณีที่ 1</b> เมื่อ kvm หรือ qemu อ่านค่าจากไฟล์ ubuntu1604qcow2.ovl และข้อมูล block ที่ต้องการยังไม่ได้รับการแก้ไขใดๆ ข้อมูลใน block เดียวกันจากไฟล์ base image ก็ถูกอ่านไปใช้งาน <b>กรณีที่ 2</b> kvm เขียนหรือแก้ไขข้อมูลใน block ของ ubuntu1604qcow2.ovl ที่ไม่เคยมีการเขียนหรือแก้ไขข้อมูลมาก่อน driver ของไฟล์แบบ qcow2 overlay นี้จะ copy ข้อมูลที่มีอยู่แล้วทั้ง block จากไฟล์ base image มายัง ubuntu1604qcow2.ovl หรือไฟล์ overlay และทำการเขียนข้อมูลลงใน copy ใหม่นั้น <b>กรณีที่ 3</b> ถ้า block ที่จะอ่านหรือแก้ไขข้อมูลมี copy อยู่ในไฟล์ overlay แล้ว kvm จะอ่านข้อมูลจาก copy นั้นหรือเขียนข้อมูลลงใน copy นั้นทันที
+<p><p>
+ประโยชน์ของไฟล์แบบ overlay คือ ทำให้เราสามารถเก็บข้อมูลที่ไม่ต้องการให้ถูกเปลี่ยนแปลงใน base image ได้ นศ สามารถสร้าง overlay ซ้อนกันหลายชั้นก็ได้ แต่ยิ่งจำนวนชั้นมากประสิทธิภาพของการอ่านข้อมูลก็จะช้าลงเพราะอาจต้องเปิดไฟล์หลายไฟล์ 
+<p><p>
+คำสั่งถัดไปจะเป็นการรัน kvm บนไฟล์ over lay ubuntu1604qcow2.ovl ขอให้สังเกตุขนาดที่เปลี่ยนไปของไฟล์นี้ และขนาดของไฟล์ที่คงเดิมของ ubuntu1604raw.img
+<pre>
+</pre>
+
   
 

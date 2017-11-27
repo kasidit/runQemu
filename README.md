@@ -488,11 +488,9 @@ $ cat /etc/network/interfaces
 
 source /etc/network/interfaces.d/*
 
-# The loopback network interface
 auto lo
 iface lo inet loopback
 
-# The primary network interface
 auto ens3
 iface ens3 inet static
 address 10.100.20.133
@@ -515,14 +513,12 @@ $ cat /etc/network/interfaces
 
 source /etc/network/interfaces.d/*
 
-# The loopback network interface
 auto lo
 iface lo inet loopback
 
 auto ens3
 iface ens3 inet manual
 
-# The primary network interface
 auto br0
 iface br0 inet static
    address 10.100.20.210
@@ -584,11 +580,9 @@ vm$ cat /etc/network/interfaces
 
 source /etc/network/interfaces.d/*
 
-# The loopback network interface
 auto lo
 iface lo inet loopback
 
-# The primary network interface
 auto ens3
 iface ens3 inet static
 address 10.100.20.220

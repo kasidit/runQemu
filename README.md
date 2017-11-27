@@ -130,7 +130,7 @@ $
 </pre>
 disk แบบ qcow2 มี features ที่เราจะกล่าวถึงอีกประการคือแบบการสร้าง virtual disk แบบ qcow2 overlay ซึ่งผมจะอธิบายอีกทีหลังจากส่วนที่ 3 
 <p><p>
-  <a id="part3"><h2>3 การติดตั้ง Guest OS แบบ ubuntu 16.04 บน virtual disks</h3></a>
+  <a id="part3"><h2>3 การติดตั้ง Guest OS แบบ ubuntu 16.04 บน virtual disks</h2></a>
 <p><p>
 ในส่วนนี้ นศ จะเรียก kvm จาก command line เพื่อสร้าง Guest OS บน disk image เปล่าๆ ที่สร้างขึ้น เพื่อความสะดวกผมเขียนคำสั่งลงใน bash shell script 
 <table>
@@ -472,5 +472,138 @@ $
 </pre>
 <p><p>
 นศ จะเห็นว่า นศ มีเครื่องมือใช้สร้าง backup หรือทำ disk snapshot ได้หลายวิธี ด้วยเครื่องมือไม่ว่าจะเป็น overlay file และ btrfs
+<p><p>
+  <a id="part4"><h2>4. การเชื่อมต่อ kvm เข้ากับ L2 Network ด้วย Linux Bridge</h2></a>
+<p><p>
+<p><p>
+  <a id="part4-1"><h3>4.1 ติดตั้ง bridge-utils และกำหนดค่า bridge br0 บน host</h3></a>
+<p><p>
+<pre>
+$ sudo apt-get update
+$ sudo apt-get install bridge-utils
+...
+$ cat /etc/network/interfaces
+# This file describes the network interfaces available on your system
+# and how to activate them. For more information, see interfaces(5).
 
+source /etc/network/interfaces.d/*
 
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+# The primary network interface
+auto ens3
+iface ens3 inet static
+address 10.100.20.133
+netmask 255.255.255.0
+network 10.100.20.0
+gateway 10.100.20.1
+dns-nameservers 9.9.9.9
+$
+$
+</pre>
+<p><p>
+หลังจากติดตั้ง แล้ว ผมแสดงค่า /etc/network/interfaces ที่มีอยู่แต่เดิม ในอันดับถัดไปผมจะกำหนดค่าในไฟล์ /etc/network/interfaces ใหม่สำหรับ br0 interface ดังนี้ 
+<p><p>
+<pre>
+$ sudo vi /etc/network/interfaces
+$
+$ cat /etc/network/interfaces
+# This file describes the network interfaces available on your system
+# and how to activate them. For more information, see interfaces(5).
+
+source /etc/network/interfaces.d/*
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+auto ens3
+iface ens3 inet manual
+
+# The primary network interface
+auto br0
+iface br0 inet static
+   address 10.100.20.210
+   netmask 255.255.255.0
+   gateway 10.100.20.1
+   bridge_ports    ens3
+   bridge_stp      off
+   bridge_maxwait  0
+   bridge_fd       0
+   dns-nameservers 9.9.9.9
+$
+$ sudo reboot 
+</pre>
+ถ้า นศ ไม่อยาก reboot นศ สามารถ restart network ด้วยคำสั่ง
+<pre>
+$ sudo /etc/init.d/networking restart 
+</pre>
+<p><p>
+  <a id="part4-2"><h3>4.2 กำหนดให้ kvm เชือมต่อกับ bridge br0 และรัน kvm </h3></a>
+<p><p>
+นศ ต้องสร้าง script ไฟล์ สองไฟล์ที่ kvm จะเรียกเพื่อสร้าง tap interface เชื่อมต่อกับ bridge br0 ที่เราเพิ่สร้างขึ้น
+<pre>
+$ mkdir ${HOME}/etc
+$ vi ${HOME}/etc/qemu-ifup
+$ chmod 755 ${HOME}/etc/qemu-ifup
+$ cat  ${HOME}/etc/qemu-ifup
+#!/bin/sh
+
+switch=$(/sbin/ip route list | awk '/^default / { print $5 }')
+/sbin/ifconfig $1 0.0.0.0 promisc up
+/sbin/brctl addif ${switch} $1
+$
+$ vi ${HOME}/etc/qemu-ifdown
+$ chmod 755 ${HOME}/etc/qemu-ifdown
+$ cat ${HOME}/etc/qemu-ifdown
+#!/bin/sh
+
+switch=$(/sbin/ip route list | awk '/^default / { print $5 }')
+/sbin/ifconfig $1 down
+/sbin/brctl delif ${switch} $1
+$
+</pre>
+รัน kvm ด้วยคำสั่งนี้ ขอให้สังเกตุ option "upscript" และ "downscript"
+<pre>
+$ sudo qemu-system-x86_64 -enable-kvm -cpu host -smp 2 \
+>  -m 2G -L pc-bios -drive file=ubuntu1604raw.img,format=raw \
+>  -boot c -vnc :95 \
+>  -netdev type=tap,script=${HOME}/etc/qemu-ifup,downscript=${HOME}/etc/qemu-ifdown,id=hostnet10 \
+>  -device virtio-net-pci,romfile=,netdev=hostnet10,mac=00:54:09:25:c1:c7 \
+>  -monitor tcp::9003,server,nowait \
+>  -localtime &
+</pre>
+เนื่องจากเรายังไม่ได้ กำหนดค่า IP ของ tap interface ของ vm ที่เพิ่งรันให้อยู่ในวง 10.100.20.x เรายังไม่สามารถ putty เข้าสู่ vm ได้ เราต้องกำหนด network เริ่มต้นโดยใช้ vnc client console ซึ่งสามารถเข้าถึงที่ vnc endpoint 10.100.20.133:95 เมื่อเข้าสู่ vnc console แล้วให้ นศ กำหนดค่าในไฟล์ /etc/network/interfaces ของ vm ดังนี้ แล้ว restart network (หมายเหตุ ผมเปลี่ยน prompt sign ของ vm ให้เป็น "vm$" 
+<p><p>
+<pre>
+vm$ cat /etc/network/interfaces
+# This file describes the network interfaces available on your system
+# and how to activate them. For more information, see interfaces(5).
+
+source /etc/network/interfaces.d/*
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+# The primary network interface
+auto ens3
+iface ens3 inet static
+address 10.100.20.220
+netmask 255.255.255.0
+network 10.100.20.0
+gateway 10.100.20.1
+dns-nameservers 9.9.9.9
+vm$ 
+vm$ sudo service networking restart
+vm$
+vm$ ping www.google.com
+...
+vm$
+</pre>
+นศ จะเห็นว่าขณะนี้ทั้ง host และ vm อยู่ในวง subnet เดียวกัน
+<p><p>
+  <a id="part5"><h2>5. การเชื่อมต่อ kvm เข้ากับ subnet ใหม่ ด้วย openvswitch</h2></a>
+<p><p>

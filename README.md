@@ -411,9 +411,48 @@ $
 <p><p>
 ประโยชน์ของไฟล์แบบ overlay คือ ทำให้เราสามารถเก็บข้อมูลที่ไม่ต้องการให้ถูกเปลี่ยนแปลงใน base image ได้ นศ สามารถสร้าง overlay ซ้อนกันหลายชั้นก็ได้ แต่ยิ่งจำนวนชั้นมากประสิทธิภาพของการอ่านข้อมูลก็จะช้าลงเพราะอาจต้องเปิดไฟล์หลายไฟล์ 
 <p><p>
-คำสั่งถัดไปจะเป็นการรัน kvm บนไฟล์ over lay ubuntu1604qcow2.ovl ขอให้สังเกตุขนาดที่เปลี่ยนไปของไฟล์นี้ และขนาดของไฟล์ที่คงเดิมของ ubuntu1604raw.img
+คำสั่งถัดไปจะเป็นการรัน kvm บนไฟล์ overlay "ubuntu1604qcow2.ovl" ขอให้สังเกตุขนาดที่เปลี่ยนไปของไฟล์นี้ และขนาดของไฟล์ที่คงเดิมของ ubuntu1604raw.img
 <pre>
+$ ls -l
+-rw-r--r-- 1 cs449user cs449user     197120 Nov 27 17:24 ubuntu1604qcow2.ovl
+-rw-r--r-- 1 cs449user cs449user 4294967296 Nov 27 17:13 ubuntu1604raw.img
+$
+$ sudo qemu-system-x86_64 -enable-kvm -cpu host -smp 2 -m 2G -L pc-bios \
+>  -drive file=ubuntu1604qcow2.ovl,format=qcow2 \
+>  -boot c -vnc :95 -net nic -net user -monitor tcp::9666,server,nowait -localtime &
+[4] 2455
+$ 
 </pre>
+หลังจากนั้นผมใช้ vnc client เข้าไปทำ apt-get update และผม ls -l ใน bash shell ข้างต้นจะเห็นความเปลี่ยนแปลงของไฟล์ ubuntu1604qcow2.ovl 
+<pre>
+$ la -l
+-rw-r--r-- 1 cs449user cs449user   13238272 Nov 27 18:13 ubuntu1604qcow2.ovl
+-rw-r--r-- 1 cs449user cs449user 4294967296 Nov 27 17:13 ubuntu1604raw.img
+$ 
+</pre>
+  <b>การ commit การเปลี่ยนแปลง จาก overlay image ไปยัง base image</b> สมมุติว่าหลังจากที่ทำงานเสร็จ ผมพอใจกับเนื้อหาใหม่ใน overlay ไฟล์ และอยาก merge ข้อมูลใหม่ลงสู่ไฟล์ base image ผมามารถทำได้ดังนี้
+<p><p>
+<pre>
+$ echo "quit" | nc localhost 9666
+QEMU 2.5.0 monitor - type 'help' for more information
+(qemu) quit
+$ 
+$ qemu-img info ubuntu1604qcow2.ovl
+image: ubuntu1604qcow2.ovl
+file format: qcow2
+virtual size: 4.0G (4294967296 bytes)
+disk size: 104M
+cluster_size: 65536
+backing file: ubuntu1604raw.img
+Format specific information:
+    compat: 1.1
+    lazy refcounts: false
+    refcount bits: 16
+    corrupt: false
+$ qemu-img commit ubuntu1604qcow2.ovl
+Image committed.
+$
+</pre>
+นศ จะเห็นว่า นศ มีเครื่องมือใช้สร้าง backup หรือทำ disk snapshot ได้หลายวิธี ด้วยเครื่องมือไม่ว่าจะเป็น overlay file และ btrfs
 
-  
 

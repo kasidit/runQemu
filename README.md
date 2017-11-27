@@ -10,15 +10,18 @@
       <ul>
        <li> <a href="#part3-1">3.1 การใช้ vnc console</a>
        <li> <a href="#part3-2">3.2 แนะนำ qemu monitor</a>
-       <li> <a href="#part3-3">3.3 รัน vm หลังจากการติดตั้ง</a>
-       <li> <a href="#part3-4">3.4 สร้าง disk แบบ qcow2 overlay</a>
+       <li> <a href="#part3-3">3.3 ติดตั้ง guest OS แบบ btrfs file system บน raw disk</a>
+       <li> <a href="#part3-4">3.4 รัน vm หลังจากการติดตั้ง</a>
+       <li> <a href="#part3-5">3.5 สร้าง disk แบบ qcow2 overlay</a>
       </ul>
 </ul>
 <p><p>
-ใน Tutorial นี้เราสมมุติว่า นศ มีเครื่องจริงหรือ host computer (หรือ server) ที่ติดตั้ง ubuntu 16.04 และ นศ ต้องการจะติดตั้งและใช้ kvm เพื่อสร้าง virtual machine (vm) ที่มี Guest OS เป็น ubuntu 16.04 เช่นกัน Guide line ในการอ่าน tutorial นี้มีดังนี้ 
+ใน Tutorial นี้เราสมมุติว่า นศ มีเครื่องจริงหรือ host computer (เราจะกำหนดให้มี IP เป็น 10.100.20.133 ใน tutorial นี้) และสมมุติว่า นศ ต้องการจะติดตั้งและใช้ kvm เพื่อสร้าง virtual machine (vm) ที่มี Guest OS เป็น ubuntu 16.04  
+<p>
+Guide line ในการอ่าน tutorial นี้มีดังนี้ 
 <ul>
-<li>ในกรณีที่ นศ ต้องการให้ vm ที่ นศ สร้างขึ้นสามารถรัน kvm ได้อีกชั้นหนึ่ง ขอให้ นศ อ่านวิธีการกำหนดค่าบนเครื่อง host ในส่วนที่ 1 มิเช่นนั้น ถ้า นศ ไม่ได้ต้องการ feature ดังกล่าวก็ข้ามไปดูส่วนที่ 2 ได้เลย  
-<li>ในส่วนที่ 3 นศ ต้องเลือกว่าจะติดตั้ง guest OS บน vm โดยใช้ ext4 หรือ btrfs
+<li>ในกรณีที่ นศ ต้องการให้ vm ที่ นศ สร้างขึ้นบนเครื่อง host สามารถรัน kvm ได้อีกชั้นหนึ่ง (nested virtualization) ขอให้ นศ อ่านวิธีการกำหนดค่าบนเครื่อง host ในส่วนที่ 1 มิเช่นนั้น ถ้า นศ ไม่ได้ต้องการ feature ดังกล่าวก็ข้ามไปดูส่วนที่ 2 ได้เลย  
+<li>ในส่วนที่ 3.3 นศ ต้องเลือกว่าจะติดตั้ง guest OS บน vm โดยใช้ ext4 หรือ btrfs เราจะไม่พูดถึงการติดตั้งแบบ ext เพราะเป็น default ของ ubuntu 16.04 แต่ tutorial นี้จะกล่าวถึงการติดตั้งแบบ btrfs และการสร้างและใช้งาน btrfs snapshot เบื้องต้น
 </ul>
 <p><p>
 <a id="part1"><h2>1. กำหนดให้ ubuntu 16.04 host สนับสนุนการทำงานแบบ nested virtualization</h2></a>
@@ -195,7 +198,7 @@ $
 </pre>
 promt sign ของ qemu monitor คือ (qemu) ถ้า นศ กด help และ info จะมีข้อมูลมากมายแสดงคำสั่งต่างๆซึ่งเราจะยังไม่กล่าวถึงในที่นี่ นศ สามารถศึกษาเพิ่มเติมได้จาก wiki ของ qemu เมื่อต้องการออกจาก monitor กลับมาที่ bash shell ให้กด ctrl C
 <p><p>
-<a id="part3-1"><h3>3.1 ติดตั้ง guest OS แบบ btrfs file system บน raw disk</h3></a>
+<a id="part3-1"><h3>3.3 ติดตั้ง guest OS แบบ btrfs file system บน raw disk</h3></a>
 <p><p>
 ในอับดับถัดไป ขอให้ นศ กลับไปพิจารณา vnc console และติดตั้ง ubuntu 16.04 server ถ้า นศ ต้องการติดตั้งแบบกำหนดให้ vm ใช้ ext4 file system ก็ทำได้เลยโดยเลือกการ partition และ format disk ตาม default ของ ubuntu
 <p>
@@ -345,7 +348,7 @@ $
 $
 </pre>
 <p><p>
-<a id="part3-3"><h3>3.3 รัน vm หลังจากการติดตั้ง</h3></a>
+<a id="part3-3"><h3>3.4 รัน vm หลังจากการติดตั้ง</h3></a>
 <p><p>
 <p><p>
 <pre>
@@ -384,20 +387,9 @@ $
 <tr><td>
 <b>หมายเหตุ:</b> ที่ผ่านมา ผมเขียนคำสั่งต่างๆใน shell script เพื่อนำกลับมาเรียกใช้ใหม่ได้ แต่เพื่อความสะดวกผมจะเปลี่ยนเป็นใช้คำสั่งโดยตรงในส่วนที่เหลือของ tutorial นี้
 </td></tr>
-<tr><td>
-<b>สำหรับ นศ วิชา คพ. 449:</b> ผมสร้าง server ที่มี IP ให้ นศ แต่ละคน เทียบเคียงกับ vnc endpoint ที่แจกให้ นศ ไปก่อนหน้า ดังต่อไปนี้ 
-<p><p>
-vnc endpoint: 10.100.20.133:48 เข้าถึงโดยตรงทาง putty ได้ด้วย IP 10.100.20.208 <br>
-vnc endpoint: 10.100.20.133:49 เข้าถึงโดยตรงทาง putty ได้ด้วย IP 10.100.20.209 <br> 
-vnc endpoint: 10.100.20.133:50 เข้าถึงโดยตรงทาง putty ได้ด้วย IP 10.100.20.210 <br>
-vnc endpoint: 10.100.20.133:51 เข้าถึงโดยตรงทาง putty ได้ด้วย IP 10.100.20.211 <br> 
-vnc endpoint: 10.100.20.133:52 เข้าถึงโดยตรงทาง putty ได้ด้วย IP 10.100.20.212 <br>
-vnc endpoint: 10.100.20.133:53 เข้าถึงโดยตรงทาง putty ได้ด้วย IP 10.100.20.213 <br> 
-<p>
-</td></tr>
 </table>
 <p><p>
-<a id="part3-4"><h3>3.4 สร้าง disk แบบ qcow2 overlay</h3></a>
+<a id="part3-4"><h3>3.5 สร้าง disk แบบ qcow2 overlay</h3></a>
 <p><p>
   
 

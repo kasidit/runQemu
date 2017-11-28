@@ -18,6 +18,7 @@
 <li> <a href="#part4">4. การเชื่อมต่อ kvm เข้ากับ L2 Network ด้วย Linux Bridge</a>
       <ul>
        <li> <a href="#part4-1">4.1 ติดตั้ง bridge-utils และกำหนดค่า bridge br0 บน host</a>
+       <li> <a href="#part4-2">4.2 4.2 กำหนดให้ kvm เชือมต่อกับ bridge br0 และรัน kvm</a>
       </ul>
 <li> <a href="#part3">5. การเชื่อมต่อ kvm เข้ากับ subnet ใหม่ ด้วย openvswitch</a> 
 </ul>
@@ -485,12 +486,9 @@ $ sudo apt-get install bridge-utils
 $ cat /etc/network/interfaces
 # This file describes the network interfaces available on your system
 # and how to activate them. For more information, see interfaces(5).
-
 source /etc/network/interfaces.d/*
-
 auto lo
 iface lo inet loopback
-
 auto ens3
 iface ens3 inet static
 address 10.100.20.133
@@ -498,7 +496,6 @@ netmask 255.255.255.0
 network 10.100.20.0
 gateway 10.100.20.1
 dns-nameservers 9.9.9.9
-$
 $
 </pre>
 <p><p>
@@ -510,15 +507,11 @@ $
 $ cat /etc/network/interfaces
 # This file describes the network interfaces available on your system
 # and how to activate them. For more information, see interfaces(5).
-
 source /etc/network/interfaces.d/*
-
 auto lo
 iface lo inet loopback
-
 auto ens3
 iface ens3 inet manual
-
 auto br0
 iface br0 inet static
    address 10.100.20.210
@@ -542,20 +535,21 @@ $ sudo /etc/init.d/networking restart
 นศ ต้องสร้าง script ไฟล์ สองไฟล์ที่ kvm จะเรียกเพื่อสร้าง tap interface เชื่อมต่อกับ bridge br0 ที่เราเพิ่สร้างขึ้น
 <pre>
 $ mkdir ${HOME}/etc
+$
 $ vi ${HOME}/etc/qemu-ifup
 $ chmod 755 ${HOME}/etc/qemu-ifup
+$
 $ cat  ${HOME}/etc/qemu-ifup
 #!/bin/sh
-
 switch=$(/sbin/ip route list | awk '/^default / { print $5 }')
 /sbin/ifconfig $1 0.0.0.0 promisc up
 /sbin/brctl addif ${switch} $1
 $
 $ vi ${HOME}/etc/qemu-ifdown
 $ chmod 755 ${HOME}/etc/qemu-ifdown
+$
 $ cat ${HOME}/etc/qemu-ifdown
 #!/bin/sh
-
 switch=$(/sbin/ip route list | awk '/^default / { print $5 }')
 /sbin/ifconfig $1 down
 /sbin/brctl delif ${switch} $1
@@ -577,12 +571,9 @@ $ sudo qemu-system-x86_64 -enable-kvm -cpu host -smp 2 \
 vm$ cat /etc/network/interfaces
 # This file describes the network interfaces available on your system
 # and how to activate them. For more information, see interfaces(5).
-
 source /etc/network/interfaces.d/*
-
 auto lo
 iface lo inet loopback
-
 auto ens3
 iface ens3 inet static
 address 10.100.20.220
@@ -597,7 +588,7 @@ vm$ ping www.google.com
 ...
 vm$
 </pre>
-นศ จะเห็นว่าขณะนี้ทั้ง host และ vm อยู่ในวง subnet เดียวกัน
+นศ จะเห็นว่าขณะนี้ทั้ง host และ vm อยู่ในวง subnet เดียวกันคือวง 10.100.20.0/24
 <p><p>
   <a id="part5"><h2>5. การเชื่อมต่อ kvm เข้ากับ subnet ใหม่ ด้วย openvswitch</h2></a>
 <p><p>

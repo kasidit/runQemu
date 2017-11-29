@@ -527,7 +527,7 @@ auto ens3
 iface ens3 inet manual
 auto br0
 iface br0 inet static
-   address 10.100.20.210
+   address 10.100.20.133
    netmask 255.255.255.0
    gateway 10.100.20.1
    bridge_ports    ens3
@@ -605,3 +605,4 @@ vm$
 <p><p>
   <a id="part5"><h2>5. การเชื่อมต่อ kvm เข้ากับ subnet ใหม่ ด้วย openvswitch</h2></a>
 <p><p>
+

@@ -448,13 +448,18 @@ $ la -l
 -rw-r--r-- 1 cs449user cs449user 4294967296 Nov 27 17:13 ubuntu1604raw.img
 $ 
 </pre>
-  <b>การ commit การเปลี่ยนแปลง จาก overlay image ไปยัง base image</b> สมมุติว่าหลังจากที่ทำงานเสร็จ ผมพอใจกับเนื้อหาใหม่ใน overlay ไฟล์ และอยาก merge ข้อมูลใหม่ลงสู่ไฟล์ base image ผมามารถทำได้ดังนี้
+  <b>การ commit การเปลี่ยนแปลง จาก overlay image ไปยัง base image</b> สมมุติว่าหลังจากที่ทำงานเสร็จ ผมพอใจกับเนื้อหาใหม่ใน overlay ไฟล์ และอยาก merge ข้อมูลใหม่ลงสู่ไฟล์ base image ผมสามารถทำได้ดังนี้
+<ul>
+ <li> ก่อนอื่นเพื่อความปลอดภัยในการใช้งาน image ทั้งสองไฟล์ ผมจะหยุดการทำงานของ vm ก่อน 
 <p><p>
 <pre>
 $ echo "quit" | nc localhost 9666
 QEMU 2.5.0 monitor - type 'help' for more information
 (qemu) quit
 $ 
+</pre>
+ <li>หลังจากนั้น ผม merge เนื้อหาของ overlay image เข้ากับ base image   
+<pre>
 $ qemu-img info ubuntu1604qcow2.ovl
 image: ubuntu1604qcow2.ovl
 file format: qcow2
@@ -471,8 +476,16 @@ $ qemu-img commit ubuntu1604qcow2.ovl
 Image committed.
 $
 </pre>
+    <li> ให้ นศ รัน vm อีกครั้งหนึ่งโดยใช้ base raw image เป็น disk image ของ vm และจะเห็นว่าการเปลี่ยนแปลงข้อมูลใน file system ที่ นศ ทำก่อนหน้าได้รับการเขียนลงสู่ไฟล์ raw image แล้ว  
+<pre>
+$ sudo qemu-system-x86_64 -enable-kvm -cpu host -smp 2 -m 2G -L pc-bios \
+>  -drive file=ubuntu1604raw.img,format=raw \
+>  -boot c -vnc :95 -net nic -net user -monitor tcp::9666,server,nowait -localtime &
+$ 
+</pre>
+  </ul>
 <p><p>
-นศ จะเห็นว่า นศ มีเครื่องมือใช้สร้าง backup หรือทำ disk snapshot ได้หลายวิธี ด้วยเครื่องมือไม่ว่าจะเป็น overlay file และ btrfs
+สรุปเนื้อหาในส่วนนี้แสดงวิธีการทำ disk snapshot อีกวิธีหนึ่งด้วยเครื่องมือ overlay image ไฟล์ของ qemu
 <p><p>
   <a id="part4"><h2>4. การเชื่อมต่อ kvm เข้ากับ L2 Network ด้วย Linux Bridge</h2></a>
 <p><p>

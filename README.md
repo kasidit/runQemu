@@ -18,7 +18,7 @@
 <li> <a href="#part4">4. การเชื่อมต่อ kvm เข้ากับ L2 Network ด้วย Linux Bridge</a>
       <ul>
        <li> <a href="#part4-1">4.1 ติดตั้ง bridge-utils และกำหนดค่า bridge br0 บน host</a>
-       <li> <a href="#part4-2">4.2 4.2 กำหนดให้ kvm เชือมต่อกับ bridge br0 และรัน kvm</a>
+       <li> <a href="#part4-2">4.2 กำหนดให้ kvm เชือมต่อกับ bridge br0 และรัน kvm</a>
       </ul>
 <li> <a href="#part3">5. การเชื่อมต่อ kvm เข้ากับ subnet ใหม่ ด้วย openvswitch</a> 
 </ul>

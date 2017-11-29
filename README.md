@@ -527,7 +527,7 @@ $ sudo reboot
 </pre>
 ถ้า นศ ไม่อยาก reboot นศ สามารถ restart network ด้วยคำสั่ง
 <pre>
-$ sudo /etc/init.d/networking restart 
+$ sudo service networking restart 
 </pre>
 <p><p>
   <a id="part4-2"><h3>4.2 กำหนดให้ kvm เชือมต่อกับ bridge br0 และรัน kvm </h3></a>

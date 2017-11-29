@@ -272,6 +272,8 @@ promt sign ของ qemu monitor คือ (qemu) ถ้า นศ กด help 
 </details>
 </ul>
 หลังจากนั้นให้ นศ ติดตั้ง ubuntu ต่อตามปกติ 
+<table>
+<tr><td>
 <details>
 <summary>Click เพื่อศึกษาการสร้าง btrfs snapshot และ recover snashot</summary>
  <p>
@@ -354,6 +356,8 @@ ID 265 gen 7813 top level 5 path @home_snapshot1
 </pre>
 ผม recommend ให้ นศ ทำ snapshot ของ /mnt/@ และ /mnt/@home เมื่อผ่านการติดตั้งที่สำคัญๆ เผื่อว่าการติดตั้งในอนาคตผิดพลาด นศ จะได้ recover snapshot ล่าสุดได้ (นศ สามารถดูการสร้าง btrfs snapshot และการใช้งานได้ที่ <a href="https://www.youtube.com/playlist?list=PLmUxMbTCUhr57iyWg8UAZsEXQ9_lX3Ca5">youtube playlist นี้</a>)
 </details>
+</td></tr>
+</table>
 หลังจากติดตั้งเสร็จ vm จะ reboot และกลับไปที่หน้าจอเริ่มต้นการติดตั้งใหม่ ให้ นศ ใช้คำสั่ง "quit" ใข qemu monitor เพื่อปิดเครื่อง vm
 <p><p>
 <pre>
@@ -603,6 +607,8 @@ vm$
 </pre>
 นศ จะเห็นว่าขณะนี้ทั้ง host และ vm อยู่ในวง subnet เดียวกันคือวง 10.100.20.0/24
 <p><p>
-  <a id="part5"><h2>5. การเชื่อมต่อ kvm เข้ากับ subnet ใหม่ ด้วย openvswitch</h2></a>
+<a id="part5"><h2>5. การเชื่อมต่อ kvm เข้ากับ subnet ใหม่ ด้วย openvswitch</h2></a>
 <p><p>
-
+<p><p>
+<a id="part6"><h2>5. การติดตั้ง docker container</h2></a>
+<p><p>

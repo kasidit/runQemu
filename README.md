@@ -609,6 +609,4 @@ vm$
 <p><p>
 <a id="part5"><h2>5. การเชื่อมต่อ kvm เข้ากับ subnet ใหม่ ด้วย openvswitch</h2></a>
 <p><p>
-<p><p>
-<a id="part6"><h2>5. การติดตั้ง docker container</h2></a>
-<p><p>
+TBA

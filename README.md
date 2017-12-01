@@ -422,7 +422,7 @@ $
 <p><p>
 สำหรับการติดต่อสื่อสารกับ network เครื่อง vm ที่ นศ เพิ่งรันด้วย option "-net nic -net user" จะมีการเชื่อมต่อกับ network ดังภาพที่ 3 
 <p><p>
-  <img src="documents/.png"> <br>
+  <img src="documents/qemuNATnetwork.png"> <br>
 ภาพที่ 3
 <p><p>
 จากภาพเครื่อง vm เชื่อมต่อกับ host แบบ NAT network ด้วย Slirp protocol และมี subnet ระหว่าง host กับ vm คืออยู่ในวง 10.0.2.0 
@@ -507,7 +507,7 @@ $
 IP address ที่อยู่ในวงเดียวกันกับ host นศ สามารถกำหนดให้ vm ใช้ bridge network ซึ่งมีลักษณะการเชื่อมต่อระหว่าง 
 vm กับโลกภายนอกดังภาพที่ 4
 <p><p>
-  <img src="documents/.png"> <br>
+  <img src="documents/qemuBridgenetwork.png"> <br>
 ภาพที่ 4
 <p><p>
   <a id="part4-1"><h3>4.1 ติดตั้ง bridge-utils และกำหนดค่า bridge br0 บน host</h3></a>
@@ -626,7 +626,7 @@ vm$
 <a id="part5"><h2>5. การเชื่อมต่อ kvm เข้ากับ subnet ใหม่ ด้วย openvswitch</h2></a>
 <p><p>
 <p><p>
-  <img src="documents/.png"> <br>
+  <img src="documents/qemuOVSlocalnetwork.png"> <br>
 ภาพที่ 5
 <p><p>
 TBA

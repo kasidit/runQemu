@@ -12,7 +12,7 @@
        <li> <a href="#part3-1">3.1 การใช้ vnc console</a>
        <li> <a href="#part3-2">3.2 แนะนำ qemu monitor</a>
        <li> <a href="#part3-3">3.3 ติดตั้ง guest OS แบบ btrfs file system บน raw disk</a>
-       <li> <a href="#part3-4">3.4 รัน vm หลังจากการติดตั้ง</a>
+       <li> <a href="#part3-4">3.4 รัน vm หลังจากการติดตั้ง และใช้ NAT network</a>
        <li> <a href="#part3-5">3.5 สร้าง disk แบบ qcow2 overlay</a>
       </ul>
 <li> <a href="#part4">4. การเชื่อมต่อ kvm เข้ากับ L2 Network ด้วย Linux Bridge</a>
@@ -370,7 +370,7 @@ $
 $
 </pre>
 <p><p>
-<a id="part3-3"><h3>3.4 รัน vm หลังจากการติดตั้ง</h3></a>
+<a id="part3-3"><h3>3.4 รัน vm หลังจากการติดตั้งและใช้ NAT network</h3></a>
 <p><p>
 <p><p>
 <pre>
@@ -419,6 +419,16 @@ $
 </pre>
 </td></tr>
 </table>
+<p><p>
+สำหรับการติดต่อสื่อสารกับ network เครื่อง vm ที่ นศ เพิ่งรันด้วย option "-net nic -net user" จะมีการเชื่อมต่อกับ network ดังภาพที่ 3 
+<p><p>
+  <img src="documents/.png"> <br>
+ภาพที่ 3
+<p><p>
+จากภาพเครื่อง vm เชื่อมต่อกับ host แบบ NAT network ด้วย Slirp protocol และมี subnet ระหว่าง host กับ vm คืออยู่ในวง 10.0.2.0 
+โดยที่ host จะมี IP address คือ 10.0.2.2 และ vm จะมี IP address คือ 10.0.2.15 subnet นี้เป็น subnet ภายในที่อยู่ภายใต้ namespace 
+เฉพาะ ระหว่าง host กับ vm แต่ละ vm เป็นคู่ๆไปเท่านั้น ด้วยเหตุนี้ นศ จะติดต่อสื่อสารจาก client โปรแกรมภายใน vm ออกสู่โลกภายนอกได้ 
+แต่ client โปรแกรมจากภายนอก vm จะไม่สามารถสื่อสารกับโปรแกรม server ภายใน vm ได้ 
 <p><p>
 <a id="part3-4"><h3>3.5 สร้าง disk แบบ qcow2 overlay</h3></a>
 <p><p>
@@ -493,6 +503,12 @@ $
 <p><p>
   <a id="part4"><h2>4. การเชื่อมต่อ kvm เข้ากับ L2 Network ด้วย Linux Bridge</h2></a>
 <p><p>
+ในกรณีที่ นศ ต้องการให้ vm รันโปรแกรม server เพื่อให้สามารถเข้าถึงได้ผ่าน network และ นศ ต้องการให้ vm มี
+IP address ที่อยู่ในวงเดียวกันกับ host นศ สามารถกำหนดให้ vm ใช้ bridge network ซึ่งมีลักษณะการเชื่อมต่อระหว่าง 
+vm กับโลกภายนอกดังภาพที่ 4
+<p><p>
+  <img src="documents/.png"> <br>
+ภาพที่ 4
 <p><p>
   <a id="part4-1"><h3>4.1 ติดตั้ง bridge-utils และกำหนดค่า bridge br0 บน host</h3></a>
 <p><p>
@@ -608,5 +624,9 @@ vm$
 นศ จะเห็นว่าขณะนี้ทั้ง host และ vm อยู่ในวง subnet เดียวกันคือวง 10.100.20.0/24
 <p><p>
 <a id="part5"><h2>5. การเชื่อมต่อ kvm เข้ากับ subnet ใหม่ ด้วย openvswitch</h2></a>
+<p><p>
+<p><p>
+  <img src="documents/.png"> <br>
+ภาพที่ 5
 <p><p>
 TBA

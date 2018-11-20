@@ -21,6 +21,7 @@
        <li> <a href="#part4-2">4.2 กำหนดให้ kvm เชือมต่อกับ bridge br0 และรัน kvm</a>
       </ul>
 <li> <a href="#part3">5. การเชื่อมต่อ kvm เข้ากับ subnet ใหม่ ด้วย openvswitch</a> 
+ <li> <a href="#part4">6. การสร้าง OpenVSwitch Virtual Network</a>
 </ul>
 <p><p>
 ใน Tutorial นี้เราสมมุติว่า นศ มีเครื่องจริงหรือ host computer (เราจะกำหนดให้มี IP เป็น 10.100.20.133 ใน tutorial นี้) และสมมุติว่า นศ ต้องการจะติดตั้งและใช้ kvm เพื่อสร้าง virtual machine (vm) ที่มี Guest OS เป็น ubuntu 16.04  
@@ -630,3 +631,6 @@ vm$
 ภาพที่ 5
 <p><p>
 TBA
+<p><p>
+<a id="part5"><h2>6. การ openvswitch virtual network</h2></a>
+<p><p>

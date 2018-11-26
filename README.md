@@ -93,18 +93,18 @@ $
 <p><p>
   <a id="part3"><h2>3 การติดตั้ง Guest OS แบบ ubuntu 16.04 บน virtual disks</h2></a>
 <p><p>
-ในส่วนนี้ นศ จะเรียก kvm จาก command line เพื่อสร้าง Guest OS บน disk image เปล่าๆ ที่สร้างขึ้น เพื่อความสะดวกผมเขียนคำสั่งลงใน bash shell script 
+ในส่วนนี้ นศ จะเรียก kvm จาก command line เพื่อสร้าง Guest OS บน qcow2 disk image เปล่าๆ ที่สร้างขึ้น เพื่อความสะดวกผมเขียนคำสั่งลงใน bash shell script ใน cs449/cs44900/script directory เพื่อเก็บไฟล์ scripts ต่างๆและสร้าง cs449/cs44900/images directory เพื่อเก็บไฟล์ images 
 <table>
 <tr><td>
-<b>สำหรับวิชา คพ. 449:</b> ขอให้ นศ เปลี่ยน -vnc :NN  และ -monitor tcp:NNNN ให้ NN และ NNNN เป็นเลขเฉพาะของแต่ละคน
+<b>แบบฝึกหัด:</b> เมื่อ นศ รัน scripts ของแต่ละคน ขอให้ นศ เปลี่ยน -vnc :NN  และ -monitor tcp:NNNN ให้ NN และ NNNN เป็นเลขเฉพาะของตน
 </td></tr>
 </table>
 <pre>
 $ cd $HOME/runQemu
 $ mkdir runQemu-scripts
 $ cd runQemu-scripts
-$ vi <a href="runQemu-scripts/runQemu-on-base-img-cdrom.sh">runQemu-on-base-img-cdrom.sh</a>
-$ cat runQemu-on-base-img-cdrom.sh
+$ vi <a href="runQemu-scripts/runQemu-on-base-qcow2-img-cdrom.sh">runQemu-on-base-qcow2-img-cdrom.sh</a>
+$ cat runQemu-on-base-qcow2-img-cdrom.sh
 #!/bin/bash
 numsmp="4"
 memsize="4G"

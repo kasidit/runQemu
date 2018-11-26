@@ -1,7 +1,6 @@
 <h1>Tutorial: การใช้ qemu-kvm สร้าง virtual machines บน ubuntu 16.04 server</h1>
 <ul>
- <li> <a href="#part0">0. ติดตั้ง qemu-kvm บน host server </a>
- <li> <a href="#part1">1. กำหนดให้ ubuntu 16.04 host สนับสนุนการทำงานแบบ nested virtualization</a>
+ <li> <a href="#part0">1. ติดตั้ง qemu-kvm บน host server </a>
  <li> <a href="#part2">2. สร้าง virtual hard disk ด้วย qemu-img</a> 
       <ul>
        <li> <a href="#part2-2">2.1 disk format แบบ raw</a>
@@ -21,19 +20,20 @@
        <li> <a href="#part4-2">4.2 กำหนดให้ kvm เชือมต่อกับ bridge br0 และรัน kvm</a>
       </ul>
 <li> <a href="#part3">5. การเชื่อมต่อ kvm เข้ากับ subnet ใหม่ ด้วย openvswitch</a> 
- <li> <a href="#part4">6. การสร้าง OpenVSwitch Virtual Network</a>
+<li> <a href="#part4">6. การสร้าง OpenVSwitch Virtual Network</a>
+<li> <a href="#part1">7. กำหนดให้ ubuntu 16.04 host สนับสนุนการทำงานแบบ nested virtualization</a>
 </ul>
 <p><p>
 ใน Tutorial นี้เราสมมุติว่า นศ มีเครื่องจริงหรือ host computer (เราจะกำหนดให้มี IP เป็น 10.100.20.133 ใน tutorial นี้) และสมมุติว่า นศ ต้องการจะติดตั้งและใช้ kvm เพื่อสร้าง virtual machine (vm) ที่มี Guest OS เป็น ubuntu 16.04  
 <p>
 Guide line ในการอ่าน tutorial นี้มีดังนี้ 
 <ul>
-<li>ในกรณีที่ นศ ต้องการให้ vm ที่ นศ สร้างขึ้นบนเครื่อง host สามารถรัน kvm ได้อีกชั้นหนึ่ง (nested virtualization) ขอให้ นศ อ่านวิธีการกำหนดค่าบนเครื่อง host ในส่วนที่ 1 มิเช่นนั้น ถ้า นศ ไม่ได้ต้องการ feature ดังกล่าวก็ข้ามไปดูส่วนที่ 2 ได้เลย  
+<li>ในกรณีที่ นศ ต้องการให้ vm ที่ นศ สร้างขึ้นบนเครื่อง host สามารถรัน kvm ได้อีกชั้นหนึ่ง (nested virtualization) ขอให้ นศ อ่านวิธีการกำหนดค่าบนเครื่อง host ในส่วนที่ 7  
 <li>ในส่วนที่ 3.3 นศ ต้องเลือกว่าจะติดตั้ง guest OS บน vm โดยใช้ ext4 หรือ btrfs เราจะไม่พูดถึงการติดตั้งแบบ ext เพราะเป็น default ของ ubuntu 16.04 แต่ tutorial นี้จะกล่าวถึงการติดตั้งแบบ btrfs และการสร้างและใช้งาน btrfs snapshot เบื้องต้น ถ้า นศ ไม่ได้จะใช้ btrfs ก็ให้ข้ามส่วนนี้ไป
 <li>ใน tutorial นี้ นศ จะรัน qemu-kvm โดยเรียกใช้ qemu-* utilities บน commandlineโดยตรง (ไม่ทำผ่าน libvirt หรือ virsh)  
 </ul>
 <p><p>
-<a id="part0"><h2>0. ติดตั้ง qemu-kvm บน host server</h2></a>
+<a id="part0"><h2>1. ติดตั้ง qemu-kvm บน host server</h2></a>
 <p><p>
 login เข้า server และรัน 
 <pre>
@@ -42,48 +42,7 @@ $ sudo apt-get install qemu-kvm libvirt-bin ubuntu-vm-builder
 $
 </pre>
 ถึงแม้ว่าเราจะไม่ได้ใช้ libvirt-bin และ ubuntu-vm-builder ใน tutorial นี้ แต่ ผมแสดงวิธี load ในที่นี้เผื่อ นศ จะใช้ในอนาคต
-<p><p>
-<a id="part1"><h2>1. กำหนดให้ ubuntu 16.04 host สนับสนุนการทำงานแบบ nested virtualization</h2></a>
-<p><p>
-ก่อนอื่นเรา assume ว่าเครื่อง host server ของ นศ มี hardware virtualization support สำหรับ kvm นศ สามารถเช็คได้ด้วยคำสั่ง 
-<pre>
-$ sudo su
-# egrep --color="auto" "vmx|svm" /proc/cpuinfo
-... vmx ... (เครื่อง intel cpu)
-#
-</pre>
-<p><p>
-เมื่อ นศ ต้องการรัน VM ภายใน VM อีกชั้นหนึ่ง นศ จะต้องกำหนดค่าดังต่อไปนี้
-<p><p>
-<pre>
-$ sudo su
-# cat /sys/module/kvm_intel/parameters/nested 
-N
-# echo 'options kvm_intel nested=1' >> /etc/modprobe.d/qemu-system-x86.conf 
-#
-</pre>
-หลังจากนั้นให้ reboot เครื่อง host 
-<p><p>
-ให้ login เข้าเครื่อง host อีกครั้งหนึ่งและเช็คว่าไฟล์ /sys/module/kvm_intel/parameters/nested มีค่า Y หรือไม่
-<p><p>
-<pre>
-$ sudo su
-# cat /sys/module/kvm_intel/parameters/nested
-Y
-#
-</pre>
-<p><p>
-หลังจากนั้น เมื่อ นศ รัน kvm ด้วยคำสั่ง qemu-system-x86_64 จาก command line (เรา assume ว่ามี qemu-kvm software ติดตั้งอยู่บน host แล้ว) ให้กำหนด option "-cpu host" เครื่อง VM ที่ นศ รันด้วย option นี้ก็จะสามารถรัน kvm ได้อีกชั้นหนึ่ง สมมุติว่า นศ รัน qemu-kvm ด้วยคำสั่ง
-<pre>
-$ sudo qemu-system-x86_64 ... -cpu host ...
-</pre>
-เมื่อ นศ login เข้าสู่เครื่อง VM นั้น สมมุติว่าเป็น ubuntu เหมือนกัน นศ สามารถตรวจสอบได้ว่า cpu ของเครื่อง VM ของ นศ มี hardware virtualization support หรือไม่ด้วยคำสั่ง
-<p><p>
-<pre>
-# egrep --color="auto" "vmx|svm" /proc/cpuinfo
-</pre>
-<p><p>
-ซึ่งควรจะเห็น บรรทัดที่มีคำว่า vmx หรือ svm
+
 <p><p>
  <a id="part2"><h2>2. สร้าง virtual hard disk ด้วย qemu-img</h2></a>
 <p><p>
@@ -632,5 +591,47 @@ vm$
 <p><p>
 TBA
 <p><p>
-<a id="part5"><h2>6. การ openvswitch virtual network</h2></a>
+<a id="part6"><h2>6. การ openvswitch virtual network</h2></a>
 <p><p>
+<p><p>
+<a id="part1"><h2>7. กำหนดให้ ubuntu 16.04 host สนับสนุนการทำงานแบบ nested virtualization</h2></a>
+<p><p>
+ก่อนอื่นเรา assume ว่าเครื่อง host server ของ นศ มี hardware virtualization support สำหรับ kvm นศ สามารถเช็คได้ด้วยคำสั่ง 
+<pre>
+$ sudo su
+# egrep --color="auto" "vmx|svm" /proc/cpuinfo
+... vmx ... (เครื่อง intel cpu)
+#
+</pre>
+<p><p>
+เมื่อ นศ ต้องการรัน VM ภายใน VM อีกชั้นหนึ่ง นศ จะต้องกำหนดค่าดังต่อไปนี้
+<p><p>
+<pre>
+$ sudo su
+# cat /sys/module/kvm_intel/parameters/nested 
+N
+# echo 'options kvm_intel nested=1' >> /etc/modprobe.d/qemu-system-x86.conf 
+#
+</pre>
+หลังจากนั้นให้ reboot เครื่อง host 
+<p><p>
+ให้ login เข้าเครื่อง host อีกครั้งหนึ่งและเช็คว่าไฟล์ /sys/module/kvm_intel/parameters/nested มีค่า Y หรือไม่
+<p><p>
+<pre>
+$ sudo su
+# cat /sys/module/kvm_intel/parameters/nested
+Y
+#
+</pre>
+<p><p>
+หลังจากนั้น เมื่อ นศ รัน kvm ด้วยคำสั่ง qemu-system-x86_64 จาก command line (เรา assume ว่ามี qemu-kvm software ติดตั้งอยู่บน host แล้ว) ให้กำหนด option "-cpu host" เครื่อง VM ที่ นศ รันด้วย option นี้ก็จะสามารถรัน kvm ได้อีกชั้นหนึ่ง สมมุติว่า นศ รัน qemu-kvm ด้วยคำสั่ง
+<pre>
+$ sudo qemu-system-x86_64 ... -cpu host ...
+</pre>
+เมื่อ นศ login เข้าสู่เครื่อง VM นั้น สมมุติว่าเป็น ubuntu เหมือนกัน นศ สามารถตรวจสอบได้ว่า cpu ของเครื่อง VM ของ นศ มี hardware virtualization support หรือไม่ด้วยคำสั่ง
+<p><p>
+<pre>
+# egrep --color="auto" "vmx|svm" /proc/cpuinfo
+</pre>
+<p><p>
+ซึ่งควรจะเห็น บรรทัดที่มีคำว่า vmx หรือ svm

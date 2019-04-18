@@ -80,21 +80,6 @@ total 196
 -rw-r--r-- 1 openstack openstack     197120 Apr 19 04:04 ubuntu1604qcow2.img
 -rw-r--r-- 1 openstack openstack 8589934592 Apr 19 04:04 ubuntu1604raw.img
 $
-
-$ cd $HOME
-$ mkdir runQemu
-$ cd runQemu
-$ mkdir runQemu-img 
-$ cd runQemu-img
-$ wget http://releases.ubuntu.com/16.04/ubuntu-16.04.3-server-amd64.iso
-$ ls
-$ <b>qemu-img create -f raw ubuntu1604raw.img 4G</b>
-Formatting 'ubuntu1604raw.img', fmt=raw size=4294967296
-$ ls -l
-total 844804
--rw-rw-r-- 1 kasidit kasidit   865075200 Sep 20 15:55 ubuntu-16.04.3-server-amd64.iso
-<b>-rw-r--r-- 1 kasidit kasidit 4294967296 Nov 16 15:38 ubuntu1604raw.img</b>
-$
 </pre>
 <p><p>
   <a id="part3"><h2>3 การติดตั้ง Guest OS แบบ ubuntu 16.04 บน virtual disks</h2></a>
@@ -134,31 +119,30 @@ isoloc=${HOME}/images
 imgfile="ubuntu1604qcow2.img"
 exeloc="/usr/local/bin"
 #
-sudo ${exeloc}/qemu-system-x86_64 -enable-kvm -cpu host -smp ${numsmp} \
-     -m ${memsize} -drive file=${imgloc}/${imgfile},format=qcow2 \
+sudo ${exeloc}/qemu-system-x86_64 \
+     -enable-kvm -cpu host -smp ${numsmp} \
+     -m ${memsize} \
+     -drive file=${imgloc}/${imgfile},format=qcow2 \
      -boot d -cdrom ${isoloc}/ubuntu-16.04.6-server-amd64.iso \
      -vnc :95 \
      -net nic -net user \
      -localtime
 $
 </pre>
-นศ สามารถแทนค่า shell variable ในคำสั่งด้วยตนเองถ้าต้องการออกคำสั่งรัน kvm (qemu-system-x86_64) ด้วยตนเอง สำหรับ script ข้างต้น พารามีเตอร์ที่กำหนดใช้กับคำสั่ง qemu-system-x86_64 ใน script มีความหมายดังนี้
+พารามีเตอร์ที่กำหนดใช้กับคำสั่ง qemu-system-x86_64 ใน script มีความหมายดังนี้
 <ul>
- <li> "-enable-kvm" : เรียก qemu ใน mode "kvm" คือให้ qemu ใช้ kvm driver บน linux เพื่อใช้ CPU virtualization supports
- <li> "-cpu host" : ให้ใช้ features ของ CPU ชอง host 
- <li> "-smp 4" : ให้ vm มี virtual cpu cores จำนวน 8 cores (qemu จะสร้าง threads  ขึ้น 8 threads เพื่อรองรับการประมวลผลของ vm)
- <li> "-m 4G" : vm มี memory 4 GiB
- <li> "-drive file..." : vm ใช้ไฟล์ ub1604raw.img เป็น harddisk drive ที่ 1 ผู้ใช้ต้องระบุว่าไฟล์เป็นแบบ raw format เพราะ qemu ต้องการ make sure ว่าผู้ใช้รู้จัวว่ากำลังใช้ raw format image อยู่ (ถ้าไม่ระบุ qemu จะเตือน) ในกรณีที่ นศ ใช้ qcow2 ก็ให้เปลี่ยน format=raw เป็น format=qcow2
+ <li> "-enable-kvm" : เรียก qemu ใน mode "kvm" คือให้ qemu ใช้ kvm driver บน linux เพื่อใช้ CPU hardware virtualization supports
+ <li> "-cpu host" : ให้ใช้ CPU ของเครื่อง host 
+ <li> "-smp 2" : ให้ VM เครื่องนี้มี virtual cpu cores จำนวน 2 cores (qemu-kvm จะสร้าง threads  ขึ้น 2 threads เพื่อรองรับการประมวลผลของ VM)
+ <li> "-m 2G" : vm มี memory 2 GiB
+ <li> "-drive file=${imgloc}/${imgfile},format=qcow2" : VM ใช้ไฟล์ที่กำหนดค่าตัวตัวแปร SHELL VARIABLE ${imgloc}/${imgfile} ซึ่งหมายถึง ${HOME}/images/ubuntu1604qcow2.img เป็น harddisk image ผู้ใช้ต้องระบุว่าไฟล์ format=qcow2 หมายถึงเป็น disk image แบบ qcow2 (ในกรณีที่ นศ ใช้ qcow2 ก็ให้เปลี่ยนเป็น format=raw)
  <li> "-boot d" : boot จาก cdrom
- <li> "-cdrom <file...>" : ไฟล์ iso ถ้าจะใช้ cdrom drive จริงต้องระบุ device (ขอให้ดูคู่มือ qemu)
- <li> "-vnc :95" : vm จะรัน vnc server เป็น console ที่ vnc port 95 (port จริง 5900+95)
+ <li> "-cdrom <file...>" : ไฟล์ iso ถ้าจะใช้ cdrom drive จริงต้องระบุชื่อ device บนเครื่อง host ของ cdrom นั้น
+ <li> "-vnc :95" : VM นี้จะรัน vnc server เป็น console ที่ vnc port 95 (port จริง 5900+95)
  <li> "-net nic -net user" : กำหนดให้ network interface ที่ 1 ของ vm ใช้ NAT network
- <li> "-monitor tcp::9666..." : ให้ผู้ใช้เข้า qemu monitor ได้ที่ port 9666 บนเครื่อง localhost
  <li> "-localtime" : กำหนดให้ vm ใช้เวลาเดียวกับเครื่อง host 
 </ul>
 ขอให้ นศ สังเกตุว่า script นี้้จะรันคำสั่ง qemu-system-x86_64 ด้วย sudo 
-<p><p>
-สำหรับคำสั่ง taskset และตัวแปร CPULIST นั้นเราไม่ได้บังคับให้ใส่ แต่ที่ใส่ในที่นี้เพื่อกำหนดให้ qemu-kvm process (หรือ threads) สามารถรันบน CPU 0 ถึง 11 ของเครื่อง host (เนื่องจาก host อาจแบ่ง cpu อื่นที่มีสำหรับรันงานอื่น)
 <p><p>
 ต่อไปให้ นศ รัน script ด้วยคำสั่ง 
 <pre>

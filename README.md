@@ -53,20 +53,12 @@ $ sudo cat /etc/sudoers
 Defaults        env_reset
 Defaults        mail_badpass
 Defaults        secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin"
-... ละไว้ไม่นำมาแสดงในที่นี้
+... ไม่เปลี่ยนแปลง ละไว้ไม่นำมาแสดงในที่นี้
 # User privilege specification
 root    ALL=(ALL:ALL) ALL
 <b>openstack ALL=(ALL) NOPASSWD:ALL</b>
 
-# Members of the admin group may gain root privileges
-%admin ALL=(ALL) ALL
-
-# Allow members of group sudo to execute any command
-%sudo   ALL=(ALL:ALL) ALL
-
-# See sudoers(5) for more information on "#include" directives:
-
-#includedir /etc/sudoers.d
+... ไม่เปลี่ยนแปลง ละไว้ไม่นำมาแสดงในที่นี้
 $
 </pre>
 เพิ่ม openstack ALL=(ALL) NOPASSWD:ALL เข้าไปใน # User privilege specification 

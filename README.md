@@ -35,7 +35,10 @@ Guide line ในการอ่าน tutorial นี้มีดังนี�
 <p><p>
 <a id="part0"><h2>1. ติดตั้ง qemu-kvm บน host server</h2></a>
 <p><p>
-login เข้า server และรัน 
+login เข้า server และกำหนดให้สามารถใช้ sudo ได้โดยไม่ต้องใส่ password ดังนี้
+<pre>
+$ 
+</pre>
 <pre>
 $ sudo apt-get update
 $ sudo apt-get install qemu-kvm libvirt-bin ubuntu-vm-builder 
@@ -108,6 +111,10 @@ $
 $ cd $HOME
 $ mkdir scripts
 $ cd scripts
+$ 
+$ which qemu-system-x86_64
+/usr/bin/qemu-system-x86_64
+$
 $ nano runQemu-on-base-qcow2-img-cdrom.sh
 $ 
 $ cat runQemu-on-base-qcow2-img-cdrom.sh
@@ -117,7 +124,7 @@ memsize="2G"
 imgloc=${HOME}/images
 isoloc=${HOME}/images
 imgfile="ubuntu1604qcow2.img"
-exeloc="/usr/local/bin"
+exeloc="/usr/bin"
 #
 sudo ${exeloc}/qemu-system-x86_64 \
      -enable-kvm -cpu host -smp ${numsmp} \
@@ -129,7 +136,7 @@ sudo ${exeloc}/qemu-system-x86_64 \
      -localtime
 $
 </pre>
-พารามีเตอร์ที่กำหนดใช้กับคำสั่ง qemu-system-x86_64 ใน script มีความหมายดังนี้
+เราใช้คำสั่ง which เพื่อเช็คว่า qemu-system-x86_64 executable อยู่ใน directory ใด และพารามีเตอร์ที่กำหนดใช้กับคำสั่ง qemu-system-x86_64 ใน script มีความหมายดังนี้
 <ul>
  <li> "-enable-kvm" : เรียก qemu ใน mode "kvm" คือให้ qemu ใช้ kvm driver บน linux เพื่อใช้ CPU hardware virtualization supports
  <li> "-cpu host" : ให้ใช้ CPU ของเครื่อง host 
@@ -144,9 +151,10 @@ $
 </ul>
 ขอให้ นศ สังเกตุว่า script นี้้จะรันคำสั่ง qemu-system-x86_64 ด้วย sudo 
 <p><p>
-ต่อไปให้ นศ รัน script ด้วยคำสั่ง 
+ต่อไปให้ นศ เปลี่ยน permission flag และรัน script ด้วยคำสั่ง 
 <pre>
-$ ./runQemu-on-base-img-cdrom.sh &
+$ chmod 755 runQemu-on-base-img-cdrom.sh
+$ ./runQemu-on-base-qcow2-img-cdrom.sh &
 $
 </pre>
 <p><p>

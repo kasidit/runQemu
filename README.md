@@ -41,20 +41,18 @@ $ sudo apt-get update
 $ sudo apt-get install qemu-kvm libvirt-bin ubuntu-vm-builder 
 $
 </pre>
-ถึงแม้ว่าเราจะไม่ได้ใช้ libvirt-bin และ ubuntu-vm-builder ใน tutorial นี้ แต่ ผมแสดงวิธี load ในที่นี้เผื่อ นศ จะใช้ในอนาคต
-
 <p><p>
  <a id="part2"><h2>2. สร้าง virtual hard disk ด้วย qemu-img</h2></a>
 <p><p>
 <table>
 <tr><td>
-<b>แบบฝึกหัด:</b> นศ แต่ละคนจะสร้าง virtual disk แบบ qcow2 ขนาด 8G  
+<b>แบบฝึกหัด:</b> ขอให้ นศ สร้าง virtual disk แบบ qcow2 ขนาด 8G  
 </td></tr>
 </table>
 <p><p>
   <a id="part2-2"><h3>2.1 disk format แบบ qcow2</h3></a>
-ถ้าผมสร้าง image แบบ qemu's copy on write (qcow2) ซึ่ง qemu-kvm จะเขียนข้อมูลลงสู่ disk จริงก็ต่อเมือมีการเพิ่มข้อมูลหรือ modify ข้อมูลเท่านั้น นศ จะเห็นว่าขนาดของ qcow2 disk เริ่มต้นจะไม่ใหญ่มากแต่จะขยายมากขึ้นเมื่อมีการเขียนข้อมูลสู่ disk จริง ข้อดีของ disk แบบ raw คือ performance 
-ในขณะที่ข้อดีของแบบ qcow2 คือใช้พื้นที่เท่าที่ใช้จริง
+คำสั่ง qemu-img สร้าง image แบบ copy on write (เรียกว่า qcow2 format) ซึ่งจะสร้าง file เปล่าๆที่ประกอบไปด้วย data structures สำหรับการจัดระเบียบว่าข้อมูลต่างๆที่ถูกเขียนลงบน disk นี้จะถูกเก็บที่ไหนในไฟล์ disk image แต่เมื่อสร้าง file disk image นี้ขึ้นมาจะยังไม่จองพื้นที่จริง แต่จะใช้พื้นที่จริงเมื่อมีการเขียนข้อมูลลงสู่ disk หรือมีการเปลี่ยนแปลงข้อมูลเท่านั้น 
+<p><p>ยกตัวอย่างเช่น เมื่อ นศ สร้าง disk image แบบ qcow2 ขนาด  GB นศ จะเห็นว่าขนาดของ qcow2 disk เริ่มต้นจะไม่ใหญ่มาก (ประมาณหมื่นกว่า bytes) แต่จะขยายมากขึ้นเมื่อมีการเขียนข้อมูลสู่ disk จริง ข้อดีของ disk แบบนี้คือประหยัดพื้นที่ใช้งาน 
 <p><p>
 <pre>
 $ <b>qemu-img create -f qcow2 ubuntu1604qcow2.img 16G</b>

@@ -352,21 +352,18 @@ ID 265 gen 7813 top level 5 path @home_snapshot1
 </details>
 </td></tr>
 </table>
-หลังจากติดตั้งเสร็จ vm จะ reboot และกลับไปที่หน้าจอเริ่มต้นการติดตั้งใหม่ ให้ นศ ใช้คำสั่ง "quit" ใข qemu monitor เพื่อปิดเครื่อง vm
-<p><p>
-<pre>
-$ nc localhost 9666
-QEMU 2.9.0 monitor - type 'help' for more information
-(qemu) quit
-quit
-$
-[1]+  Done                    ./runQemu-on-base-img-cdrom.sh  (wd: ~/runQemu-temp/runQemu-scripts)
-$
-</pre>
+
 <p><p>
 <a id="part3-3"><h3>3.4 รัน vm หลังจากการติดตั้งและใช้ NAT network</h3></a>
 <p><p>
+หลังจากติดตั้งเสร็จ VM จะ reboot และกลับไปที่หน้าจอเริ่มต้นการติดตั้งใหม่ ให้ นศ ใช้คำสั่ง "quit" ใข qemu monitor (กด ctrl-alt-1 บนหน้าจอ VNC) เพื่อปิดเครื่อง VM
 <p><p>
+<pre>
+QEMU 2.9.0 monitor - type 'help' for more information
+(qemu) quit
+quit
+</pre>
+<p><p> นศ ต้องสร้าง script ไฟล์ใหม่ดังนี้ 
 <pre>
 $ cd $HOME/runQemu/runQemu-scripts
 $ vi <a href="runQemu-scripts/runQemu-on-base-img.sh">runQemu-on-base-img.sh</a>

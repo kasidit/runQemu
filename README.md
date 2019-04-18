@@ -42,7 +42,7 @@ $ sudo apt-get install qemu-kvm libvirt-bin ubuntu-vm-builder
 $
 </pre>
 <p><p>
- <a id="part2"><h2>2. สร้าง virtual hard disk ด้วย qemu-img</h2></a>
+ <a id="part2"><h2>2. สร้าง virtual hard disk image ด้วย qemu-img</h2></a>
 <p><p>
 <table>
 <tr><td>
@@ -52,27 +52,35 @@ $
 <p><p>
   <a id="part2-2"><h3>2.1 disk format แบบ qcow2</h3></a>
 คำสั่ง qemu-img สร้าง image แบบ copy on write (เรียกว่า qcow2 format) ซึ่งจะสร้าง file เปล่าๆที่ประกอบไปด้วย data structures สำหรับการจัดระเบียบว่าข้อมูลต่างๆที่ถูกเขียนลงบน disk นี้จะถูกเก็บที่ไหนในไฟล์ disk image แต่เมื่อสร้าง file disk image นี้ขึ้นมาจะยังไม่จองพื้นที่จริง แต่จะใช้พื้นที่จริงเมื่อมีการเขียนข้อมูลลงสู่ disk หรือมีการเปลี่ยนแปลงข้อมูลเท่านั้น 
-<p><p>ยกตัวอย่างเช่น เมื่อ นศ สร้าง disk image แบบ qcow2 ขนาด  GB นศ จะเห็นว่าขนาดของ qcow2 disk เริ่มต้นจะไม่ใหญ่มาก (ประมาณหมื่นกว่า bytes) แต่จะขยายมากขึ้นเมื่อมีการเขียนข้อมูลสู่ disk จริง ข้อดีของ disk แบบนี้คือประหยัดพื้นที่ใช้งาน 
-<p><p>
+<p><p>ยกตัวอย่างเช่น เมื่อ นศ สร้าง disk image แบบ qcow2 ขนาด  GB นศ จะเห็นว่าขนาดของ qcow2 disk เริ่มต้นจะไม่ใหญ่มาก (197120 bytes) แต่จะขยายมากขึ้นเมื่อมีการเขียนข้อมูลสู่ disk จริง ข้อดีของ disk แบบนี้คือประหยัดพื้นที่ใช้งาน 
+<p><p> เพื่อความสะดวกผมจะสร้าง directory ใหม่คือ $HOME/images เพื่อเก็บไฟล์ disk images
 <pre>
-$ <b>qemu-img create -f qcow2 ubuntu1604qcow2.img 16G</b>
-Formatting 'ubuntu1604qcow2.img', fmt=qcow2 size=17179869184 encryption=off cluster_size=65536 lazy_refcounts=off refcount_bits=16
+$ mkdir images
+$ cd images
+$ qemu-img create -f qcow2 ubuntu1604qcow2.img 8G
+Formatting 'ubuntu1604qcow2.img', fmt=qcow2 size=8589934592 encryption=off cluster_size=65536 lazy_refcounts=off refcount_bits=16
+$ 
 $ ls -l
-total 845000
--rw-rw-r-- 1 kasidit kasidit   865075200 Sep 20 15:55 ubuntu-16.04.3-server-amd64.iso
-<b>-rw-r--r-- 1 kasidit kasidit      196864 Nov 16 15:49 ubuntu1604qcow2.img</b>
--rw-r--r-- 1 kasidit kasidit  4294967296 Nov 16 15:38 ubuntu1604raw.img
+total 196
+-rw-r--r-- 1 openstack openstack 197120 Apr 19 04:03 ubuntu1604qcow2.img
 $
 </pre>
-disk แบบ qcow2 มี features ที่เราจะกล่าวถึงอีกประการคือแบบการสร้าง virtual disk แบบ qcow2 overlay ซึ่งผมจะอธิบายอีกทีหลังจากส่วนที่ 3 
+disk image แบบ qcow2 มี features ที่เราจะกล่าวถึงอีกประการคือการสร้าง disk image แบบ qcow2 overlay ซึ่งผมจะอธิบายอีกทีในภายหลัง 
 <p><p>
   <a id="part2-1"><h3>2.2 disk format แบบ raw</h3></a>
 <p><p>
-เราจะทดลองสร้าง disk image แบบต่างๆ แต่ก่อนอื่นเราต้องสร้าง disk เพื่อติดตั้ง guest OS ของ VM ในคำสั่งถัดไป นศ จะสร้าง disk image แบบ raw 
-<p><p>
-disk แบบ raw นี้ มีค่าใช้จ่ายคือมันจะใช้พื้นที่บน disk จริงเท่ากับปริมาณที่ นศ ขอไม่ว่า นศ จะใช้พื้นที่เก็บข้อมูลจริงเท่าไร แต่มีข้อดีอ่านเขียนข้อมูลได้เร็ว
+virtual disk image แบบ raw นี้ จะใช้พื้นที่บน disk จริงเท่ากับปริมาณที่ขอตั้งแต่แรก มีข้อดีอ่านเขียนข้อมูลได้เร็วแต่มีข้อเสียคือใช้พื้นบน physical disk มาก
 <p><p>
 <pre>
+$ qemu-img create -f raw ubuntu1604raw.img 8G
+Formatting 'ubuntu1604raw.img', fmt=raw size=8589934592
+$
+$ ls -l
+total 196
+-rw-r--r-- 1 openstack openstack     197120 Apr 19 04:04 ubuntu1604qcow2.img
+-rw-r--r-- 1 openstack openstack 8589934592 Apr 19 04:04 ubuntu1604raw.img
+$
+
 $ cd $HOME
 $ mkdir runQemu
 $ cd runQemu
@@ -91,34 +99,46 @@ $
 <p><p>
   <a id="part3"><h2>3 การติดตั้ง Guest OS แบบ ubuntu 16.04 บน virtual disks</h2></a>
 <p><p>
-ในส่วนนี้ นศ จะเรียก kvm จาก command line เพื่อสร้าง Guest OS บน qcow2 disk image เปล่าๆ ที่สร้างขึ้น เพื่อความสะดวกผมเขียนคำสั่งลงใน bash shell script ใน cs449/cs44900/script directory เพื่อเก็บไฟล์ scripts ต่างๆและสร้าง cs449/cs44900/images directory เพื่อเก็บไฟล์ images 
+ในส่วนนี้ นศ จะเรียก qemu-kvm จาก command line เพื่อสร้าง Guest OS บน qcow2 disk image ที่สร้างขึ้น 
+ก่อนอื่นผมต้อง download ไฟล์ iso image ของ ubuntu OS มาจากเก็บใน images directory 
+<pre>
+$ cd $HOME/images
+$ wget http://releases.ubuntu.com/16.04/ubuntu-16.04.6-server-amd64.iso
+$  
+$ ls -l
+total 894152
+-rw-rw-r-- 1 openstack openstack  915406848 Mar 29 18:14 ubuntu-16.04.6-server-amd64.iso
+-rw-r--r-- 1 openstack openstack     197120 Apr 19 04:04 ubuntu1604qcow2.img
+-rw-r--r-- 1 openstack openstack 8589934592 Apr 19 04:04 ubuntu1604raw.img
+$
+</pre>
 <table>
 <tr><td>
-<b>แบบฝึกหัด:</b> เมื่อ นศ รัน scripts ของแต่ละคน ขอให้ นศ เปลี่ยน -vnc :NN  และ -monitor tcp:NNNN ให้ NN และ NNNN เป็นเลขเฉพาะของตน
+<b>ข้อสังเกตุ:</b> ถ้าในเครื่องของ นศ มีไฟล์นี้อยู่แล้ว ก็ไม่ต้อง wget มาอีก 
 </td></tr>
+<p><p>
+ในอันดับถัดไป ผมจะสร้าง directory ใหม่คือ $HOME/script และใช้ nano หรือ vi เขียนคำสั่งลงใน bash shell script "runQemu-on-base-qcow2-img-cdrom.sh" ใน directory นั้น 
 </table>
 <pre>
-$ cd $HOME/runQemu
-$ mkdir runQemu-scripts
-$ cd runQemu-scripts
-$ vi <a href="runQemu-scripts/runQemu-on-base-qcow2-img-cdrom.sh">runQemu-on-base-qcow2-img-cdrom.sh</a>
+$ cd $HOME
+$ mkdir scripts
+$ cd scripts
+$ nano runQemu-on-base-qcow2-img-cdrom.sh
+$ 
 $ cat runQemu-on-base-qcow2-img-cdrom.sh
 #!/bin/bash
-numsmp="4"
-memsize="4G"
-imgloc=${HOME}/"runQemu"/"runQemu-imgs"
-isoloc=${HOME}/"runQemu"/"runQemu-imgs"
-imgfile="ubuntu1604raw.img"
+numsmp="2"
+memsize="2G"
+imgloc=${HOME}/images
+isoloc=${HOME}/images
+imgfile="ubuntu1604qcow2.img"
 exeloc="/usr/local/bin"
-CPU_LIST="0-11"
-TASKSET="taskset -c ${CPU_LIST}"
 #
-sudo ${TASKSET} ${exeloc}/qemu-system-x86_64 -enable-kvm -cpu host -smp ${numsmp} \
-     -m ${memsize} -drive file=${imgloc}/${imgfile},format=raw \
-     -boot d -cdrom ${isoloc}/ubuntu-16.04.3-server-amd64.iso \
+sudo ${exeloc}/qemu-system-x86_64 -enable-kvm -cpu host -smp ${numsmp} \
+     -m ${memsize} -drive file=${imgloc}/${imgfile},format=qcow2 \
+     -boot d -cdrom ${isoloc}/ubuntu-16.04.6-server-amd64.iso \
      -vnc :95 \
      -net nic -net user \
-     -monitor tcp::9666,server,nowait \
      -localtime
 $
 </pre>

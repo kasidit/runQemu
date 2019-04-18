@@ -185,7 +185,7 @@ $
 <p><p>
 <a id="part3-1"><h3>3.1 การใช้ vnc console</h3></a>
 <p><p>
-ขอให้ นศ ติดตั้ง vnc client (ผมแนะนำ tightVNC และ VNC plugin บน chrome browser) บนเครื่อง notebook หรือ desktop computer ที่ นศ ใช้ และกำหนด IP address ของเครื่อง host server (ในตัวอย่างของเราคือ 10.100.20.151) และ vnc port (จากที่กำหนดใน option "-vnc" ในตัวอย่างคือ 95) ดังภาพที่ 1 หลังจากกด connect แล้ว นศ จะเห็น vnc console ดังภาพที่ 2
+ขอให้ นศ ติดตั้ง vnc client (ผมแนะนำ tightVNC และ VNC plugin บน chrome browser) บนเครื่อง notebook หรือ desktop computer ที่ นศ ใช้ และกำหนด IP address ของเครื่อง host server (ในตัวอย่างของเราคือ 10.100.20.151) และ vnc port (จากที่กำหนดใน option "-vnc" ในตัวอย่างคือ 95) ดังภาพที่ 1 หลังจากกด connect แล้ว นศ จะเห็น vnc console ดังภาพที่ 2 ในระหว่าติดตั้งขอให้ นศ ติดตั้ง OpenSSH Server ด้วย ในหน้า "Software Selection"
 <p>
   <img src="documents/vncclient1.png"> <br>
 <p>
@@ -398,20 +398,6 @@ $
 </pre>
 หลังจากนั้น นศ สามารถเข้าใช้งาน VM ได้ทาง VNC โดยระบุ VNC endpoint (ในตัวอย่างของเราคือ 10.100.20.151:95)
 <p><p>
-<table>
-<tr><td>
-<b>หมายเหตุ:</b> ที่ผ่านมา ผมเขียนคำสั่งต่างๆใน shell script เพื่อนำกลับมาเรียกใช้ใหม่ได้ แต่เพื่อความสะดวกผมจะเปลี่ยนเป็นใช้คำสั่งโดยตรงในส่วนที่เหลือของ tutorial นี้
-</td></tr>
-<tr><td>
-<b>ยกตัวอย่างเช่น:</b> ที่ผ่านมา คำสั่งที่ติดตั้ง ubuntu 16.04 บน guest OS บน raw image ก่อนหน้า ผมจะเขียนใหม่เป็น
-<pre>
-$ sudo qemu-system-x86_64 -enable-kvm -cpu host -smp 2 -m 2G \
-  -drive file=ubuntu1604raw.img,format=raw -boot d -cdrom ubuntu-16.04.3-server-amd64.iso \
-  -vnc :95 -net nic -net user -monitor tcp::9666,server,nowait -localtime &
-$
-</pre>
-</td></tr>
-</table>
 <p><p>
 สำหรับการติดต่อสื่อสารกับ network เครื่อง vm ที่ นศ เพิ่งรันด้วย option "-net nic -net user" จะมีการเชื่อมต่อกับ network ดังภาพที่ 3 
 <p><p>
@@ -425,7 +411,7 @@ $
 <p><p>
 <a id="part3-4"><h3>3.5 สร้าง disk แบบ qcow2 overlay</h3></a>
 <p><p>
-จากคำสั่งที่แล้ว ผมได้ติดตั้ง ubuntu 16.04 บน image ubuntu1604raw.img ในอันดับถัดไป ผมจะสร้าง image ชนิด qcow2 แบบที่เรียกว่า overlay image ซึ่งเป็นไฟล์ที่แตกต่างจากแบบ raw และ qcow2 ธรรมดา ก็คือมันเป็นไฟล์ที่เก็บส่วนต่างของ image ที่เป็น base ของมัน ในคำสั่งถัดไป ผมจะสร้าง overlay image ชื่อว่า ubuntu1604qcow2.ovl ขึ้นมา
+ที่ผ่านมาผมได้ติดตั้ง ubuntu 16.04 บน image ubuntu1604qcow2.img ในอันดับถัดไป ผมจะสร้าง image ชนิด qcow2 แบบที่เรียกว่า overlay image ซึ่งเป็นไฟล์ที่แตกต่างจากแบบ raw และ qcow2 ธรรมดา ก็คือมันเป็นไฟล์ที่เก็บเฉพาะข้อมูลที่แตกต่างจาก image ที่เป็น base image ของมัน ในคำสั่งถัดไป ผมจะสร้าง overlay image ชื่อว่า ubuntu1604qcow2.ovl ขึ้นมาบน base image "ubuntu1604qcow2.img"
 <p><p>
 <pre>
 $ qemu-img create -f qcow2 -b ubuntu1604raw.img ubuntu1604qcow2.ovl

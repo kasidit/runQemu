@@ -365,25 +365,26 @@ quit
 </pre>
 <p><p> นศ ต้องสร้าง script ไฟล์ใหม่ดังนี้ 
 <pre>
-$ cd $HOME/runQemu/runQemu-scripts
-$ vi <a href="runQemu-scripts/runQemu-on-base-img.sh">runQemu-on-base-img.sh</a>
-$ cat runQemu-on-base-img.sh
+$ cd $HOME/script
+$ cp runQemu-on-base-qcow2-img-cdrom.sh runQemu-on-base-qcow2-img.sh
+$ nano runQemu-on-base-qcow2-img.sh
+$ 
+$ cat runQemu-on-base-qcow2-img.sh
 #!/bin/bash
-numsmp="4"
-memsize="4G"
-imgloc=${HOME}/"runQemu"/"runQemu-imgs"
-isoloc=${HOME}/"runQemu"/"runQemu-imgs"
-imgfile="ubuntu1604raw.img"
-exeloc="/usr/local/bin"
-CPU_LIST="0-7"
-TASKSET="taskset -c ${CPU_LIST}"
+numsmp="2"
+memsize="2G"
+imgloc=${HOME}/images
+isoloc=${HOME}/images
+imgfile="ubuntu1604qcow2.img"
+exeloc="/usr/bin"
 #
-sudo ${TASKSET} ${exeloc}/qemu-system-x86_64 -enable-kvm -cpu host -smp ${numsmp} \
-     -m ${memsize} -L pc-bios -drive file=${imgloc}/${imgfile},format=raw \
-     <b>-boot c</b> \
+sudo ${exeloc}/qemu-system-x86_64 \
+     -enable-kvm -cpu host -smp ${numsmp} \
+     -m ${memsize} \
+     -drive file=${imgloc}/${imgfile},format=qcow2 \
+     <b>-boot c </b> \
      -vnc :95 \
      -net nic -net user \
-     -monitor tcp::9666,server,nowait \
      -localtime
 $
 </pre>
@@ -391,10 +392,11 @@ $
 <p><p>
  หลังจากนั้นให้ นศ รัน qemu-kvm ขึ้นมาใหม่ด้วยคำสั่งข้างล่าง 
 <pre>
-$ ./runQemu-on-base-img.sh &
-$
+$ ./runQemu-on-base-qcow2-img.sh &
+...
+$ 
 </pre>
-นศ สามารถเข้าใช้งาน vm ได้ทาง vnc endpoint ตัวอย่างของเราคือ 10.100.20.133:95
+หลังจากนั้น นศ สามารถเข้าใช้งาน VM ได้ทาง VNC โดยระบุ VNC endpoint (ในตัวอย่างของเราคือ 10.100.20.151:95)
 <p><p>
 <table>
 <tr><td>

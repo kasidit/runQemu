@@ -589,10 +589,11 @@ $
  <li>สั่งให้ bridge utility ใน linux kernel จะสร้าง virtual switch ชื่อ br0 ขึ้น 
  <li>ยกเลิกการกำหนดค่า IP address บน ens3 และกำหนดให้ ens3 เป็น port หนึ่งของ br0 และ
  <li>กำหนดให้ br0 เป็น network interface หลักของ Linux network stack ของ host โดยกำหนด IP address สำหรับ สำหรับ br0 interface เป็น 10.100.20.151 แทน ens3 
+</ul>
 <p><p>
-Linux kernel 
+โดยใช้คำสั่งต่อไปนี้บนเครื่อง host  
 <pre>
-$ sudo vi /etc/network/interfaces
+$ sudo nano /etc/network/interfaces
 $
 $ cat /etc/network/interfaces
 # This file describes the network interfaces available on your system

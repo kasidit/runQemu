@@ -41,7 +41,6 @@ $ sudo nano /etc/sudoers
 [sudo] password for ...
 $
 $ sudo cat /etc/sudoers
-$ sudo cat /etc/sudoers
 #
 # This file MUST be edited with the 'visudo' command as root.
 #
@@ -54,14 +53,22 @@ Defaults        env_reset
 Defaults        mail_badpass
 Defaults        secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin"
 ... ไม่เปลี่ยนแปลง ละไว้ไม่นำมาแสดงในที่นี้
-# User privilege specification
+#User privilege specification
 root    ALL=(ALL:ALL) ALL
+
+#Members of the admin group may gain root privileges
+%admin ALL=(ALL) ALL
+
+#Allow members of group sudo to execute any command
+%sudo   ALL=(ALL:ALL) ALL
 <b>openstack ALL=(ALL) NOPASSWD:ALL</b>
 
-... ไม่เปลี่ยนแปลง ละไว้ไม่นำมาแสดงในที่นี้
+#See sudoers(5) for more information on "#include" directives:
+
+#includedir /etc/sudoers.d
 $
 </pre>
-เพิ่ม openstack ALL=(ALL) NOPASSWD:ALL เข้าไปใน # User privilege specification 
+เพิ่ม <b>openstack ALL=(ALL) NOPASSWD:ALL</b> เข้าไปใน # Allow members of group sudo to execute any command
 <pre>
 $ sudo apt-get update
 $ sudo apt-get install qemu-kvm libvirt-bin ubuntu-vm-builder 
@@ -459,13 +466,41 @@ $ cd $HOME/scripts
 $ ls
 runQemu-on-base-qcow2-img-cdrom.sh  runQemu-on-base-qcow2-img.sh
 $ 
-$ sudo qemu-system-x86_64 -enable-kvm -cpu host -smp 2 -m 2G -L pc-bios \
->  -drive file=ubuntu1604qcow2.ovl,format=qcow2 \
->  -boot c -vnc :95 -net nic -net user -monitor tcp::9666,server,nowait -localtime &
-[4] 2455
-$ 
+$ cp runQemu-on-base-qcow2-img.sh runQemu-on-base-qcow2-ovl.sh
+$ nano runQemu-on-base-qcow2-ovl.sh
+$ cat runQemu-on-base-qcow2-ovl.sh
+#!/bin/bash
+numsmp="2"
+memsize="2G"
+imgloc=${HOME}/images
+isoloc=${HOME}/images
+imgfile="ubuntu1604qcow2.ovl"
+exeloc="/usr/bin"
+#
+sudo ${exeloc}/qemu-system-x86_64 \
+     -enable-kvm \
+     -cpu host -smp ${numsmp} \
+     -m ${memsize} -drive file=${imgloc}/${imgfile},format=qcow2 \
+     -boot c \
+     -vnc :95 \
+     -net nic -net user \
+     -localtime
+$
+$ ./runQemu-on-base-qcow2-ovl.sh &
+[1] 19540
+$
 </pre>
-หลังจากนั้นผมใช้ vnc client เข้าไปทำ apt-get update และผม ls -l ใน bash shell ข้างต้นจะเห็นความเปลี่ยนแปลงของไฟล์ ubuntu1604qcow2.ovl 
+หลังจากนั้นผมใช้ vnc client 10.100.20.151:95 เข้าไป login เข้า VM และทำ sudo apt-get update 
+<pre>
+vm$ sudo apt update 
+vm$ ifconfig 
+จะเห็นว่า IP address คือ 10.0.2.15
+vm$ sudo sed -i "s/us.arch/th.arch/g" /etc/apt/sources.list
+vm$ sudo apt update
+...
+vm$ 
+</pre>
+บนเครื่อง host 10.100.20.151 ผมใช้ ls -l ใน shell จะเห็นความเปลี่ยนแปลงของไฟล์ ubuntu1604qcow2.ovl 
 <pre>
 $ la -l
 -rw-r--r-- 1 cs449user cs449user   13238272 Nov 27 18:13 ubuntu1604qcow2.ovl

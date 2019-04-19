@@ -206,7 +206,6 @@ QEMU 2.9.0 monitor - type 'help' for more information
 (qemu) info
 ...
 (qemu) กด ctrl-alt-1 เพื่อ switch กลับไปหน้าจอปกติ
-$
 </pre>
 promt sign ของ qemu monitor คือ (qemu) ถ้า นศ กด help และ info จะมีข้อมูลมากมายแสดงคำสั่งต่างๆซึ่งเราจะยังไม่กล่าวถึงในที่นี่ นศ สามารถศึกษาเพิ่มเติมได้จาก wiki ของ qemu เมื่อต้องการออกจาก monitor กลับมาที่ หน้าจอของ VM ให้กด ctrl-alt-1
 <p><p>
@@ -411,22 +410,41 @@ $
 <p><p>
 <a id="part3-4"><h3>3.5 สร้าง disk แบบ qcow2 overlay</h3></a>
 <p><p>
-ที่ผ่านมาผมได้ติดตั้ง ubuntu 16.04 บน image ubuntu1604qcow2.img ในอันดับถัดไป ผมจะสร้าง image ชนิด qcow2 แบบที่เรียกว่า overlay image ซึ่งเป็นไฟล์ที่แตกต่างจากแบบ raw และ qcow2 ธรรมดา ก็คือมันเป็นไฟล์ที่เก็บเฉพาะข้อมูลที่แตกต่างจาก image ที่เป็น base image ของมัน ในคำสั่งถัดไป ผมจะสร้าง overlay image ชื่อว่า ubuntu1604qcow2.ovl ขึ้นมาบน base image "ubuntu1604qcow2.img"
+ที่ผ่านมาผมได้ติดตั้ง ubuntu 16.04 บน image ubuntu1604qcow2.img ในอันดับถัดไป ผมจะสร้าง image ชนิด qcow2 แบบที่เรียกว่า overlay image ซึ่งเป็นไฟล์ที่แตกต่างจากแบบ raw และ qcow2 ธรรมดา ก็คือมันเป็นไฟล์ที่เก็บเฉพาะข้อมูลที่แตกต่างจาก image ที่เป็น base image ของมัน โดยที่เนื้อหาของ base image จะเหมือนเดิมและไม่เปลี่ยนแปลง การเปลี่ยนแปลงจะเกิดขึ้นที่ overlay image แทน format ของ base image จะเป็น qcow2 หรือ raw ก็ได้ แต่ format ของ overlay image เป็น qcow2 เท่านั้น
+<p><p>
+ในคำสั่งถัดไป ผมจะลบไฟล์ raw image ทิ้งเพื่อประหยัดเนื้อที่และ overlay image ชื่อว่า ubuntu1604qcow2.ovl ขึ้นมาบน base image "ubuntu1604qcow2.img"
 <p><p>
 <pre>
-$ qemu-img create -f qcow2 -b ubuntu1604raw.img ubuntu1604qcow2.ovl
-Formatting 'ubuntu1604qcow2.ovl', fmt=qcow2 size=4294967296 backing_file=ubuntu1604raw.img encryption=off cluster_size=65536 lazy_refcounts=off refcount_bits=16
+$ rm ubuntu1604raw.img
+$ qemu-img create -f qcow2 -b ubuntu1604qcow2.img ubuntu1604qcow2.ovl
+Formatting 'ubuntu1604qcow2.ovl', fmt=qcow2 size=8589934592 backing_file=ubuntu1604qcow2.img encryption=off cluster_size=65536 lazy_refcounts=off refcount_bits=16
+$
+$ $ ls -l
+total 3056208
+-rw-rw-r-- 1 openstack openstack  915406848 Mar 29 18:14 ubuntu-16.04.6-server-amd64.iso
+-rw-r--r-- 1 openstack openstack 2214002688 Apr 19 06:02 ubuntu1604qcow2.img
+-rw-r--r-- 1 openstack openstack     197120 Apr 20 04:07 ubuntu1604qcow2.ovl
+$ 
+$ $ qemu-img info ubuntu1604qcow2.ovl
+image: ubuntu1604qcow2.ovl
+file format: qcow2
+virtual size: 8.0G (8589934592 bytes)
+disk size: 196K
+cluster_size: 65536
+backing file: ubuntu1604qcow2.img
+Format specific information:
+    compat: 1.1
+    lazy refcounts: false
+    refcount bits: 16
+    corrupt: false
 $
 </pre>
-จากคำสั่งข้างต้นไฟล์ ubuntu1604qcow2.ovl มี base image คือไฟล์ ubuntu1604raw.img นั่นหมายความว่า <b>กรณีที่ 1</b> เมื่อ kvm หรือ qemu อ่านค่าจากไฟล์ ubuntu1604qcow2.ovl และข้อมูล block ที่ต้องการยังไม่ได้รับการแก้ไขใดๆ ข้อมูลใน block เดียวกันจากไฟล์ base image ก็ถูกอ่านไปใช้งาน <b>กรณีที่ 2</b> kvm เขียนหรือแก้ไขข้อมูลใน block ของ ubuntu1604qcow2.ovl ที่ไม่เคยมีการเขียนหรือแก้ไขข้อมูลมาก่อน driver ของไฟล์แบบ qcow2 overlay นี้จะ copy ข้อมูลที่มีอยู่แล้วทั้ง block จากไฟล์ base image มายัง ubuntu1604qcow2.ovl หรือไฟล์ overlay และทำการเขียนข้อมูลลงใน copy ใหม่นั้น <b>กรณีที่ 3</b> ถ้า block ที่จะอ่านหรือแก้ไขข้อมูลมี copy อยู่ในไฟล์ overlay แล้ว kvm จะอ่านข้อมูลจาก copy นั้นหรือเขียนข้อมูลลงใน copy นั้นทันที
+จากคำสั่งข้างต้นไฟล์ ubuntu1604qcow2.ovl มี base image คือไฟล์ ubuntu1604raw.img นั่นหมายความว่า <b>กรณีที่ 1</b> เมื่อ kvm หรือ qemu อ่านค่าจากไฟล์ ubuntu1604qcow2.ovl และข้อมูล block ที่ต้องการยังไม่ได้รับการแก้ไขใดๆ ข้อมูลใน block เดียวกันจากไฟล์ base image ก็ถูกอ่านไปใช้งาน <b>กรณีที่ 2</b> kvm เขียนหรือแก้ไขข้อมูลใน block ของ ubuntu1604qcow2.ovl ที่ไม่เคยมีการเขียนหรือแก้ไขข้อมูลมาก่อน driver ของไฟล์แบบ qcow2 overlay นี้จะ copy ข้อมูลที่มีอยู่แล้วทั้ง block จากไฟล์ base image มายัง ubuntu1604qcow2.ovl หรือไฟล์ overlay และทำการเขียนข้อมูลลงใน copy ใหม่นั้น (หลักการ copy-on-write) <b>กรณีที่ 3</b> ถ้า block ที่จะอ่านหรือแก้ไขข้อมูลมี copy อยู่ในไฟล์ overlay แล้ว kvm จะอ่านข้อมูลจาก copy นั้นหรือเขียนข้อมูลลงใน copy นั้นทันที
 <p><p>
-ประโยชน์ของไฟล์แบบ overlay คือ ทำให้เราสามารถเก็บข้อมูลที่ไม่ต้องการให้ถูกเปลี่ยนแปลงใน base image ได้ นศ สามารถสร้าง overlay ซ้อนกันหลายชั้นก็ได้ แต่ยิ่งจำนวนชั้นมากประสิทธิภาพของการอ่านข้อมูลก็จะช้าลงเพราะอาจต้องเปิดไฟล์หลายไฟล์ 
+ประโยชน์ของไฟล์แบบ overlay คือ ทำให้เราสามารถเก็บข้อมูลที่ไม่ต้องการให้ถูกเปลี่ยนแปลงใน base image ได้ <b>นศ สามารถสร้าง overlay ซ้อนกันหลายชั้นก็ได้</b> แต่ยิ่งจำนวนชั้นมากประสิทธิภาพของการอ่านข้อมูลก็จะช้าลงเพราะอาจต้องเปิดไฟล์หลายไฟล์ 
 <p><p>
-คำสั่งถัดไปจะเป็นการรัน kvm บนไฟล์ overlay "ubuntu1604qcow2.ovl" ขอให้สังเกตุขนาดที่เปลี่ยนไปของไฟล์นี้ และขนาดของไฟล์ที่คงเดิมของ ubuntu1604raw.img
+คำสั่งถัดไปจะเป็นการรัน qemu-kvm บนไฟล์ overlay "ubuntu1604qcow2.ovl" 
 <pre>
-$ ls -l
--rw-r--r-- 1 cs449user cs449user     197120 Nov 27 17:24 ubuntu1604qcow2.ovl
--rw-r--r-- 1 cs449user cs449user 4294967296 Nov 27 17:13 ubuntu1604raw.img
 $
 $ sudo qemu-system-x86_64 -enable-kvm -cpu host -smp 2 -m 2G -L pc-bios \
 >  -drive file=ubuntu1604qcow2.ovl,format=qcow2 \

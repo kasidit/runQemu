@@ -419,8 +419,9 @@ $
 <pre>
 ... login เข้าสู่ VM แล้ว ...
 vm$ 
+vm$ ifconfig 
+จะเห็นว่า ens3 มี IP address คือ 10.0.2.15
 vm$ 
-
 </pre>
 <p><p>
 <a id="part3-4"><h3>3.5 สร้าง disk แบบ qcow2 overlay</h3></a>
@@ -551,11 +552,11 @@ $
 <p><p>
   <a id="part4"><h2>4. การเชื่อมต่อ qemu kvm เข้ากับ L2 Network ด้วย Linux Bridge</h2></a>
 <p><p>
-ในกรณีที่ นศ ต้องการให้ vm รันโปรแกรม server เพื่อให้สามารถเข้าถึงได้ผ่าน network และ นศ ต้องการให้ vm มี
-IP address ที่อยู่ในวงเดียวกันกับ host นศ สามารถกำหนดให้ vm ใช้ bridge network ซึ่งมีลักษณะการเชื่อมต่อระหว่าง 
-vm กับโลกภายนอกดังภาพที่ 4
+ในกรณีที่ นศ ต้องการเข้าถึง VM จาก network ได้และต้องการให้ vm มี
+IP address ที่อยู่ในวงเดียวกันกับ host (10.100.20.151) นศ สามารถกำหนดให้ VM ใช้ bridge network ซึ่งมีลักษณะการเชื่อมต่อระหว่าง 
+vm กับโลกภายนอกดังภาพที่ 4 โดย bridge network จะอนุญาตให้เรากำหนด IP address ของ VM ให้อยู่ในวงเดียวกันกับของ host ได้ โดยในที่นี้เราจะกำหนดให้ VM มี IP เป็น 10.100.20.201
 <p><p>
-  <img src="documents/qemuBridgenetwork.png"> <br>
+  <img src="documents/qemuBridgenetwork2.png"> <br>
 ภาพที่ 4
 <p><p>
   <a id="part4-1"><h3>4.1 ติดตั้ง bridge-utils และกำหนดค่า bridge br0 บน host</h3></a>

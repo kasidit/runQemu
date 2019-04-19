@@ -408,6 +408,14 @@ $
 เฉพาะ ระหว่าง host กับ vm แต่ละ vm เป็นคู่ๆไปเท่านั้น ด้วยเหตุนี้ นศ จะติดต่อสื่อสารจาก client โปรแกรมภายใน vm ออกสู่โลกภายนอกได้ 
 แต่ client โปรแกรมจากภายนอก vm จะไม่สามารถสื่อสารกับโปรแกรม server ภายใน vm ได้ 
 <p><p>
+เมื่อ นศ ใช้ VNC client เชื่อมต่อเข้าใช้งาน VM ที่สร้างขึ้นแล้ว นศ สามารถตรวจสอบสถานะของ network ได้โดยใช้คำสั่งต่อไปนี้  เราจะสมมุติว่า นศ ได้ login เข้าสู่ vm ที่สร้างขึ้นใหม่แล้ว และเพื่อความสะดวกในการอธิบาย ผมจะใช้ "vm$" เป็นตัวแทน command line prompt ของ shell ของเครื่อง VM
+<pre>
+... login เข้าสู่ VM แล้ว ...
+vm$ 
+vm$ 
+
+</pre>
+<p><p>
 <a id="part3-4"><h3>3.5 สร้าง disk แบบ qcow2 overlay</h3></a>
 <p><p>
 ที่ผ่านมาผมได้ติดตั้ง ubuntu 16.04 บน image ubuntu1604qcow2.img ในอันดับถัดไป ผมจะสร้าง image ชนิด qcow2 แบบที่เรียกว่า overlay image ซึ่งเป็นไฟล์ที่แตกต่างจากแบบ raw และ qcow2 ธรรมดา ก็คือมันเป็นไฟล์ที่เก็บเฉพาะข้อมูลที่แตกต่างจาก image ที่เป็น base image ของมัน โดยที่เนื้อหาของ base image จะเหมือนเดิมและไม่เปลี่ยนแปลง การเปลี่ยนแปลงจะเกิดขึ้นที่ overlay image แทน format ของ base image จะเป็น qcow2 หรือ raw ก็ได้ แต่ format ของ overlay image เป็น qcow2 เท่านั้น
@@ -415,6 +423,7 @@ $
 ในคำสั่งถัดไป ผมจะลบไฟล์ raw image ทิ้งเพื่อประหยัดเนื้อที่และ overlay image ชื่อว่า ubuntu1604qcow2.ovl ขึ้นมาบน base image "ubuntu1604qcow2.img"
 <p><p>
 <pre>
+$ cd $HOME/images
 $ rm ubuntu1604raw.img
 $ qemu-img create -f qcow2 -b ubuntu1604qcow2.img ubuntu1604qcow2.ovl
 Formatting 'ubuntu1604qcow2.ovl', fmt=qcow2 size=8589934592 backing_file=ubuntu1604qcow2.img encryption=off cluster_size=65536 lazy_refcounts=off refcount_bits=16
@@ -446,6 +455,10 @@ $
 คำสั่งถัดไปจะเป็นการรัน qemu-kvm บนไฟล์ overlay "ubuntu1604qcow2.ovl" 
 <pre>
 $
+$ cd $HOME/scripts
+$ ls
+runQemu-on-base-qcow2-img-cdrom.sh  runQemu-on-base-qcow2-img.sh
+$ 
 $ sudo qemu-system-x86_64 -enable-kvm -cpu host -smp 2 -m 2G -L pc-bios \
 >  -drive file=ubuntu1604qcow2.ovl,format=qcow2 \
 >  -boot c -vnc :95 -net nic -net user -monitor tcp::9666,server,nowait -localtime &

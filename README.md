@@ -490,7 +490,7 @@ $ ./runQemu-on-base-qcow2-ovl.sh &
 [1] 19540
 $
 </pre>
-หลังจากนั้นผมใช้ vnc client 10.100.20.151:95 เข้าไป login เข้า VM และทำ sudo apt-get update 
+หลังจากนั้นผมใช้ vnc client 10.100.20.151:95 เข้าไป login เข้า VM และทำ sudo apt-get update  
 <pre>
 vm$ sudo apt update 
 vm$ ifconfig 
@@ -500,53 +500,56 @@ vm$ sudo apt update
 ...
 vm$ 
 </pre>
+นศ สามารถศึกษาเพิ่มเติมเกี่ยวกับ qemu network ได้ที่ https://wiki.qemu.org/Documentation/Networking และ https://en.wikibooks.org/wiki/QEMU/Networking
+<p><p>
 บนเครื่อง host 10.100.20.151 ผมใช้ ls -l ใน shell จะเห็นความเปลี่ยนแปลงของไฟล์ ubuntu1604qcow2.ovl 
 <pre>
-$ la -l
--rw-r--r-- 1 cs449user cs449user   13238272 Nov 27 18:13 ubuntu1604qcow2.ovl
--rw-r--r-- 1 cs449user cs449user 4294967296 Nov 27 17:13 ubuntu1604raw.img
-$ 
+$ cd $HOME/images
+$ ls -l 
+total 3566356
+-rw-rw-r-- 1 openstack openstack  915406848 Mar 29 18:14 ubuntu-16.04.6-server-amd64.iso
+-rw-r--r-- 1 openstack openstack 2214002688 Apr 19 06:02 ubuntu1604qcow2.img
+-rw-r--r-- 1 openstack openstack  522649600 Apr 20 05:05 ubuntu1604qcow2.ovl
+$
 </pre>
-  <b>การ commit การเปลี่ยนแปลง จาก overlay image ไปยัง base image</b> สมมุติว่าหลังจากที่ทำงานเสร็จ ผมพอใจกับเนื้อหาใหม่ใน overlay ไฟล์ และอยาก merge ข้อมูลใหม่ลงสู่ไฟล์ base image ผมสามารถทำได้ดังนี้
+<b>การ commit การเปลี่ยนแปลง จาก overlay image ไปยัง base image</b> สมมุติว่าหลังจากที่ทำงานเสร็จ ผมพอใจกับเนื้อหาใหม่ใน overlay ไฟล์ และอยาก merge ข้อมูลใหม่ลงสู่ไฟล์ base image สามารถทำได้ดังนี้
 <ul>
- <li> ก่อนอื่นเพื่อความปลอดภัยในการใช้งาน image ทั้งสองไฟล์ ผมจะหยุดการทำงานของ vm ก่อน 
+ <li> ก่อนอื่นเพื่อความปลอดภัยในการใช้งาน image ทั้งสองไฟล์ ผมจะหยุดการทำงานของ vm ก่อน โดยกด ctr-alt-2 ที่หน้าจอ VNC 
 <p><p>
 <pre>
-$ echo "quit" | nc localhost 9666
 QEMU 2.5.0 monitor - type 'help' for more information
 (qemu) quit
-$ 
 </pre>
- <li>หลังจากนั้น ผม merge เนื้อหาของ overlay image เข้ากับ base image   
+ <li>หลังจากนั้น ผมออกคำสั่งบน command line บน host 10.100.20.151 เพื่อ merge เนื้อหาของ overlay image เข้ากับ base image   
 <pre>
+$ cd $HOME/images
 $ qemu-img info ubuntu1604qcow2.ovl
 image: ubuntu1604qcow2.ovl
 file format: qcow2
-virtual size: 4.0G (4294967296 bytes)
-disk size: 104M
+virtual size: 8.0G (8589934592 bytes)
+disk size: 498M
 cluster_size: 65536
-backing file: ubuntu1604raw.img
+backing file: ubuntu1604qcow2.img
 Format specific information:
     compat: 1.1
     lazy refcounts: false
     refcount bits: 16
     corrupt: false
+$
 $ qemu-img commit ubuntu1604qcow2.ovl
 Image committed.
+$ ls -l
+total 3211216
+-rw-rw-r-- 1 openstack openstack  915406848 Mar 29 18:14 ubuntu-16.04.6-server-amd64.iso
+-rw-r--r-- 1 openstack openstack 2372665344 Apr 20 05:14 ubuntu1604qcow2.img
+-rw-r--r-- 1 openstack openstack     262144 Apr 20 05:14 ubuntu1604qcow2.ovl
 $
 </pre>
-    <li> ให้ นศ รัน vm อีกครั้งหนึ่งโดยใช้ base raw image เป็น disk image ของ vm และจะเห็นว่าการเปลี่ยนแปลงข้อมูลใน file system ที่ นศ ทำก่อนหน้าได้รับการเขียนลงสู่ไฟล์ raw image แล้ว  
-<pre>
-$ sudo qemu-system-x86_64 -enable-kvm -cpu host -smp 2 -m 2G -L pc-bios \
->  -drive file=ubuntu1604raw.img,format=raw \
->  -boot c -vnc :95 -net nic -net user -monitor tcp::9666,server,nowait -localtime &
-$ 
-</pre>
+นศ จะเห็นว่ามีการเปลี่ยนแปลงในไฟล์ base และขนาดของ overlay ลดลง
   </ul>
 <p><p>
-สรุปเนื้อหาในส่วนนี้แสดงวิธีการทำ disk snapshot อีกวิธีหนึ่งด้วยเครื่องมือ overlay image ไฟล์ของ qemu
 <p><p>
-  <a id="part4"><h2>4. การเชื่อมต่อ kvm เข้ากับ L2 Network ด้วย Linux Bridge</h2></a>
+  <a id="part4"><h2>4. การเชื่อมต่อ qemu kvm เข้ากับ L2 Network ด้วย Linux Bridge</h2></a>
 <p><p>
 ในกรณีที่ นศ ต้องการให้ vm รันโปรแกรม server เพื่อให้สามารถเข้าถึงได้ผ่าน network และ นศ ต้องการให้ vm มี
 IP address ที่อยู่ในวงเดียวกันกับ host นศ สามารถกำหนดให้ vm ใช้ bridge network ซึ่งมีลักษณะการเชื่อมต่อระหว่าง 

@@ -407,7 +407,7 @@ $
 <p><p>
 สำหรับการติดต่อสื่อสารกับ network เครื่อง vm ที่ นศ เพิ่งรันด้วย option "-net nic -net user" จะมีการเชื่อมต่อกับ network ดังภาพที่ 3 
 <p><p>
-  <img src="documents/qemuNATnetwork2.png" width="200" height="200"> <br>
+  <img src="documents/qemuNATnetwork2.png" width="400" height="300"> <br>
 ภาพที่ 3
 <p><p>
 จากภาพเครื่อง vm เชื่อมต่อกับ host แบบ NAT network ด้วย Slirp protocol และมี subnet ระหว่าง host กับ vm คืออยู่ในวง 10.0.2.0 

@@ -501,7 +501,7 @@ vm$ sudo apt update
 ...
 vm$ 
 </pre>
-นศ สามารถศึกษาเพิ่มเติมเกี่ยวกับ qemu network ได้ที่ https://wiki.qemu.org/Documentation/Networking และ https://en.wikibooks.org/wiki/QEMU/Networking
+หมายเหตุ: นศ สามารถศึกษาเพิ่มเติมเกี่ยวกับ qemu network ได้ที่ https://wiki.qemu.org/Documentation/Networking และ https://en.wikibooks.org/wiki/QEMU/Networking
 <p><p>
 บนเครื่อง host 10.100.20.151 ผมใช้ ls -l ใน shell จะเห็นความเปลี่ยนแปลงของไฟล์ ubuntu1604qcow2.ovl 
 <pre>
@@ -514,14 +514,15 @@ total 3566356
 $
 </pre>
 <b>การ commit การเปลี่ยนแปลง จาก overlay image ไปยัง base image</b> สมมุติว่าหลังจากที่ทำงานเสร็จ ผมพอใจกับเนื้อหาใหม่ใน overlay ไฟล์ และอยาก merge ข้อมูลใหม่ลงสู่ไฟล์ base image สามารถทำได้ดังนี้
-<ul>
- <li> ก่อนอื่นเพื่อความปลอดภัยในการใช้งาน image ทั้งสองไฟล์ ผมจะหยุดการทำงานของ vm ก่อน โดยกด ctr-alt-2 ที่หน้าจอ VNC 
+<p><p>
+ก่อนอื่นเพื่อความปลอดภัยในการใช้งาน image ทั้งสองไฟล์ ผมจะหยุดการทำงานของ vm ก่อน โดยกด ctr-alt-2 ที่หน้าจอ VNC 
 <p><p>
 <pre>
 QEMU 2.5.0 monitor - type 'help' for more information
 (qemu) quit
 </pre>
- <li>หลังจากนั้น ผมออกคำสั่งบน command line บน host 10.100.20.151 เพื่อ merge เนื้อหาของ overlay image เข้ากับ base image   
+<p><p>
+หลังจากนั้น ผมออกคำสั่งบน command line บน host 10.100.20.151 เพื่อ merge เนื้อหาของ overlay image เข้ากับ base image   
 <pre>
 $ cd $HOME/images
 $ qemu-img info ubuntu1604qcow2.ovl
@@ -547,7 +548,6 @@ total 3211216
 $
 </pre>
 นศ จะเห็นว่ามีการเปลี่ยนแปลงในไฟล์ base และขนาดของ overlay ลดลง
-  </ul>
 <p><p>
 <p><p>
   <a id="part4"><h2>4. การเชื่อมต่อ qemu kvm เข้ากับ L2 Network ด้วย Linux Bridge</h2></a>
@@ -559,8 +559,11 @@ vm กับโลกภายนอกดังภาพที่ 4 โดย b
   <img src="documents/qemuBridgenetwork2.png" width="400" height="300"> <br>
 ภาพที่ 4
 <p><p>
+หมายเหตุ: นศ สามารถศึกษาเพิ่มเติมเกี่ยวกับ qemu network ได้ที่ https://wiki.qemu.org/Documentation/Networking และ https://en.wikibooks.org/wiki/QEMU/Networking
+<p><p>
   <a id="part4-1"><h3>4.1 ติดตั้ง bridge-utils และกำหนดค่า bridge br0 บน host</h3></a>
 <p><p>
+บนเครื่อง host 10.100.20.151 ผมใช้คำสั่งต่อไปนี้เพื่อติดตั้ง bridge util tool และเช็ค network interface configuration ปัจจุบันในไฟล์ /etc/network/interfaces
 <pre>
 $ sudo apt-get update
 $ sudo apt-get install bridge-utils
@@ -573,16 +576,21 @@ auto lo
 iface lo inet loopback
 auto ens3
 iface ens3 inet static
-address 10.100.20.133
+address 10.100.20.151
 netmask 255.255.255.0
 network 10.100.20.0
 gateway 10.100.20.1
-dns-nameservers 9.9.9.9
+dns-nameservers 8.8.8.8
 $
 </pre>
 <p><p>
-หลังจากติดตั้ง แล้ว ผมแสดงค่า /etc/network/interfaces ที่มีอยู่แต่เดิม ในอันดับถัดไปผมจะกำหนดค่าในไฟล์ /etc/network/interfaces ใหม่สำหรับ br0 interface ดังนี้ 
+ในอันดับถัดไปผมจะกำหนดค่าในไฟล์ /etc/network/interfaces เพื่อ 
+<ul>
+ <li>สั่งให้ bridge utility ใน linux kernel จะสร้าง virtual switch ชื่อ br0 ขึ้น 
+ <li>ยกเลิกการกำหนดค่า IP address บน ens3 และกำหนดให้ ens3 เป็น port หนึ่งของ br0 และ
+ <li>กำหนดให้ br0 เป็น network interface หลักของ Linux network stack ของ host โดยกำหนด IP address สำหรับ สำหรับ br0 interface เป็น 10.100.20.151 แทน ens3 
 <p><p>
+Linux kernel 
 <pre>
 $ sudo vi /etc/network/interfaces
 $
@@ -596,7 +604,7 @@ auto ens3
 iface ens3 inet manual
 auto br0
 iface br0 inet static
-   address 10.100.20.133
+   address 10.100.20.151
    netmask 255.255.255.0
    gateway 10.100.20.1
    bridge_ports    ens3

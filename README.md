@@ -599,26 +599,66 @@ $ cat /etc/network/interfaces
 # This file describes the network interfaces available on your system
 # and how to activate them. For more information, see interfaces(5).
 source /etc/network/interfaces.d/*
+
 auto lo
 iface lo inet loopback
+
 auto ens3
 iface ens3 inet manual
+
 auto br0
 iface br0 inet static
    address 10.100.20.151
    netmask 255.255.255.0
    gateway 10.100.20.1
-   bridge_ports    ens3
+   bridge_ports    <b>ens3</b>
    bridge_stp      off
    bridge_maxwait  0
    bridge_fd       0
-   dns-nameservers 9.9.9.9
+   dns-nameservers 8.8.8.8
 $
 $ sudo reboot 
 </pre>
-ถ้า นศ ไม่อยาก reboot นศ สามารถ restart network ด้วยคำสั่ง
+ค่าในไฟล์นี้มีความหมายว่า เรากำหนดให้ ens3 ไม่เป็น interface ของ Linux 
+Network Stack ของเครื่อง host แต่จะมีการกำหนดค่าในภายหลัง 
+<p><p>
+ถัดจากนั้น กำหนดให้ br0 เป็น virtual switch (หรือ 
+Linux bridge) และให้มันเป็น interface ของ Linux Network Stack ของ host และมี 
+IP address คือ 10.100.20.151 และกำหนดให้ ens3 เป็น port หนึ่งของ br0
+นศ สามารถ restart network ด้วยคำสั่งข้างล่าง (หรือ reboot ระบบด้วยคำสั่ง "sudo reboot" ก็ได้)
 <pre>
 $ sudo service networking restart 
+</pre>
+หลังจากนั้น (กรณี reboot ให้ login เข้าสู่ระบบ) นศ สามารถใช้คำสั่ง brctl เพื่อจัดการ bridge network บนเครื่อง 
+host ของ นศ และใช้คำสั่ง "brctl show" เพื่อแสดงว่ามี virtual switch (หรือ Linux bridge) อะไรอยู่บนเครื่อง host 
+ของ นศ บ้าง ในที่นี่ นศ จะเห็นว่า br0 อยู่และ br0 มี ens3 ต่ออยู่กับมัน
+<pre>
+$ brctl
+Usage: brctl [commands]
+commands:
+        addbr           <bridge>                add bridge
+        delbr           <bridge>                delete bridge
+        addif           <bridge> <device>       add interface to bridge
+        delif           <bridge> <device>       delete interface from bridge
+        hairpin         <bridge> <port> {on|off}        turn hairpin on/off
+        setageing       <bridge> <time>         set ageing time
+        setbridgeprio   <bridge> <prio>         set bridge priority
+        setfd           <bridge> <time>         set bridge forward delay
+        sethello        <bridge> <time>         set hello time
+        setmaxage       <bridge> <time>         set max message age
+        setpathcost     <bridge> <port> <cost>  set path cost
+        setportprio     <bridge> <port> <prio>  set port priority
+        show            [ <bridge> ]            show a list of bridges
+        showmacs        <bridge>                show a list of mac addrs
+        showstp         <bridge>                show bridge stp info
+        stp             <bridge> {on|off}       turn stp on/off
+$
+$
+$ brctl show
+bridge name     bridge id               STP enabled     interfaces
+br0             8000.007159272b80       no              ens3
+virbr0          8000.5254000d09ec       yes             virbr0-nic
+$
 </pre>
 <p><p>
   <a id="part4-2"><h3>4.2 กำหนดให้ kvm เชือมต่อกับ bridge br0 และรัน kvm </h3></a>

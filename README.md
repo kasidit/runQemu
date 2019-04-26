@@ -632,26 +632,27 @@ $ sudo service networking restart
 หลังจากนั้น (กรณี reboot ให้ login เข้าสู่ระบบ) นศ สามารถใช้คำสั่ง brctl เพื่อจัดการ bridge network บนเครื่อง 
 host ของ นศ และใช้คำสั่ง "brctl show" เพื่อแสดงว่ามี virtual switch (หรือ Linux bridge) อะไรอยู่บนเครื่อง host 
 ของ นศ บ้าง ในที่นี่ นศ จะเห็นว่า br0 อยู่และ br0 มี ens3 ต่ออยู่กับมัน
+<p><p>
 <pre>
 $ brctl
 Usage: brctl [commands]
 commands:
-        addbr           <bridge>                add bridge
-        delbr           <bridge>                delete bridge
-        addif           <bridge> <device>       add interface to bridge
-        delif           <bridge> <device>       delete interface from bridge
-        hairpin         <bridge> <port> {on|off}        turn hairpin on/off
-        setageing       <bridge> <time>         set ageing time
-        setbridgeprio   <bridge> <prio>         set bridge priority
-        setfd           <bridge> <time>         set bridge forward delay
-        sethello        <bridge> <time>         set hello time
-        setmaxage       <bridge> <time>         set max message age
-        setpathcost     <bridge> <port> <cost>  set path cost
-        setportprio     <bridge> <port> <prio>  set port priority
-        show            [ <bridge> ]            show a list of bridges
-        showmacs        <bridge>                show a list of mac addrs
-        showstp         <bridge>                show bridge stp info
-        stp             <bridge> {on|off}       turn stp on/off
+        addbr             add bridge
+        delbr             delete bridge
+        addif             add interface to bridge
+        delif             delete interface from bridge
+        hairpin           turn hairpin on/off
+        setageing         set ageing time
+        setbridgeprio     set bridge priority
+        setfd             set bridge forward delay
+        sethello          set hello time
+        setmaxage         set max message age
+        setpathcost       set path cost
+        setportprio       set port priority
+        show              show a list of bridges
+        showmacs          show a list of mac addrs
+        showstp           show bridge stp info
+        stp               turn stp on/off
 $
 $
 $ brctl show

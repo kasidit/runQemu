@@ -718,9 +718,15 @@ sudo ${exeloc}/qemu-system-x86_64 \
      -device virtio-net-pci,romfile=,netdev=hostnet10,mac=00:71:50:00:01:51 \
      -localtime
 $
-$ 
+$ ./runQemu-on-br-network.sh &
+...
+$
 </pre>
-เนื่องจากเรายังไม่ได้ กำหนดค่า IP ของ tap interface ของ vm ที่เพิ่งรันให้อยู่ในวง 10.100.20.x เรายังไม่สามารถ putty เข้าสู่ vm ได้ เราต้องกำหนด network เริ่มต้นโดยใช้ vnc client console ซึ่งสามารถเข้าถึงที่ vnc endpoint 10.100.20.133:95 เมื่อเข้าสู่ vnc console แล้วให้ นศ กำหนดค่าในไฟล์ /etc/network/interfaces ของ vm ดังนี้ แล้ว restart network (หมายเหตุ ผมเปลี่ยน prompt sign ของ vm ให้เป็น "vm$" 
+<p><p>
+คำสั่งนี้จะทำให้เรารัน VM ขึ้นมา แต่เนื่องจาก network ที่เราใช้เป็น static network ไม่ได้ assign IP ให้อัตโนมัติแบบ DHCP 
+ดังนั้น ubuntu guest OS ใน VM จะรอประมาณ 5 นาที ก่อนที่จะเข้าสู่ login screen 
+<p><p> 
+เนื่องจากเรายังไม่ได้ กำหนดค่า IP ของ tap interface ของ vm ที่เพิ่งรันให้อยู่ในวง 10.100.20.x เรายังไม่สามารถ putty เข้าสู่ vm ได้ เราต้องกำหนด network เริ่มต้นโดยใช้ vnc client console ซึ่งสามารถเข้าถึงที่ vnc endpoint 10.100.20.151:95 เมื่อเข้าสู่ vnc console แล้วให้ นศ กำหนดค่าในไฟล์ /etc/network/interfaces ของ vm ดังนี้ แล้ว restart network (หมายเหตุ ผมเปลี่ยน prompt sign ของ vm ให้เป็น "vm$" 
 <p><p>
 <pre>
 vm$ cat /etc/network/interfaces
@@ -729,13 +735,14 @@ vm$ cat /etc/network/interfaces
 source /etc/network/interfaces.d/*
 auto lo
 iface lo inet loopback
+
 auto ens3
 iface ens3 inet static
-address 10.100.20.220
+address 10.100.20.201
 netmask 255.255.255.0
 network 10.100.20.0
 gateway 10.100.20.1
-dns-nameservers 9.9.9.9
+dns-nameservers 8.8.8.8
 vm$ 
 vm$ sudo service networking restart
 vm$
@@ -743,7 +750,11 @@ vm$ ping www.google.com
 ...
 vm$
 </pre>
-นศ จะเห็นว่าขณะนี้ทั้ง host และ vm อยู่ในวง subnet เดียวกันคือวง 10.100.20.0/24
+นศ จะเห็นว่าขณะนี้ทั้ง host และ vm อยู่ในวง subnet เดียวกันคือวง 10.100.20.0/24 
+<p><p>
+จากเครื่อง 10.100.20.151 นศ สามารถใช้ putty login เข้าสู่เครื่อง 10.100.20.201 ได้
+<p><p>
+ <b>แบบฝึกหัด</b> ขอให้ นศ สร้าง VM อีกเครื่องหนึ่งให้ใช้ IP 10.100.20.211
 <p><p>
 <a id="part5"><h2>5. การเชื่อมต่อ kvm เข้ากับ subnet ใหม่ ด้วย openvswitch</h2></a>
 <p><p>

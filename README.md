@@ -744,7 +744,8 @@ network 10.100.20.0
 gateway 10.100.20.1
 dns-nameservers 8.8.8.8
 vm$ 
-vm$ sudo service networking restart
+vm$ sudo ifdown ens3
+vm$ sudo ifup ens3
 vm$
 vm$ ping www.google.com
 ...

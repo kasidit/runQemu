@@ -666,36 +666,59 @@ $
 <p><p>
 นศ ต้องสร้าง script ไฟล์ สองไฟล์ที่ kvm จะเรียกเพื่อสร้าง tap interface เชื่อมต่อกับ bridge br0 ที่เราเพิ่สร้างขึ้น
 <pre>
+$ cd
 $ mkdir ${HOME}/etc
+$ cd etc
+$ nano qemu-ifup
+$ chmod 755 qemu-ifup
 $
-$ vi ${HOME}/etc/qemu-ifup
-$ chmod 755 ${HOME}/etc/qemu-ifup
-$
-$ cat  ${HOME}/etc/qemu-ifup
+$ cat qemu-ifup
 #!/bin/sh
-switch=$(/sbin/ip route list | awk '/^default / { print $5 }')
+# switch=$(/sbin/ip route list | awk '/^default / { print $5 }')
+switch=br0
 /sbin/ifconfig $1 0.0.0.0 promisc up
 /sbin/brctl addif ${switch} $1
 $
-$ vi ${HOME}/etc/qemu-ifdown
-$ chmod 755 ${HOME}/etc/qemu-ifdown
+$ nano qemu-ifdown
+$ chmod 755 qemu-ifdown
 $
 $ cat ${HOME}/etc/qemu-ifdown
 #!/bin/sh
-switch=$(/sbin/ip route list | awk '/^default / { print $5 }')
+# switch=$(/sbin/ip route list | awk '/^default / { print $5 }')
+swirch=br0
 /sbin/ifconfig $1 down
 /sbin/brctl delif ${switch} $1
 $
 </pre>
-รัน kvm ด้วยคำสั่งนี้ ขอให้สังเกตุ option "upscript" และ "downscript"
+qemu-ifup จะถูกใช้โดย qemu-kvm เพื่อเพิ่ม TAP network interface ของ VM เข้ากับ br0 ส่วน qemu-ifdown จะลบ TAP interface ออก
+TAP interface เป็นไฟล์ที่ถูกสร้างขึนเป็นพื้นที่ใช้ส่ง Ethernet frame ระหว่าง processes ใน Linux
+<p><p>
+รัน qemu-kvm ด้วยคำสั่งนี้ ขอให้สังเกตุ option "script" และ "downscript"
 <pre>
-$ sudo qemu-system-x86_64 -enable-kvm -cpu host -smp 2 \
->  -m 2G -L pc-bios -drive file=ubuntu1604raw.img,format=raw \
->  -boot c -vnc :95 \
->  -netdev type=tap,script=${HOME}/etc/qemu-ifup,downscript=${HOME}/etc/qemu-ifdown,id=hostnet10 \
->  -device virtio-net-pci,romfile=,netdev=hostnet10,mac=00:54:09:25:c1:c7 \
->  -monitor tcp::9003,server,nowait \
->  -localtime &
+$ cd
+$ cd scripts
+$ cp runQemu-on-base-qcow2-ovl.sh runQemu-on-br-network.sh
+$ nano runQemu-on-br-network.sh
+$ cat runQemu-on-br-network.sh
+#!/bin/bash
+numsmp="2"
+memsize="2G"
+imgloc=${HOME}/images
+isoloc=${HOME}/images
+imgfile="ubuntu1604qcow2.ovl"
+exeloc="/usr/bin"
+#
+sudo ${exeloc}/qemu-system-x86_64 \
+     -enable-kvm \
+     -cpu host -smp ${numsmp} \
+     -m ${memsize} -drive file=${imgloc}/${imgfile},format=qcow2 \
+     -boot c \
+     -vnc :95 \
+     -netdev type=tap,script=${HOME}/etc/qemu-ifup,downscript=${HOME}/etc/qemu-ifdown,id=hostnet10 \
+     -device virtio-net-pci,romfile=,netdev=hostnet10,mac=00:71:50:00:01:51 \
+     -localtime
+$
+$ 
 </pre>
 เนื่องจากเรายังไม่ได้ กำหนดค่า IP ของ tap interface ของ vm ที่เพิ่งรันให้อยู่ในวง 10.100.20.x เรายังไม่สามารถ putty เข้าสู่ vm ได้ เราต้องกำหนด network เริ่มต้นโดยใช้ vnc client console ซึ่งสามารถเข้าถึงที่ vnc endpoint 10.100.20.133:95 เมื่อเข้าสู่ vnc console แล้วให้ นศ กำหนดค่าในไฟล์ /etc/network/interfaces ของ vm ดังนี้ แล้ว restart network (หมายเหตุ ผมเปลี่ยน prompt sign ของ vm ให้เป็น "vm$" 
 <p><p>

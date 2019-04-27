@@ -766,6 +766,7 @@ TBA
 <p><p>
 <a id="part6"><h2>6. การ openvswitch virtual network</h2></a>
 <p><p>
+<a href="http://sciencecloud-community.cs.tu.ac.th/?p=492">การสร้าง openvswitch tunneling network</a>
 <p><p>
 <a id="part1"><h2>7. กำหนดให้ ubuntu 16.04 host สนับสนุนการทำงานแบบ nested virtualization</h2></a>
 <p><p>

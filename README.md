@@ -35,7 +35,10 @@ Guide line ในการอ่าน tutorial นี้มีดังนี�
 <p><p>
 <a id="part0"><h2>1. ติดตั้ง qemu-kvm บน host server</h2></a>
 <p><p>
-login เข้า server และกำหนดให้สามารถใช้ sudo ได้โดยไม่ต้องใส่ password ดังนี้
+สมมุติว่า นศ มีเครื่อง host server เป็นเครื่อง ubuntu 16.04 อยู่เครื่องหนึ่ง และเครื่องนี้มี network inerface ที่ออก internet ได้ นศ สามารถติดตั้ง qemu-kvm ได้สองวิธีได้แก่ การติดตั้งโดยใช้ apt utility และการติดตั้งโดยการ compile จาก source code 
+<p><p>
+อย่างไรก็ตาม ก่อนอื่นเพื่อความสะดวก ให้ นศ 
+login เข้า server และกำหนดให้ account ของ นศ สามารถใช้ sudo ได้โดยไม่ต้องใส่ password ดังนี้
 <pre>
 $ sudo nano /etc/sudoers
 [sudo] password for ...
@@ -69,10 +72,61 @@ root    ALL=(ALL:ALL) ALL
 $
 </pre>
 เพิ่ม <b>openstack ALL=(ALL) NOPASSWD:ALL</b> เข้าไปใน # Allow members of group sudo to execute any command
+<p><p>
+ในกรณีติดตั้งโดยใช้ apt นศ สามารถใช้คำสั่งต่อไปนี้ แต่ถ้าจะติดตั้งโดยการ compile source code ขอให้ข้ามสองคำสั่งนี้ไป เพื่อความรวดเร็วขอให้กำหนดค่า repository ใน /etc/apt/sources.list ให้ใช้ th.archive.ubuntu.com repository 
 <pre>
 $ sudo apt-get update
 $ sudo apt-get install qemu-kvm libvirt-bin ubuntu-vm-builder 
 $
+</pre>
+<p><p>
+การ compile และ install qemu-kvm บน ubintu 16.04 ทำดังต่อไปนี้ (อ้างอิงจาก https://wiki.qemu.org/Hosts/Linux) ในส่วนแรกจะเป็นการติดตั้ง required packages ได้แก่ git glib2.0-dev และ libfdt 
+<pre>
+$ sudo apt-get install git libglib2.0-dev libfdt-dev libpixman-1-dev zlib1g-dev
+$ 
+</pre>
+ถัดจากนั้นก็เป็น recommended packages ถ้าจะทำใน command เดียวก็เป็น 
+<pre>
+$ sudo apt-get install git-email libaio-dev libbluetooth-dev libbrlapi-dev libbz2-dev \
+libcap-dev libcap-ng-dev libcurl4-gnutls-dev libgtk-3-dev \
+libibverbs-dev libjpeg8-dev libncurses5-dev libnuma-dev \
+librbd-dev librdmacm-dev \
+libsasl2-dev libsdl1.2-dev libseccomp-dev libsnappy-dev libssh2-1-dev \
+libvde-dev libvdeplug-dev libvte-dev libxen-dev liblzo2-dev \
+valgrind xfslibs-dev
+$
+</pre>
+หรือจะแยกๆทำ ดังนี้ก็ได้
+<pre>
+$ sudo apt-get install git-email
+$ sudo apt-get install libaio-dev libbluetooth-dev libbrlapi-dev libbz2-dev
+$ sudo apt-get install libcap-dev libcap-ng-dev libcurl4-gnutls-dev libgtk-3-dev
+$ sudo apt-get install libibverbs-dev libjpeg8-dev libncurses5-dev libnuma-dev
+$ sudo apt-get install librbd-dev librdmacm-dev
+$ sudo apt-get install libsasl2-dev libsdl1.2-dev libseccomp-dev libsnappy-dev libssh2-1-dev
+$ sudo apt-get install libvde-dev libvdeplug-dev libvte-dev libxen-dev liblzo2-dev
+$ sudo apt-get install valgrind xfslibs-dev
+</pre>
+หลังจากนั้นขอให้ download qemu-kvm จาก https://www.qemu.org/download/ และเลือ source code หรือใช้คำสั่งต่อไปนี้เพื่อ
+download source code ของ qemu 4.1.0 และ extract source code (นศ อาจ clone จาก github ก็ได้แต่ไม่ได้ over ในที่นี้)
+<pre>
+$ wget https://download.qemu.org/qemu-4.1.0.tar.xz
+$ ls -l
+total 52740
+-rw-rw-r-- 1 openstack openstack 54001708 Aug 16 02:49 qemu-4.1.0.tar.xz
+$ tar xvf qemu-4.1.0.tar.xz 
+$ ls -l
+total 52744
+drwxr-xr-x 49 openstack openstack     4096 Aug 16 02:01 qemu-4.1.0
+-rw-rw-r--  1 openstack openstack 54001708 Aug 16 02:49 qemu-4.1.0.tar.xz
+$
+</pre>
+ถัดไปคือการ configure และ make และ make install ซอฟต์แวร์นี้ ขอให้ นศ cd เข้าสู่ qemu-4.1.0 directory และ
+สร้าง build subdirectory เพื่อเก็บ object ไฟล์ และไฟล์ชั่วคราวต่างๆที่ใช้ในการสร้าง และให้ cd สู่ build เพื่อรัน 
+configure เพื่อกำหนด parameters ต่างๆ สำหรับการติดตั้งนี้
+<pre>
+$ cd qemu-4.1.0
+$ 
 </pre>
 <p><p>
  <a id="part2"><h2>2. สร้าง virtual hard disk image ด้วย qemu-img</h2></a>

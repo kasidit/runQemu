@@ -982,7 +982,7 @@ $
 $ cat ${HOME}/etc/qemu-ifdown
 #!/bin/sh
 # switch=$(/sbin/ip route list | awk '/^default / { print $5 }')
-swirch=br0
+switch=br0
 /sbin/ifconfig $1 down
 /sbin/brctl delif ${switch} $1
 $

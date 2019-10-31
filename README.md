@@ -476,6 +476,8 @@ $
 </ul>
 ขอให้ นศ สังเกตุว่า script นี้้จะรันคำสั่ง qemu-system-x86_64 ด้วย sudo ซึ่งเรากำหนดไว้ตั้งแต่แรกแล้วว่าให้ใช้ได้โดยไม่ต้องป้อน password 
 <p><p>
+ในกรณีที่ นศ ต้องการใช้ qemu แทนที่จะเป็น kvm เนื่องจาก host ไม่มี hardware virtualization นศ จะต้องละ -enable-kvm และ -cpu host ออกไป
+<p><p>
 ต่อไปให้ นศ เปลี่ยน permission flag และรัน script ด้วยคำสั่ง 
 <pre>
 $ chmod 755 runQemu-on-base-img-cdrom.sh

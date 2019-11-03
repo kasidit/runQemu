@@ -1061,6 +1061,22 @@ vm$
 ภาพที่ 5
 <p><p>
 TBA
+<pre>
+$ sudo apt install openvswitch-switch
+$ sudo ovs-vsctl add-br br-int
+$ sudo ovs-vsctl add-port br-int gw1 -- set interface gw1 type=internal
+$ sudo ip addr add 192.168.10.1/24 dev gw1
+$ 
+</pre>
+<pre>
+$ sudo nano /etc/rc.local
+$ cat /etc/rc.local
+sudo iptables -t nat -A POSTROUTING -o br0 -j MASQUERADE
+sudo iptables -A FORWARD -i br0 -o gw1 -m state --state RELATED,ESTABLISHED -j ACCEPT
+sudo iptables -A FORWARD -i gw1 -o br0 -j ACCEPT
+exit 0
+$ 
+</pre>
 <p><p>
 <a id="part6"><h2>6. การ openvswitch virtual network</h2></a>
 <p><p>

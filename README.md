@@ -1070,7 +1070,9 @@ $
 </pre>
 <pre>
 $ sudo nano /etc/rc.local
+$ sudo chmod +x /etc/rc.local
 $ cat /etc/rc.local
+#!/bin/bash
 sudo iptables -t nat -A POSTROUTING -o br0 -j MASQUERADE
 sudo iptables -A FORWARD -i br0 -o gw1 -m state --state RELATED,ESTABLISHED -j ACCEPT
 sudo iptables -A FORWARD -i gw1 -o br0 -j ACCEPT

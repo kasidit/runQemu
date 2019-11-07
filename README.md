@@ -1066,9 +1066,60 @@ $ sudo apt install openvswitch-switch
 $ sudo ovs-vsctl add-br br-int
 $ sudo ovs-vsctl add-port br-int gw1 -- set interface gw1 type=internal
 $ sudo ip addr add 10.90.0.1/24 dev gw1
-$ 
+$ ifconfig gw1
 </pre>
-
+สำหรับการกำหนดค่า IP ของ gw1 นศ สามารถกำหนดใน /etc/network/interfaces ได้ด้วย ซึ่งจะทำให้ gw1 มีค่านี้ถาวรในกรณีที่มีการ reboot
+<p><p>
+นศ ต้องสร้าง ovs-ifup script ให้ qemu เรียกเพื่อสร้าง interface เชื่อมต่อกับ br-int
+<pre>
+$ cd $HOME/etc
+$ nano ovs-ifup
+$ cat ovs-ifup
+#!/bin/sh
+switch='br-int'
+/sbin/ifconfig $1 0.0.0.0 up
+ovs-vsctl add-port ${switch} $1
+$
+</pre>
+และสร้าง ovs-ifdown script ให้ qemu เรียกเพื่อลบ interface ออกจาก br-int
+<pre>
+$ nano ovs-ifdown
+$ cat ovs-ifdown
+#!/bin/sh
+switch='br-int'
+/sbin/ifconfig $1 0.0.0.0 down
+$
+</pre>
+<p><p>
+สร้าง qemu script ที่ใช้ openvswitch network (OVS network) และรัน VM
+<pre>
+$ cd scripts
+$ cp runQemu-on-br-network.sh runQemu-on-ovs-network.sh
+$ nano runQemu-on-ovs-network.sh
+$ cat runQemu-on-ovs-network.sh
+#!/bin/bash
+numsmp="2"
+memsize="2G"
+imgloc=${HOME}/images
+isoloc=${HOME}/images
+imgfile="ubuntu1604qcow2.ovl"
+exeloc="/usr/bin"
+#
+sudo ${exeloc}/qemu-system-x86_64 \
+     -enable-kvm \
+     -cpu host -smp ${numsmp} \
+     -m ${memsize} -drive file=${imgloc}/${imgfile},format=qcow2 \
+     -boot c \
+     -vnc :95 \
+     <b>-netdev type=tap,script=${HOME}/etc/ovs-ifup,downscript=${HOME}/etc/ovs-ifdown,id=hostnet10 \</b>
+     -device virtio-net-pci,romfile=,netdev=hostnet10,mac=00:71:50:00:01:51 \
+     -localtime
+$
+$ ./runQemu-on-ovs-network.sh &
+...
+$
+</pre>
+ก็จะได้ VM และ network ดังภาพที่ 5
 
 <p><p>
   <img src="documents/qemuOVSlocalbr2.PNG"> <br>

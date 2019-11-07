@@ -1057,7 +1057,7 @@ vm$
 <a id="part5"><h2>5. การเชื่อมต่อ kvm เข้ากับ subnet ใหม่ ด้วย openvswitch</h2></a>
 <p><p>
 <p><p>
-  <img src="documents/qemuOVSlocalnetwork.png"> <br>
+  <img src="documents/qemuOVSlocalbr1.png"> <br>
 ภาพที่ 5
 <p><p>
 TBA
@@ -1065,9 +1065,12 @@ TBA
 $ sudo apt install openvswitch-switch
 $ sudo ovs-vsctl add-br br-int
 $ sudo ovs-vsctl add-port br-int gw1 -- set interface gw1 type=internal
-$ sudo ip addr add 192.168.10.1/24 dev gw1
+$ sudo ip addr add 10.90.0.1/24 dev gw1
 $ 
 </pre>
+
+
+
 <pre>
 $ sudo nano /etc/rc.local
 $ sudo chmod +x /etc/rc.local

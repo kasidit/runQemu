@@ -1057,7 +1057,7 @@ vm$
 <a id="part5"><h2>5. การเชื่อมต่อ kvm เข้ากับ subnet ใหม่ ด้วย openvswitch</h2></a>
 <p><p>
 <p><p>
-  <img src="documents/qemuOVSlocalbr1.png"> <br>
+  <img src="documents/qemuOVSlocalbr1.PNG"> <br>
 ภาพที่ 5
 <p><p>
 TBA
@@ -1070,7 +1070,10 @@ $
 </pre>
 
 
-
+<p><p>
+  <img src="documents/qemuOVSlocalbr2.PNG"> <br>
+ภาพที่ 6
+<p><p>
 <pre>
 $ sudo nano /etc/rc.local
 $ sudo chmod +x /etc/rc.local

@@ -1023,7 +1023,7 @@ $
 คำสั่งนี้จะทำให้เรารัน VM ขึ้นมา แต่เนื่องจาก network ที่เราใช้เป็น static network ไม่ได้ assign IP ให้อัตโนมัติแบบ DHCP 
 ดังนั้น ubuntu guest OS ใน VM จะรอประมาณ 5 นาที ก่อนที่จะเข้าสู่ login screen 
 <p><p> 
-เนื่องจากเรายังไม่ได้ กำหนดค่า IP ของ tap interface ของ vm ที่เพิ่งรันให้อยู่ในวง 10.100.20.x เรายังไม่สามารถ putty เข้าสู่ vm ได้ เราต้องกำหนด network เริ่มต้นโดยใช้ vnc client console ซึ่งสามารถเข้าถึงที่ vnc endpoint 10.100.20.151:95 เมื่อเข้าสู่ vnc console แล้วให้ นศ กำหนดค่าในไฟล์ /etc/network/interfaces ของ vm ดังนี้ แล้ว restart network (หมายเหตุ ผมเปลี่ยน prompt sign ของ vm ให้เป็น "vm$" 
+เนื่องจากเรายังไม่ได้ กำหนดค่า IP ของ tap interface ของ vm ที่เพิ่งรันให้อยู่ในวง 10.100.20.x เรายังไม่สามารถ putty เข้าสู่ vm ได้ เราต้องกำหนด network เริ่มต้นโดยใช้ vnc client console ซึ่งสามารถเข้าถึงที่ vnc endpoint 10.100.20.151:95 เมื่อเข้าสู่ vnc console แล้วให้ นศ กำหนดค่าในไฟล์ /etc/network/interfaces ของ vm ดังนี้ แล้ว restart network (หมายเหตุ ผมเปลี่ยน prompt sign ของ vm ให้เป็น "vm$") 
 <p><p>
 <pre>
 vm$ cat /etc/network/interfaces
@@ -1120,32 +1120,11 @@ $ ./runQemu-on-ovs-network.sh &
 ...
 $
 </pre>
-อันดับถัดไปให้เข้าใช้ vm ทาง console และกำหนดค่า IP ของ ens3 interface ให้เป็น 10.90.0.11
-<pre>
-vm$ sudo nano /etc/network/interfaces
-vm$ cat /etc/network/interfaces
-...
-source /etc/network/interfaces.d/*
-auto lo
-iface lo inet loopback
-
-auto ens3
-iface ens3 inet static
-address 10.90.0.11
-netmask 255.255.255.0
-network 10.90.0.0
-gateway 10.90.0.1
-dns-nameservers 8.8.8.8
-...
-vm$
-</pre>
 ก็จะได้ VM และ network ดังภาพที่ 5
-
 <p><p>
   <img src="documents/qemuOVSlocalbr2.PNG"> <br>
 ภาพที่ 6
 <p><p>
-หลังจากนั้น เราจะทำให้ host เป็น SNAT gateway ด้วย IP MASQURADE 
 <pre>
 $ sudo nano /etc/rc.local
 $ sudo chmod +x /etc/rc.local
@@ -1157,7 +1136,6 @@ sudo iptables -A FORWARD -i gw1 -o br0 -j ACCEPT
 exit 0
 $ 
 </pre>
-vm ก็จะออก network ได้
 <p><p>
 <a id="part6"><h2>6. การ openvswitch virtual network</h2></a>
 <p><p>

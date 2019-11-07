@@ -1119,12 +1119,32 @@ $ ./runQemu-on-ovs-network.sh &
 ...
 $
 </pre>
+อันดับถัดไปให้เข้าใช้ vm ทาง console และกำหนดค่า IP ของ ens3 interface ให้เป็น 10.90.0.11
+<pre>
+vm$ sudo nano /etc/network/interfaces
+vm$ cat /etc/network/interfaces
+...
+source /etc/network/interfaces.d/*
+auto lo
+iface lo inet loopback
+
+auto ens3
+iface ens3 inet static
+address 10.90.0.11
+netmask 255.255.255.0
+network 10.90.0.0
+gateway 10.90.0.1
+dns-nameservers 8.8.8.8
+...
+vm$
+</pre>
 ก็จะได้ VM และ network ดังภาพที่ 5
 
 <p><p>
   <img src="documents/qemuOVSlocalbr2.PNG"> <br>
 ภาพที่ 6
 <p><p>
+หลังจากนั้น เราจะทำให้ host เป็น SNAT gateway ด้วย IP MASQURADE 
 <pre>
 $ sudo nano /etc/rc.local
 $ sudo chmod +x /etc/rc.local
@@ -1136,6 +1156,7 @@ sudo iptables -A FORWARD -i gw1 -o br0 -j ACCEPT
 exit 0
 $ 
 </pre>
+vm ก็จะออก network ได้
 <p><p>
 <a id="part6"><h2>6. การ openvswitch virtual network</h2></a>
 <p><p>

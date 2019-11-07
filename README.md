@@ -1088,6 +1088,7 @@ $ cat ovs-ifdown
 #!/bin/sh
 switch='br-int'
 /sbin/ifconfig $1 0.0.0.0 down
+ovs-vsctl del-port ${switch} $1
 $
 </pre>
 <p><p>

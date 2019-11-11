@@ -1131,6 +1131,21 @@ $ ./runQemu-on-ovs-network.sh &
 ...
 $
 </pre>
+หลังจากนั้นให้ นศ เปิด vnc console ที่ VNC port 10.100.20.151:95 และกำหนดค่า IP address ดังนี้
+<pre>
+vm$
+vm$ sudo nano /etc/network/interfaces
+...(เปลี่ยน config ของ ens3)...
+auto ens3
+iface ens3 inet static
+address 10.90.0.11
+netmask 255.255.255.0
+network 10.90.0.0
+gateway 10.90.0.1
+dns-nameservers 8.8.8.8
+...
+vm$
+</pre>
 ก็จะได้ VM และ network ดังภาพที่ 5
 <p><p>
   <img src="documents/qemuOVSlocalbr2.PNG"> <br>

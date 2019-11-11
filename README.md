@@ -869,7 +869,6 @@ vm$
   <img src="documents/qemuOVSlocalbr1.PNG" width="600" height="300"> <br>
 ภาพที่ 5
 <p><p>
-TBA
 <pre>
 $ sudo apt install openvswitch-switch
 $ sudo ovs-vsctl add-br br-int

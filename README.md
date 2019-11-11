@@ -1057,7 +1057,7 @@ vm$
 <a id="part5"><h2>5. การเชื่อมต่อ kvm เข้ากับ subnet ใหม่ ด้วย openvswitch</h2></a>
 <p><p>
 <p><p>
-  <img src="documents/qemuOVSlocalbr1.PNG"> <br>
+  <img src="documents/qemuOVSlocalbr1.PNG" width="400" height="300"> <br>
 ภาพที่ 5
 <p><p>
 TBA
@@ -1148,7 +1148,7 @@ vm$
 </pre>
 ก็จะได้ VM และ network ดังภาพที่ 5
 <p><p>
-  <img src="documents/qemuOVSlocalbr2.PNG"> <br>
+  <img src="documents/qemuOVSlocalbr2.PNG" width="400" height="300"> <br>
 ภาพที่ 6
 <p><p>
 <pre>

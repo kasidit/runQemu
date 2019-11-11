@@ -1057,7 +1057,7 @@ vm$
 <a id="part5"><h2>5. การเชื่อมต่อ kvm เข้ากับ subnet ใหม่ ด้วย openvswitch</h2></a>
 <p><p>
 <p><p>
-  <img src="documents/qemuOVSlocalbr1.PNG" width="500" height="300"> <br>
+  <img src="documents/qemuOVSlocalbr1.PNG" width="600" height="300"> <br>
 ภาพที่ 5
 <p><p>
 TBA
@@ -1148,19 +1148,34 @@ vm$
 </pre>
 ก็จะได้ VM และ network ดังภาพที่ 5
 <p><p>
-  <img src="documents/qemuOVSlocalbr2.PNG" width="500" height="300"> <br>
+  <img src="documents/qemuOVSlocalbr2.PNG" width="600" height="300"> <br>
 ภาพที่ 6
 <p><p>
 <pre>
-$ sudo nano /etc/rc.local
-$ sudo chmod +x /etc/rc.local
-$ cat /etc/rc.local
+$ sudo nano /etc/sysctl.conf
+...เปลี่ยนบรรทัดนี้ดังข้างล่าง
+net.ipv4.ip_forward = 1
+...save ไฟล์
+$
+$ sudo nano /etc/rc.local  
 #!/bin/bash
+...เพิ่มเติม...
 sudo iptables -t nat -A POSTROUTING -o br0 -j MASQUERADE
 sudo iptables -A FORWARD -i br0 -o gw1 -m state --state RELATED,ESTABLISHED -j ACCEPT
 sudo iptables -A FORWARD -i gw1 -o br0 -j ACCEPT
 exit 0
-$ 
+...save ไฟล์
+$
+$ sudo chmod +x /etc/rc.local
+$ cat /etc/rc.local
+$ sudo reboot
+</pre>
+หลังจากนั้นจะได้ network ดังภาพที่ 6 ให้ทดสอบโดยเข้าใช้ VNC console ของ VM และ ping 8.8.8.8 จาก VM 
+<pre>
+vm$
+vm$ ping 8.8.8.8
+...
+vm$
 </pre>
 <p><p>
 <a id="part6"><h2>6. การ openvswitch virtual network</h2></a>

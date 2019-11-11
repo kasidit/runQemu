@@ -1065,10 +1065,21 @@ TBA
 $ sudo apt install openvswitch-switch
 $ sudo ovs-vsctl add-br br-int
 $ sudo ovs-vsctl add-port br-int gw1 -- set interface gw1 type=internal
-$ sudo ip addr add 10.90.0.1/24 dev gw1
+$ 
+</pre>
+สำหรับการกำหนดค่า IP ของ gw1 นศ สามารถกำหนดใน /etc/network/interfaces ดังนี้
+<pre>
+$ sudo nano /etc/network/interfaces
+...เพิ่ม...
+auto gw1
+iface gw1 inet static
+address 10.90.0.1
+netmask 255.255.255.0
+network 10.90.0.0
+...save ไฟล์...
+$ sudo ifup gw1
 $ ifconfig gw1
 </pre>
-สำหรับการกำหนดค่า IP ของ gw1 นศ สามารถกำหนดใน /etc/network/interfaces ได้ด้วย ซึ่งจะทำให้ gw1 มีค่านี้ถาวรในกรณีที่มีการ reboot
 <p><p>
 นศ ต้องสร้าง ovs-ifup script ให้ qemu เรียกเพื่อสร้าง interface เชื่อมต่อกับ br-int
 <pre>

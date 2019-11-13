@@ -986,7 +986,7 @@ vm$ ping 8.8.8.8
 vm$
 </pre>
 <p><p>
-<a id="part6"><h2>6. การเชื่อมต่อ ovs bridge ข้ามเครื่อง/h2></a>
+<a id="part6"><h2>6. การเชื่อมต่อ ovs bridge ข้ามเครื่อง hosts </h2></a>
 <p><p>
 ในอันดับถัด
 <p><p>

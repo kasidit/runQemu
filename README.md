@@ -866,7 +866,7 @@ vm$
 <a id="part5"><h2>5. การเชื่อมต่อ kvm เข้ากับ subnet ใหม่ ด้วย openvswitch</h2></a>
 <p><p>
 <p><p>
-  <img src="documents/qemuOVSlocalbr1.PNG" width="600" height="300"> <br>
+  <img src="documents/ovs1.PNG" width="600" height="300"> <br>
 ภาพที่ 5
 <p><p>
 <pre>
@@ -956,7 +956,7 @@ vm$
 </pre>
 ก็จะได้ VM และ network ดังภาพที่ 5
 <p><p>
-  <img src="documents/qemuOVSlocalbr2.PNG" width="600" height="300"> <br>
+  <img src="documents/นอห2.PNG" width="600" height="300"> <br>
 ภาพที่ 6
 <p><p>
 <pre>
@@ -986,9 +986,89 @@ vm$ ping 8.8.8.8
 vm$
 </pre>
 <p><p>
-<a id="part6"><h2>6. การ openvswitch virtual network</h2></a>
+<a id="part6"><h2>6. การเชื่อมต่อ ovs bridge ข้ามเครื่อง/h2></a>
 <p><p>
-<a href="http://sciencecloud-community.cs.tu.ac.th/?p=492">การสร้าง openvswitch tunneling network</a>
+ในอันดับถัด
+<p><p>
+  <img src="documents/ovs3.PNG" width="700" height="300"> <br>
+ภาพที่ 7
+<p><p>
+<p><p>
+  <img src="documents/ovs4.PNG" width="700" height="300"> <br>
+ภาพที่ 8
+<p><p> 
+<p><p>
+  <img src="documents/ovs5.PNG" width="700" height="300"> <br>
+ภาพที่ 9
+<p><p>
+<p><p>
+  <img src="documents/ovs6.PNG" width="700" height="300"> <br>
+ภาพที่ 10
+<p><p> 
+<p><p>
+  <img src="documents/ovs7.PNG" width="700" height="300"> <br>
+ภาพที่ 11
+<p><p>
+<p><p>
+  <img src="documents/ovs8.PNG" width="700" height="300"> <br>
+ภาพที่ 12
+<p><p> 
+<p><p>
+  <img src="documents/ovs9.PNG" width="700" height="300"> <br>
+ภาพที่ 13
+<p><p>
+<p><p>
+  <img src="documents/ovs10.PNG" width="700" height="300"> <br>
+ภาพที่ 14
+<p><p> 
+<p><p>
+  <img src="documents/ovs11.PNG" width="700" height="300"> <br>
+ภาพที่ 7
+<p><p>
+<p><p>
+  <img src="documents/ovs12.PNG" width="700" height="300"> <br>
+ภาพที่ 8
+<p><p> 
+<p><p>
+  <img src="documents/ovs13.PNG" width="700" height="300"> <br>
+ภาพที่ 9
+<p><p>
+<p><p>
+  <img src="documents/ovs14.PNG" width="700" height="300"> <br>
+ภาพที่ 10
+<p><p> 
+<p><p>
+  <img src="documents/ovs15.PNG" width="700" height="300"> <br>
+ภาพที่ 11
+<p><p>
+<p><p>
+  <img src="documents/ovs16.PNG" width="700" height="300"> <br>
+ภาพที่ 12
+<p><p> 
+<p><p>
+  <img src="documents/ovs17.PNG" width="700" height="300"> <br>
+ภาพที่ 13
+<p><p>
+<p><p>
+  <img src="documents/ovs18.PNG" width="700" height="300"> <br>
+ภาพที่ 14
+<p><p> 
+<p><p>
+  <img src="documents/ovs19.PNG" width="700" height="300"> <br>
+ภาพที่ 15
+<p><p> 
+<p><p>
+  <img src="documents/ovs20.PNG" width="700" height="300"> <br>
+ภาพที่ 16
+<p><p>
+<p><p>
+  <img src="documents/ovs21.PNG" width="700" height="300"> <br>
+ภาพที่ 17
+<p><p> 
+<p><p>
+  <img src="documents/ovs22.PNG" width="700" height="300"> <br>
+ภาพที่ 18
+<p><p> 
 <p><p>
 <a id="part1"><h2>7. กำหนดให้ ubuntu 16.04 host สนับสนุนการทำงานแบบ nested virtualization</h2></a>
 <p><p>

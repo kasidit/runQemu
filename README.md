@@ -988,11 +988,41 @@ vm$
 <p><p>
 <a id="part6"><h2>6. การเชื่อมต่อ ovs bridge ข้ามเครื่อง hosts </h2></a>
 <p><p>
-ในอันดับถัด
+กำหนดให้เครื่อง host1 มี ens4 เชื่อมต่อเครือข่ายภายในที่อีกฝั่งหนึ่งต่อกับ ens3 ของ host2 (นศต้องสร้างเพิ่ม) 
+และกำหนดให้ ens4 มี IP address คือ 10.0.0.11 และ ens3 ของ host2 มี IP 10.0.0.12 ดังภาพที่ 7 จากภาพ
+เราจะเชื่อมต่อ ens4 เข้ากับ br-int เพื่อทำให้ VM1 สามารถส่งข้อมูลผ่าน OVS br br-int ไปยัง host2 ได้
 <p><p>
   <img src="documents/ovs3.PNG" width="700" height="400"> <br>
 ภาพที่ 7
 <p><p>
+จากภาพที่ 7 เราจะเพิ่ม ens4 interface ให้เป็น port หนึ่งของ br-int และเนื่องจาก ens4 เป็น NIC device 
+มันจะข้อมูลที่รับมาส่งออกสู่ network สมมุติว่า นศ ได้กำหนดค่าใน /etc/network/interfaces ของ host1 และ host2 
+ให้มี IP 10.0.0.11 และ 10.0.0.12 แล้ว ให้ทำคำสั่งต่อไปนี้
+<pre>
+$ 
+$ ifconfig ens4
+ens4      Link encap:Ethernet  HWaddr 52:54:ee:00:61:02
+          inet addr:10.0.0.10  Bcast:10.0.0.255  Mask:255.255.255.0
+....
+$ sudo ovs-vsctl add-port br-int ens4
+$ sudo ovs-vsctl show
+$ sudo ovs-vsctl show
+f8c0907c-bcbc-4df9-b1bb-48c187f09967
+    Bridge br-int
+        Port "gw1"
+            Interface "gw1"
+                type: internal
+        Port "tap0"
+            Interface "tap0"
+        Port "ens4"
+            Interface "ens4"
+        Port br-int
+            Interface br-int
+                type: internal
+    ovs_version: "2.5.5"
+openstack@ubuntu:~/scripts$
+$ 
+</pre>
 <p><p>
   <img src="documents/ovs4.PNG" width="700" height="400"> <br>
 ภาพที่ 8

@@ -1023,6 +1023,8 @@ f8c0907c-bcbc-4df9-b1bb-48c187f09967
 openstack@ubuntu:~/scripts$
 $ 
 </pre>
+จะสังเกตุว่าเมื่อ add ens4 เข้ากับ br-int แล้ว เครื่อง host2 จะไม่สามารถ ping 10.0.0.10 ได้ 
+เนื่องจาก ping packet จะถูก forward ไปที่ br-int บนเครื่อง host1 
 <p><p>
   <img src="documents/ovs4.PNG" width="700" height="400"> <br>
 ภาพที่ 8

@@ -273,7 +273,7 @@ $
 เราใช้คำสั่ง which เพื่อเช็คว่า qemu-system-x86_64 executable อยู่ใน directory ใด และพารามีเตอร์ที่กำหนดใช้กับคำสั่ง qemu-system-x86_64 ใน script มีความหมายดังนี้
 <ul>
  <li> "-enable-kvm" : เรียก qemu ใน mode "kvm" คือให้ qemu ใช้ kvm driver บน linux เพื่อใช้ CPU hardware virtualization supports
- <li> "-cpu host" : ให้ใช้ CPU ของเครื่อง host 
+ <li> "-cpu host" : รัน VM นี้บน CPU ของเครื่อง host จริง (physical machine)
  <li> "-smp 2" : ให้ VM เครื่องนี้มี virtual cpu cores จำนวน 2 cores (qemu-kvm จะสร้าง threads  ขึ้น 2 threads เพื่อรองรับการประมวลผลของ VM)
  <li> "-m 2G" : vm มี memory 2 GiB
  <li> "-drive file=${imgloc}/${imgfile},format=qcow2" : VM ใช้ไฟล์ที่กำหนดค่าตัวตัวแปร SHELL VARIABLE ${imgloc}/${imgfile} ซึ่งหมายถึง ${HOME}/images/ubuntu1604qcow2.img เป็น harddisk image ผู้ใช้ต้องระบุว่าไฟล์ format=qcow2 หมายถึงเป็น disk image แบบ qcow2 (ในกรณีที่ นศ ใช้ qcow2 ก็ให้เปลี่ยนเป็น format=raw)
@@ -284,8 +284,9 @@ $
  <li> "-localtime" : กำหนดให้ vm ใช้เวลาเดียวกับเครื่อง host 
 </ul>
 ขอให้ นศ สังเกตุว่า script นี้้จะรันคำสั่ง qemu-system-x86_64 ด้วย sudo ซึ่งเรากำหนดไว้ตั้งแต่แรกแล้วว่าให้ใช้ได้โดยไม่ต้องป้อน password 
+และในกรณีที่ นศ ต้องการใช้ qemu แทนที่จะเป็น kvm เนื่องจาก host ไม่มี hardware virtualization นศ จะต้องละ -enable-kvm และ -cpu host ออกไป 
 <p><p>
-ในกรณีที่ นศ ต้องการใช้ qemu แทนที่จะเป็น kvm เนื่องจาก host ไม่มี hardware virtualization นศ จะต้องละ -enable-kvm และ -cpu host ออกไป
+  <b>หมายเหตุ:</b> เนื่องจากส่วนใหญ่แล้วในการเรียนรู้ เราอาจไม่รูว่าเราจะรัน VM บน host หรือ VM ดังนั้น ผมจะถือว่า -cpu host เป็น optimization option และใน scripts ที่จะใช้เป็นตัวอย่างต่อไปจะไม่ไช้ option นี้ นอกจากนั้นขอให้ผู้อ่านระวังว่า ถ้ารัน VM บน Virtual Box หรือ VM ของ Cloud บางเจ้า จะไม่ support nested virtualization ซึ่งผู้อ่านจำเป็นต้องตัด -enable-kvm ออกไปเพื่อรัน VM แบบ user-mode qemu มิฉะนั้นจะรัน VM ไม่ได้   
 <p><p>
 ต่อไปให้ นศ เปลี่ยน permission flag และรัน script ด้วยคำสั่ง 
 <pre>

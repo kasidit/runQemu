@@ -1192,6 +1192,8 @@ script นี้เป็นคำสั่งเพื่อรัน vm ที
 shost$ ssh openstack@loaclhost -p 10022
 </pre>
 เนื่องจาก "hostfwd=tcp::10022-:22" option เป็นการกำหนด port forwarding จาก port 10022 ของ source host map ไปที่ port 22 ของ vm ๖ในตัวอย่างนี้ ubuntu image ของผมมี user ชื่อ openstack) 
+<p>
+<b>ขอให้จำไว้ว่า:</b> ถ้า นศ จะรันโปรแกรมใดหลังจากที่ ssh ไปบน vm แล้ว และ นศ จะ migrate vm ระหว่างที่โปรแกรมนั้นรันอยู่ นศ จะต้องรันโปรแกรมนั้นภายใต้ screen session
 <p><p>
 เมื่อผมรัน vm นี้แล้ว และเข้าถึงด้วย VNC viewer แล้ว ผมสามารถใช้ Ctr-Alt 2 เพื่อเข้าถึง qemu monitor window บน vnc console นั้น
 <p><p>

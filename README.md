@@ -1028,6 +1028,7 @@ $
 </pre>
 จะสังเกตุว่าเมื่อ add ens4 เข้ากับ br-int แล้ว เครื่อง host2 จะไม่สามารถ ping 10.0.0.10 ได้ 
 เนื่องจาก ping packet จะถูก forward ไปที่ br-int บนเครื่อง host1 
+<!--
 <p><p>
   <img src="documents/ovs4.PNG" width="700" height="400"> <br>
 ภาพที่ 8
@@ -1103,7 +1104,8 @@ $
 <p><p>
   <img src="documents/ovs22.PNG" width="700" height="400"> <br>
 ภาพที่ 18
-<p><p> 
+-->
+<p><p>
 <p><p>
 <a id="part1"><h2>7. กำหนดให้ ubuntu 16.04 host สนับสนุนการทำงานแบบ nested virtualization</h2></a>
 <p><p>
@@ -1146,3 +1148,10 @@ $ sudo qemu-system-x86_64 ... -cpu host ...
 </pre>
 <p><p>
 ซึ่งควรจะเห็น บรรทัดที่มีคำว่า vmx หรือ svm
+<p><p>
+<p><p>
+<a id="part1"><h2>8. การทำ Live migration </h2></a>
+<p><p>
+สมมุติว่ามีเครื่อง hosts อยู่สองเครื่อง ขั้นแรก นศ ต้องติดตั้ง qemu-kvm บนเครื่องทั้งสอง และ qemu-kvm ควรจะเป็น version เดียวกัน (อาจใช้ version ใกล้เคียงกันได้ แต่ผู้ใช้ต้องแบกรับความเสี่ยงเอง และต้องทดสอบด้วยตนเองให้ดีก่อนใช้จริง เพราะแต่อาจไม่ compatible ได้) นอกจากนั้นเครื่องทั้ง 2 จะต้องมี shared file system เช่น NFS เพื่อใช้เก็บ VM image 
+<p><p>
+to be continue...

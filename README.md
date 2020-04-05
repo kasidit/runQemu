@@ -1154,4 +1154,88 @@ $ sudo qemu-system-x86_64 ... -cpu host ...
 <p><p>
 สมมุติว่ามีเครื่อง hosts อยู่สองเครื่อง ขั้นแรก นศ ต้องติดตั้ง qemu-kvm บนเครื่องทั้งสอง และ qemu-kvm ควรจะเป็น version เดียวกัน (อาจใช้ version ใกล้เคียงกันได้ แต่ผู้ใช้ต้องแบกรับความเสี่ยงเอง และต้องทดสอบด้วยตนเองให้ดีก่อนใช้จริง เพราะแต่อาจไม่ compatible ได้) นอกจากนั้นเครื่องทั้ง 2 จะต้องมี shared file system เช่น NFS เพื่อใช้เก็บ VM image 
 <p><p>
-to be continue...
+ผมจะเรียก host ที่รัน vm ดั้งเดิมก่อน migration ว่า source host และ host ที่รัน vm ปลายทางหลังจากการ migration ว่า destination host บน source host สมมุติว่ามี image ของ ubuntu 16.04 server อยู่ใน shared directory ระหว่างเครื่อง host ทั้งสองที /srv/kasidit/images/ ในไฟล์ชื่อ ub1604-NPB331-qcow2.img 
+<p><p>
+กำหนดให้ "shost$" เป็น command line prompt ของ source host และ "dhost$" เป็น command line prompt ของ destination host 
+<p><p>
+<b>บนเครื่อง source host:<b> 
+<p><p>
+ผมจะเขียน script ข้างล่างและ รัน script นั้น
+<pre>
+shost$
+shost$ vi src-kvm-npb311img.sh 
+shost$ cat src-kvm-npb311img.sh
+#!/bin/bash
+binloc=/usr/bin
+imgloc=/srv/kasidit/images
+isoloc=/srv/kasidit/iso-images
+filename="ub1604-NPB331-qcow2.img"
+#
+sudo ${binloc}/qemu-system-x86_64 \
+  -enable-kvm \
+  -smp 4 \
+  -m 8G \
+  -boot c \
+  -drive file=${imgloc}/${filename},format=qcow2 \
+  -vnc :81 \
+  -net nic \
+  -net user,hostfwd=tcp::10022-:22 \
+  -rtc base=localtime,clock=vm | tee src-mplcr-migreport-npb331-1.txt &
+
+shost$
+shost$ ./src-kvm-npb311img.sh
+shost$
+</pre>
+script นี้เป็นคำสั่งเพื่อรัน vm ที่เมื่อรันแล้ว ผู้ใช้สามารถเข้าใช้ console ผ่าน VNC viewer ที่ vnc port 81 และสามารถ ssh เข้าสู่ vm จาก source host ด้วยคำสั่ง 
+<pre>
+shost$ ssh openstack@loaclhost -p 10022
+</pre>
+เนื่องจาก "hostfwd=tcp::10022-:22" option เป็นการกำหนด port forwarding จาก port 10022 ของ source host map ไปที่ port 22 ของ vm ๖ในตัวอย่างนี้ ubuntu image ของผมมี user ชื่อ openstack) 
+<p><p>
+เมื่อผมรัน vm นี้แล้ว และเข้าถึงด้วย VNC viewer แล้ว ผมสามารถใช้ Ctr-Alt 2 เพื่อเข้าถึง qemu monitor window บน vnc console นั้น
+<p><p>
+<b>บนเครื่อง destination host:<b> 
+<p><p>
+ผมสร้าง script ข้างล่างและรัน script นี้เพื่อเรียก qemu-kvm ขึ้นมารอรับการถ่ายโอนข้อมูลจาก source host 
+<pre>
+dhost$
+dhost$ vi dest-kvm-npb331img.sh
+dhost$ cat dest-kvm-npb331img.sh
+#!/bin/bash
+binloc=/usr/bin
+imgloc=/srv/kasidit/images
+isoloc=/srv/kasidit/iso-images
+filename="ub1604-NPB331-qcow2.img"
+#
+sudo ${binloc}/qemu-system-x86_64 \
+  -enable-kvm \
+  -smp 4 \
+  -m 8G \
+  -boot c \
+  -drive file=${imgloc}/${filename},format=qcow2 \
+  -vnc :82 \
+  -net nic \
+  -net user,hostfwd=tcp::10122-:22 \
+  -rtc base=localtime,clock=vm \
+  -incoming tcp::9886 | tee src-mplcr-migreport-npb331-1.txt &
+
+dhost$
+dhost$ ./dest-kvm-npb331img.sh
+dhost$
+</pre>
+script นี้รัน qemu-kvm แล้ว และผู้ใช้สามารถเข้าใช้ผ่าน VNC ได้ที่ vnc port 82 และ เข้าถึงทาง ssh จาก destination host ได้ทาง port 10122 บนเครื่อง localhost นั้น และที่สำคัญคือ vm นี้จะไม่รันตามปกติ แต่จะรอรับ vm state อยู่ที่ tcp port 9886 บน host ที่รันอยู่ เมื่อได้รับ state จากการ migration เสร็จแล้วจึงจะรันต่อ 
+<p><p>
+<p><p>
+<b>บนเครื่อง vm ที่รันบน source host:<b> 
+<p><p>
+ให้ นศ รันโปรแกรมสักอย่าง ในตัวอย่างนี้ผมจะรัน htop สมมุติว่า "vm$" เป็น command line prompt ของ vm 
+<pre>
+vm$ htop
+</pre>
+จะเห็นหน้าจอของโปรแกรม htop ปรากฏขึ้นมา หลังจากนั้นให้กด Ctr-Alt-2 เพื่อเข้าสู่ qemu monitor และใช้คำสั่งข้างล่างเพื่อ live migration vm ไปยัง destination
+<pre>
+(qemu) migrate -d tcp:<destination IP>:8698
+</pre>
+โดยที่ <destination IP> เป็น IP address ของ destination host
+<p><p>
+ขอให้สังเกตุว่าหลังจาก migration แล้วหน้าจอของ destination vm จะเปลี่ยนไปเป็นหน้าจอของ source vm แล้วรันต่อ ในขณะที่ source vm จะ pause การทำงาน

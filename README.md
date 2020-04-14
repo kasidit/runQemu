@@ -1237,8 +1237,8 @@ vm$ htop
 </pre>
 จะเห็นหน้าจอของโปรแกรม htop ปรากฏขึ้นมา หลังจากนั้นให้กด Ctr-Alt-2 เพื่อเข้าสู่ qemu monitor และใช้คำสั่งข้างล่างเพื่อ live migration vm ไปยัง destination
 <pre>
-(qemu) migrate -d tcp:<destination IP>:8698
+(qemu) migrate -d tcp:<b>destination-IP</b>:8698
 </pre>
-โดยที่ <destination IP> เป็น IP address ของ destination host
+โดยที่ <b>destination-IP</b> คือ IP address ของ destination host
 <p><p>
 ขอให้สังเกตุว่าหลังจาก migration แล้วหน้าจอของ destination vm จะเปลี่ยนไปเป็นหน้าจอของ source vm แล้วรันต่อ ในขณะที่ source vm จะ pause การทำงาน

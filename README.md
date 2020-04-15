@@ -22,7 +22,7 @@
 <li> <a href="#part5">5. การเชื่อมต่อ kvm เข้ากับ L2 Network ด้วย openvswitch</a> 
       <ul>
        <li> <a href="#part5-1">5.1 การเชื่อมต่อ switch สู่ Internet ด้วย IP Masqurade</a>
-       <li> <a href="#part5-2">5.2 การสร้าง openvswitch switch เบื้องต้น</a>
+       <li> <a href="#part5-2">5.2 การเชื่อมต่อ physical host เข้ากับ openvswitch switch เบื้องต้น</a>
       </ul>
 <li> <a href="#part7">7. กำหนดให้ ubuntu 16.04 host สนับสนุนการทำงานแบบ nested virtualization</a>
 <li> <a href="#part8">8. การทำ live migration ของ vm</a>
@@ -993,7 +993,7 @@ vm$ ping 8.8.8.8
 vm$
 </pre>
 <p><p>
-<a id="part5-2"><h2>5.2 การสร้าง openvswitch switch เบื้องต้น </h2></a>
+<a id="part5-2"><h2>5.2 การเชื่อมต่อ physical host เข้ากับ openvswitch switch เบื้องต้น </h2></a>
 <p><p>
 จากภาพที่ 7 กำหนดให้มีเครื่อง host1 และ host2 โดยที่เครื่อง 
  

@@ -1,6 +1,10 @@
 <h1>Tutorial: การใช้ qemu-kvm สร้าง virtual machines บน ubuntu 16.04 server</h1>
 <ul>
  <li> <a href="#part1">1. ติดตั้ง qemu-kvm บน host server </a>
+       <ul>
+       <li> <a href="#part1-1">1.1 ติดตั้งจาก ubuntu repository</a>
+       <li> <a href="#part1-2">1.2 compile และติดตั้งจาก source code</a>
+      </ul>
  <li> <a href="#part2">2. สร้าง virtual hard disk ด้วย qemu-img</a> 
       <ul>
        <li> <a href="#part2-2">2.1 disk format แบบ raw</a>
@@ -77,12 +81,16 @@ $
 </pre>
 เพิ่ม <b>openstack ALL=(ALL) NOPASSWD:ALL</b> เข้าไปใน # Allow members of group sudo to execute any command
 <p><p>
+  <a id="part1-1"><h3>1.1 ติดตั้งจาก qemu repository</h3></a>
+<p><p>
 ในกรณีติดตั้งโดยใช้ apt นศ สามารถใช้คำสั่งต่อไปนี้ แต่ถ้าจะติดตั้งโดยการ compile source code ขอให้ข้ามสองคำสั่งนี้ไป เพื่อความรวดเร็วขอให้กำหนดค่า repository ใน /etc/apt/sources.list ให้ใช้ th.archive.ubuntu.com repository 
 <pre>
 $ sudo apt-get update
 $ sudo apt-get install qemu-kvm libvirt-bin ubuntu-vm-builder 
 $
 </pre>
+<p><p>
+  <a id="part1-2"><h3>1.2 ติดตั้งโดย compile และ install จาก source code</h3></a>
 <p><p>
 การ compile และ install qemu-kvm บน ubintu 16.04 ทำดังต่อไปนี้ (อ้างอิงจาก https://wiki.qemu.org/Hosts/Linux) ในส่วนแรกจะเป็นการติดตั้ง required packages ได้แก่ git glib2.0-dev และ libfdt 
 <pre>

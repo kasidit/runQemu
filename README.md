@@ -105,7 +105,7 @@ libibverbs-dev libjpeg8-dev libncurses5-dev libnuma-dev \
 librbd-dev librdmacm-dev \
 libsasl2-dev libsdl1.2-dev libseccomp-dev libsnappy-dev libssh2-1-dev \
 libvde-dev libvdeplug-dev libvte-dev libxen-dev liblzo2-dev \
-valgrind xfslibs-dev
+valgrind xfslibs-dev ninja-build
 $
 </pre>
 หรือจะแยกๆทำ ดังนี้ก็ได้
@@ -118,6 +118,7 @@ $ sudo apt-get install librbd-dev librdmacm-dev
 $ sudo apt-get install libsasl2-dev libsdl1.2-dev libseccomp-dev libsnappy-dev libssh2-1-dev
 $ sudo apt-get install libvde-dev libvdeplug-dev libvte-dev libxen-dev liblzo2-dev
 $ sudo apt-get install valgrind xfslibs-dev
+$ sudo apt-get install ninja-build
 </pre>
 หลังจากนั้นขอให้ download qemu-kvm จาก https://www.qemu.org/download/ และเลือ source code หรือใช้คำสั่งต่อไปนี้เพื่อ
 download source code ของ qemu 4.1.0 และ extract source code (นศ อาจ clone จาก github ก็ได้แต่ไม่ได้ over ในที่นี้)

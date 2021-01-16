@@ -1054,28 +1054,20 @@ $ sudo ufw enable
 <p><p>
 <a id="part5-2"><h2>5.2 การเชื่อมต่อ physical host เข้ากับ openvswitch switch เบื้องต้น </h2></a>
 <p><p>
-จากภาพที่ 7 กำหนดให้มีเครื่อง host1 และ host2 โดยที่เครื่อง 
- 
- มี ens4 เชื่อมต่อเครือข่ายภายใน ที่อีกฝั่งหนึ่งต่อกับ ens3 ของ host2 (นศต้องสร้างเพิ่ม) 
-และกำหนดให้ ens4 มี IP address คือ 10.0.0.10 และ ens3 ของ host2 มี IP 10.0.0.11 ดังภาพที่ 7 จากภาพ
-เราจะเชื่อมต่อ ens4 เข้ากับ br-int เพื่อทำให้ VM1 สามารถส่งข้อมูลผ่าน OVS br br-int ไปยัง host2 ได้
+จากภาพที่ 7 กำหนดให้เครื่อง host1 มี ens4 เชื่อมต่อกับ ens3 ของ host2 อยู่แล้ว 
+โดยที่ ens4 มี IP address คือ 10.0.0.10 และ ens3 ของ host2 มี IP คือ 10.0.0.11 
+
+เพื่อทำให้ VM1 สามารถส่งข้อมูลผ่าน OVS br br-int ไปยัง host2 ได้
 <p><p>
   <img src="documents/ovs3.PNG" width="700" height="400"> <br>
 ภาพที่ 7
 <p><p>
-จากภาพที่ 7 เราจะเพิ่ม ens4 interface ให้เป็น port หนึ่งของ br-int และเนื่องจาก ens4 เป็น NIC device 
-มันจะข้อมูลที่รับมาส่งออกสู่ network สมมุติว่า นศ ได้กำหนดค่าใน /etc/network/interfaces ของ host1 และ host2 
-ให้มี IP 10.0.0.11 และ 10.0.0.12 แล้ว ให้ทำคำสั่งต่อไปนี้
+จากภาพเราจะเชื่อมต่อ ens4 เข้ากับ br-int โดยใช้คำสั่งคำสั่งต่อไปนี้
 <pre>
 $ 
-$ ifconfig ens4
-ens4      Link encap:Ethernet  HWaddr 52:54:ee:00:61:02
-          inet addr:10.0.0.10  Bcast:10.0.0.255  Mask:255.255.255.0
-....
 $ sudo ovs-vsctl add-port br-int ens4
 $ sudo ovs-vsctl show
-$ sudo ovs-vsctl show
-f8c0907c-bcbc-4df9-b1bb-48c187f09967
+...
     Bridge br-int
         Port "gw1"
             Interface "gw1"
@@ -1092,7 +1084,8 @@ openstack@ubuntu:~/scripts$
 $ 
 </pre>
 จะสังเกตุว่าเมื่อ add ens4 เข้ากับ br-int แล้ว เครื่อง host2 จะไม่สามารถ ping 10.0.0.10 ได้ 
-เนื่องจาก ping packet จะถูก forward ไปที่ br-int บนเครื่อง host1 
+เนื่องจาก ens4 ได้กลายเป็น port หนึ่งของ br-int แล้วและ ping packet จะถูก forward 
+ไปที่ br-int แทนที่จะส่งไปให้ network stack ของเครื่อง host1 
 
 <p><p>
   <img src="documents/ovs4.PNG" width="700" height="400"> <br>

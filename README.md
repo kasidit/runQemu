@@ -1056,8 +1056,6 @@ $ sudo ufw enable
 <p><p>
 จากภาพที่ 7 กำหนดให้เครื่อง host1 มี ens4 เชื่อมต่อกับ ens3 ของ host2 อยู่แล้ว 
 โดยที่ ens4 มี IP address คือ 10.0.0.10 และ ens3 ของ host2 มี IP คือ 10.0.0.11 
-
-เพื่อทำให้ VM1 สามารถส่งข้อมูลผ่าน OVS br br-int ไปยัง host2 ได้
 <p><p>
   <img src="documents/ovs3.PNG" width="700" height="400"> <br>
 ภาพที่ 7

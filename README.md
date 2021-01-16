@@ -1002,6 +1002,7 @@ vm$ ping 8.8.8.8
 vm$
 </pre>
 <p>
+<!--
 ในกรณีของ ubuntu 20.04 จะไม่ใช้ rc.local เป็น default (ถ้าจะใช้ผู้อ่านต้องกำหนด systemd ใช้มันเป็นพิเศษ) 
 แต่จะใช้ ufw package แทน ซึ่งผู้อ่านต้องใช้คำสั่งต่อไปนี้ 
 <pre>
@@ -1031,22 +1032,25 @@ $ sudo nano /etc/ufw/before.rules
 # nat IP masquerade table
 *nat
 :POSTROUTING ACCEPT [0:0]
-
+-->
+<!--
 # Forward packets from the local network to br0
 -A POSTROUTING -s 10.90.0.0/24 -o br0 -j MASQUERADE
-
+-->
+<!--
 # Don't delete these required lines, otherwise there will be errors
 *filter
 ...save ไฟล์
 $
 </pre>
-
+-->
+<!--
 หลังจากนั้น ให้ restart ufw
 <pre>
 $ sudo ufw disable 
 $ sudo ufw enable
 </pre>
-
+-->
 <p><p>
 <a id="part5-2"><h2>5.2 การเชื่อมต่อ physical host เข้ากับ openvswitch switch เบื้องต้น </h2></a>
 <p><p>
@@ -1089,11 +1093,12 @@ $
 </pre>
 จะสังเกตุว่าเมื่อ add ens4 เข้ากับ br-int แล้ว เครื่อง host2 จะไม่สามารถ ping 10.0.0.10 ได้ 
 เนื่องจาก ping packet จะถูก forward ไปที่ br-int บนเครื่อง host1 
-<!--
+
 <p><p>
   <img src="documents/ovs4.PNG" width="700" height="400"> <br>
 ภาพที่ 8
 <p><p> 
+<!--
 <p><p>
   <img src="documents/ovs5.PNG" width="700" height="400"> <br>
 ภาพที่ 9

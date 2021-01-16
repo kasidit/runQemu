@@ -1001,13 +1001,59 @@ vm$ ping 8.8.8.8
 ...
 vm$
 </pre>
+<p>
+ในกรณีของ ubuntu 20.04 จะไม่ใช้ rc.local เป็น default (ถ้าจะใช้ผู้อ่านต้องกำหนด systemd ใช้มันเป็นพิเศษ) 
+แต่จะใช้ ufw package แทน ซึ่งผู้อ่านต้องใช้คำสั่งต่อไปนี้ 
+<pre>
+$ sudo nano /etc/sysctl.conf
+...เปลี่ยนบรรทัดนี้ดังข้างล่าง
+net.ipv4.ip_forward = 1
+...save ไฟล์
+$
+$ sudo sysctl -p 
+$ sudo apt install ufw
+$ sudo vi /etc/default/ufw
+... เปลี่ยนค่าให้เป็นข้างล่าง
+DEFAULT_FORWARD_POLICY="ACCEPT"
+...
+...save ไฟล์
+$
+$ sudo nano /etc/ufw/before.rules
+#
+# rules.before
+#
+# Rules that should be run before the ufw command line added rules. Custom
+# rules should be added to one of these chains:
+#   ufw-before-input
+#   ufw-before-output
+#   ufw-before-forward
+#
+# nat IP masquerade table
+*nat
+:POSTROUTING ACCEPT [0:0]
+
+# Forward packets from the local network to br0
+-A POSTROUTING -s 10.90.0.0/24 -o br0 -j MASQUERADE
+
+# Don't delete these required lines, otherwise there will be errors
+*filter
+...save ไฟล์
+$
+</pre>
+
+หลังจากนั้น ให้ restart ufw
+<pre>
+$ sudo ufw disable 
+$ sudo ufw enable
+</pre>
+
 <p><p>
 <a id="part5-2"><h2>5.2 การเชื่อมต่อ physical host เข้ากับ openvswitch switch เบื้องต้น </h2></a>
 <p><p>
 จากภาพที่ 7 กำหนดให้มีเครื่อง host1 และ host2 โดยที่เครื่อง 
  
  มี ens4 เชื่อมต่อเครือข่ายภายใน ที่อีกฝั่งหนึ่งต่อกับ ens3 ของ host2 (นศต้องสร้างเพิ่ม) 
-และกำหนดให้ ens4 มี IP address คือ 10.0.0.11 และ ens3 ของ host2 มี IP 10.0.0.12 ดังภาพที่ 7 จากภาพ
+และกำหนดให้ ens4 มี IP address คือ 10.0.0.10 และ ens3 ของ host2 มี IP 10.0.0.11 ดังภาพที่ 7 จากภาพ
 เราจะเชื่อมต่อ ens4 เข้ากับ br-int เพื่อทำให้ VM1 สามารถส่งข้อมูลผ่าน OVS br br-int ไปยัง host2 ได้
 <p><p>
   <img src="documents/ovs3.PNG" width="700" height="400"> <br>

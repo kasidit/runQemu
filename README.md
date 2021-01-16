@@ -1002,7 +1002,7 @@ vm$ ping 8.8.8.8
 vm$
 </pre>
 <p>
-<!--
+
 ในกรณีของ ubuntu 20.04 จะไม่ใช้ rc.local เป็น default (ถ้าจะใช้ผู้อ่านต้องกำหนด systemd ใช้มันเป็นพิเศษ) 
 แต่จะใช้ ufw package แทน ซึ่งผู้อ่านต้องใช้คำสั่งต่อไปนี้ 
 <pre>
@@ -1019,6 +1019,9 @@ DEFAULT_FORWARD_POLICY="ACCEPT"
 ...
 ...save ไฟล์
 $
+</pre>
+หลังจากนั้นเปลี่ยนค่าในไฟล์ /etc/ufw/before.rules
+<pre>
 $ sudo nano /etc/ufw/before.rules
 #
 # rules.before
@@ -1032,30 +1035,37 @@ $ sudo nano /etc/ufw/before.rules
 # nat IP masquerade table
 *nat
 :POSTROUTING ACCEPT [0:0]
--->
-<!--
-# Forward packets from the local network to br0
+
+#Forward packets from the local network to br0
 -A POSTROUTING -s 10.90.0.0/24 -o br0 -j MASQUERADE
--->
-<!--
-# Don't delete these required lines, otherwise there will be errors
+
+COMMIT
+
+#Don't delete these required lines, otherwise there will be errors
 *filter
-...save ไฟล์
-$
+... save ไฟล์
 </pre>
--->
-<!--
-หลังจากนั้น ให้ restart ufw
+หลังจากนั้น ให้ reenable ufw (ในขั้นตอนนี้ ถ้า นศ ใช้ ssh เข้าใช้เครื่อง host1 อยู่ต้องระวัง 
+เพราะถ้า config ผิดอาจทำให้การเข้าถึงด้วย ssh มีปัญหาได้)
 <pre>
 $ sudo ufw disable 
 $ sudo ufw enable
 </pre>
--->
+
 <p><p>
 <a id="part5-2"><h2>5.2 การเชื่อมต่อ physical host เข้ากับ openvswitch switch เบื้องต้น </h2></a>
 <p><p>
 จากภาพที่ 7 กำหนดให้เครื่อง host1 มี ens4 เชื่อมต่อกับ ens3 ของ host2 อยู่แล้ว 
-โดยที่ ens4 มี IP address คือ 10.0.0.10 และ ens3 ของ host2 มี IP คือ 10.0.0.11 
+โดยที่ ens4 มี IP address คือ 10.0.0.10 
+<pre>
+On host1: 
+$ sudo ip address add 10.0.0.10/24 dev ens4
+</pre>
+และ ens3 ของ host2 มี IP คือ 10.0.0.11 
+<pre>
+On host2: 
+$ sudo ip address add 10.0.0.11/24 dev ens3
+</pre>
 <p><p>
   <img src="documents/ovs3.PNG" width="700" height="400"> <br>
 ภาพที่ 7

@@ -1096,7 +1096,7 @@ $
 ไปที่ br-int แทนที่จะส่งไปให้ network stack ของเครื่อง host1 
 
 <p><p>
-  <img src="documents/ovs4.PNG" width="700" height="400"> <br>
+  <img src="documents/2021_ovs1.PNG" width="700" height="400"> <br>
 ภาพที่ 8
 <p><p> 
 <!--

@@ -852,7 +852,7 @@ $
 vm$ cat /etc/network/interfaces
 # This file describes the network interfaces available on your system
 # and how to activate them. For more information, see interfaces(5).
-source /etc/network/interfaces.d/*
+source /etc/network/interfaces.d/\*
 auto lo
 iface lo inet loopback
 
@@ -910,7 +910,7 @@ $ nano ovs-ifup
 $ cat ovs-ifup
 #!/bin/sh
 switch='br-int'
-/sbin/ifconfig $1 0.0.0.0 up
+ifconfig $1 0.0.0.0 up
 ovs-vsctl add-port ${switch} $1
 $
 </pre>
@@ -920,7 +920,7 @@ $ nano ovs-ifdown
 $ cat ovs-ifdown
 #!/bin/sh
 switch='br-int'
-/sbin/ifconfig $1 0.0.0.0 down
+ifconfig $1 0.0.0.0 down
 ovs-vsctl del-port ${switch} $1
 $
 </pre>
@@ -928,9 +928,8 @@ $
 สร้าง qemu script ที่ใช้ openvswitch network (OVS network) และรัน VM
 <pre>
 $ cd scripts
-$ cp runQemu-on-br-network.sh runQemu-on-ovs-network.sh
-$ nano runQemu-on-ovs-network.sh
-$ cat runQemu-on-ovs-network.sh
+$ nano vm.sh
+$ cat vm.sh
 #!/bin/bash
 numsmp="2"
 memsize="2G"
@@ -949,11 +948,11 @@ sudo ${exeloc}/qemu-system-x86_64 \
      -device virtio-net-pci,romfile=,netdev=hostnet10,mac=00:71:50:00:01:51 \
      -localtime
 $
-$ ./runQemu-on-ovs-network.sh &
+$ ./vm.sh &
 ...
 $
 </pre>
-หลังจากนั้นให้ นศ เปิด vnc console ที่ VNC port 10.100.20.151:95 และกำหนดค่า IP address ดังนี้
+หลังจากนั้นให้ นศ เปิด vnc console ที่ VNC port 10.100.20.151:95 ในกรณีที่ Guest OS คือ Ubuntu 16.04 ให้กำหนดค่า IP address ดังนี้
 <pre>
 vm$
 vm$ sudo nano /etc/network/interfaces

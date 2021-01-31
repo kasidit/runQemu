@@ -1,5 +1,4 @@
 #!/bin/sh
-UID=99
-switch="data-br-$UID"
+switch="br-int"
 ifconfig $1 0.0.0.0 up
 ovs-vsctl add-port ${switch} $1

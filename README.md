@@ -1087,6 +1087,10 @@ host2$ sudo ip link set ens68s0f0 up
 On host1: 
 host1$ 
 host1$ sudo ovs-vsctl add-port br-int enp68s0f0
+</pre>
+และตรวจสอบโครงสร้างการเชื่อมต่อด้วยคำสั่ง ovs-vsctl show 
+<pre>
+On host1: 
 host1$ sudo ovs-vsctl show
 ...
     Bridge br-int
@@ -1103,8 +1107,11 @@ host1$ sudo ovs-vsctl show
     ovs_version: "2.5.5"
 host1$
 </pre>
-จะสังเกตุว่าเมื่อ add enp68s0f0 เข้ากับ br-int แล้ว ผู้อ่านจะไม่สามารถ ping 10.0.0.10 จากเครื่อง host2 ได้ 
-เนื่องจาก enp68s0f0 ได้กลายเป็น port หนึ่งของ br-int แล้วและ ping packet จะถูก forward 
+หลังจากนั้น ขอให้ผู้อ่านใช้คำสั่ง ping 10.0.0.10 บนเครื่อง host2 
+ผู้อ่านจะสังเกตุเห็นว่าเมื่อ add enp68s0f0 เข้ากับ br-int แล้ว 
+ผู้อ่านจะไม่สามารถ ping 10.0.0.10 จากเครื่อง host2 ได้ 
+โดยมีสาเหตุคือ เนื่องจาก enp68s0f0 ได้กลายเป็น port หนึ่งของ br-int แล้ว
+ดังนั้น ping packet จะถูก forward 
 ไปที่ br-int แทนที่จะส่งไปให้ network stack ของเครื่อง host1 
 
 <p><p>
@@ -1122,7 +1129,9 @@ host1$ sudo ovs-vsctl add-port br-int xif1 -- set interface xif1 type=internal
 host1$ sudo ip address add 10.0.0.10/24 dev xif1
 host1$ sudo ifconfig xif1 up
 </pre>
-หลังจากนั้น ผู้อ่านจะสามารถ ping 10.0.0.10 จากเครื่อง host2 ได้
+ด้วยการเพิ่มอินเตอร์เฟสและกำหนดค่าไอพีแอดเดรสข้างต้น จะส่งผลให้ packet ในสับเนต 10.0.0.0/24 
+ที่เดินทางมาถึง br-int ถูกส่งต่อไปสู่อินเตอร์เฟสที่มีค่าไอพีแอดเดรสตรงกับจุดหมายปลายทางของ 
+packet เหล่านั้น ดังนั้น ผู้อ่านจะสามารถ ping 10.0.0.10 จากเครื่อง host2 ได้อย่างถูกต้อง
 <pre>
 On host2: 
 host2$ ping -c 1 10.0.0.10

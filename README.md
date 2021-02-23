@@ -1011,7 +1011,16 @@ net.ipv4.ip_forward = 1
 ...save ไฟล์
 $
 $ sudo sysctl -p 
+$
 $ sudo apt install ufw
+$ sudo ufw status
+Status: inactive
+$ sudo ufw allow ssh
+Rules updated
+Rules updated (v6)
+$ 
+$ sudo ufw enable
+$
 $ sudo vi /etc/default/ufw
 ... เปลี่ยนค่าให้เป็นข้างล่าง
 DEFAULT_FORWARD_POLICY="ACCEPT"
@@ -1095,7 +1104,7 @@ $
 ไปที่ br-int แทนที่จะส่งไปให้ network stack ของเครื่อง host1 
 
 <p><p>
-  <img src="documents/2021_ovs1.PNG" width="700" height="400"> <br>
+  <img src="documents/ch5ovs01.png" width="700" height="400"> <br>
 ภาพที่ 8
 <p><p> 
 <!--

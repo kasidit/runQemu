@@ -1063,26 +1063,31 @@ $ sudo ufw enable
 <p><p>
 <a id="part5-2"><h2>5.2 การเชื่อมต่อ physical host เข้ากับ openvswitch switch เบื้องต้น </h2></a>
 <p><p>
-จากภาพที่ 7 กำหนดให้เครื่อง host1 มี ens4 เชื่อมต่อกับ ens3 ของ host2 อยู่แล้ว 
-โดยที่ ens4 มี IP address คือ 10.0.0.10 
-<pre>
-On host1: 
-$ sudo ip address add 10.0.0.10/24 dev ens4
-</pre>
-และ ens3 ของ host2 มี IP คือ 10.0.0.11 
-<pre>
-On host2: 
-$ sudo ip address add 10.0.0.11/24 dev ens3
-</pre>
 <p><p>
-  <img src="documents/ovs3.PNG" width="700" height="400"> <br>
+  <img src="documents/ch5ovs00.png" width="700" height="350"> <br>
 ภาพที่ 7
 <p><p>
-จากภาพเราจะเชื่อมต่อ ens4 เข้ากับ br-int โดยใช้คำสั่งคำสั่งต่อไปนี้
+จากภาพที่ 7 กำหนดให้เครื่อง host1 มี enp68s0f0 เชื่อมต่อกับ enp68s0f0 ของ host2 อยู่แล้ว 
+ซึ่งผู้เขียนจะใช้คำสั่งต่อไปนี้เพื่อกำหนดให้ enp68s0f0 ยนเครื่อง host1 มีค่า IP address คือ 10.0.0.10 
 <pre>
-$ 
-$ sudo ovs-vsctl add-port br-int ens4
-$ sudo ovs-vsctl show
+On host1: 
+host1$ sudo ip address add 10.0.0.10/24 dev enp68s0f0
+host1$ sudo ip link set ens68s0f0 up
+</pre>
+และ กำหนดให้ enp68s0f0 ยนเครื่อง host2 มีค่า IP address คือ 10.0.0.11 
+<pre>
+On host2: 
+host2$ sudo ip address add 10.0.0.11/24 dev ens3
+host2$ sudo ip link set ens68s0f0 up
+</pre>
+ผู้อ่านสามารถทดสอบได้ด้วยการ ping ip ทั้งสองข้ามเครื่อง
+<p><p>
+ในอันดับถัดไปผู้เขียนจะเชื่อมต่ออินเตอร์เฟส enp68s0f0 เข้ากับ br-int บนเครื่อง host1 โดยใช้คำสั่งคำสั่ง
+<pre>
+On host1: 
+host1$ 
+host1$ sudo ovs-vsctl add-port br-int enp68s0f0
+host1$ sudo ovs-vsctl show
 ...
     Bridge br-int
         Port "gw1"
@@ -1090,23 +1095,42 @@ $ sudo ovs-vsctl show
                 type: internal
         Port "tap0"
             Interface "tap0"
-        Port "ens4"
-            Interface "ens4"
+        Port enp68s0f0
+            Interface enp68s0f0
         Port br-int
             Interface br-int
                 type: internal
     ovs_version: "2.5.5"
-openstack@ubuntu:~/scripts$
-$ 
+host1$
 </pre>
-จะสังเกตุว่าเมื่อ add ens4 เข้ากับ br-int แล้ว เครื่อง host2 จะไม่สามารถ ping 10.0.0.10 ได้ 
-เนื่องจาก ens4 ได้กลายเป็น port หนึ่งของ br-int แล้วและ ping packet จะถูก forward 
+จะสังเกตุว่าเมื่อ add enp68s0f0 เข้ากับ br-int แล้ว ผู้อ่านจะไม่สามารถ ping 10.0.0.10 จากเครื่อง host2 ได้ 
+เนื่องจาก enp68s0f0 ได้กลายเป็น port หนึ่งของ br-int แล้วและ ping packet จะถูก forward 
 ไปที่ br-int แทนที่จะส่งไปให้ network stack ของเครื่อง host1 
 
 <p><p>
   <img src="documents/ch5ovs01.png" width="700" height="350"> <br>
 ภาพที่ 8
 <p><p> 
+ในภาพที่ 8 เพื่อให้ผู้อ่านสามารถส่งข้อมูลจากเครื่อง host2 ผ่าน enp68s0f0 มายังเครื่อง host1 และส่งข้อมูลจาก
+host1 มายัง host2 ได้ ผู้อ่านจะต้องใช้คำสั่งต่อไปนี้สร้าง อินเตอร์เฟสภายในขึ้นหนึ่งอินเตอร์เฟส ชื่อว่า "xif1" ขึ้นบนเครื่อง 
+host1 และเชื่อมต่อเข้ากับ br-int และกำหนดให้ xif1 มีไอพีแอดแดรสเป็น 10.0.0.10/24
+<pre>
+On host1:
+host1$ sudo ip address del 10.0.0.10/24 dev enp68s0f0
+host1$
+host1$ sudo ovs-vsctl add-port br-int xif1 -- set interface xif1 type=internal
+host1$ sudo ip address add 10.0.0.10/24 dev xif1
+host1$ sudo ifconfig xif1 up
+</pre>
+หลังจากนั้น ผู้อ่านจะสามารถ ping 10.0.0.10 จากเครื่อง host2 ได้
+<pre>
+On host2: 
+host2$ ping -c 1 10.0.0.10
+PING 10.0.0.10 (10.0.0.10) 56(84) bytes of data.
+64 bytes from 10.0.0.10: icmp_seq=1 ttl=64 time=0.745 ms
+...
+host2$
+</pre>
 <!--
 <p><p>
   <img src="documents/ovs5.PNG" width="700" height="400"> <br>

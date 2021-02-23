@@ -1104,7 +1104,7 @@ $
 ไปที่ br-int แทนที่จะส่งไปให้ network stack ของเครื่อง host1 
 
 <p><p>
-  <img src="documents/ch5ovs01.png" width="700" height="400"> <br>
+  <img src="documents/ch5ovs01.png" width="700" height="350"> <br>
 ภาพที่ 8
 <p><p> 
 <!--

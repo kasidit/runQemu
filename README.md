@@ -1064,6 +1064,68 @@ $ sudo ufw enable
 <a id="part5-2"><h2>5.2 การเชื่อมต่อ physical host เข้ากับ openvswitch switch เบื้องต้น </h2></a>
 <p><p>
 <p><p>
+ก่อนที่จะกล่าวถึงเรื่องของการเชื่อมต่อวิีเอ็มเข้ากับโอเพ่นวีสวิชต์ ผู้เขียนจะบรรยายโครงสร้างการเก็บข้อมูลไฟล์ต่างๆดังนี้
+<ul>
+<li>ไดเรกตอรี่ /srv/kasidit/bookhosts/etc เก็บสคริปไฟล์สำหรับเชื่อมต่อและยกเลิกการเชื่อมต่อแทบอินเตอร์เฟสเข้ากับเวอ์ชวลสวิชต์ ได้แก่
+ไฟล์ ovs-ifup และ ovs-ifdown ซึ่งมีเพอมิสชัน 755 เพื่อให้ประมวลผลได้ เนื้อหาของไฟล์ทั้งสองมีดังต่อไปนี้
+<pre>
+On host1: 
+host1$ cd /srv/kasidit/bookhosts/etc
+host1$ 
+host1$ ls
+ovs-hs-ifdown  ovs-hs-ifup  ovs-ifdown  ovs-ifup
+host1$ cat ovs-ifup
+#!/bin/sh
+switch='br-int'
+/usr/sbin/ifconfig $1 0.0.0.0 up
+/usr/bin/ovs-vsctl add-port ${switch} $1
+host1$ cat ovs-ifdown
+#!/bin/sh
+switch='br-int'
+/usr/sbin/ifconfig $1 0.0.0.0 down
+/usr/bin/ovs-vsctl del-port ${switch} $1
+host1$ 
+</pre> 
+<li>ไดเรกทอรี่ /srv/kasidit/bookhosts/images เก็บไฟล์ disk image ของวีเอ็มได้แก่ไฟล์ vm1.img ซึ่งเป็นไฟล์
+ที่มีฟอร์แมตแบบ qcow2 ในไฟล์นี้ผู้เขียนได้ติดตั้ง Ubuntu 20.04 server เป็นเกสโอเอส
+<li>ไดเรกทอรี่ /srv/kasidit/bookhosts/scripts เก็บไฟล์สคริปสำหรับเรียกวีเอ็มขึ้นมาประมวลผลบนเครื่องโฮส 
+ซึ่งไฟล์สคริปสำหรับเรียกวีเอ็ม vm1 นั้นชื่อ vm1.sh ที่มีเนื้อหาดังต่อไปนี้
+<pre>
+On host1: 
+host1$ cd /srv/kasidit/bookhosts/scripts
+host1$ cat vm1.sh
+#!/bin/bash
+numsmp="6"
+memsize="8G"
+etcloc=/srv/kasidit/bookhosts/etc
+imgloc=/srv/kasidit/bookhosts/images/
+imgfile="vm1.img"
+#
+exeloc="/usr/bin"
+#
+sudo ${exeloc}/qemu-system-x86_64 \
+     -enable-kvm \
+     -cpu host,kvm=off \
+     -smp ${numsmp} \
+     -m ${memsize} \
+     -drive file=${imgloc}/${imgfile},format=qcow2 \
+     -boot c \
+     -vnc :11 \
+     -qmp tcp::9111,server,nowait \
+     -monitor tcp::9112,server,nowait \
+     -netdev type=tap,script=${etcloc}/ovs-ifup,downscript=${etcloc}/ovs-ifdown,id=hostnet1 \
+     -device virtio-net-pci,romfile=,netdev=hostnet1,mac=00:81:50:b0:01:94 \
+     -rtc base=localtime,clock=vm 
+host1$
+host1$
+</pre> 
+</ul> 
+วีเอ็ม vm1 ถูกเรียกขึ้นมาทำงานด้วยคำสั่ง
+<pre>
+host1$ cd /srv/kasidit/bookhosts/scripts
+host1$ ./vm1.sh &
+</pre>
+<p><p>
   <img src="documents/ch5ovs00.png" width="700" height="350"> <br>
 ภาพที่ 7
 <p><p>

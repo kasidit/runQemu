@@ -1202,6 +1202,10 @@ PING 10.0.0.10 (10.0.0.10) 56(84) bytes of data.
 ...
 host2$
 </pre>
+<p><p>
+  <img src="documents/ch5ovs02.png" width="700" height="350"> <br>
+ภาพที่ 9
+<p><p> 
 <!--
 <p><p>
   <img src="documents/ovs5.PNG" width="700" height="400"> <br>

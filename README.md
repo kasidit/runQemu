@@ -1064,7 +1064,12 @@ $ sudo ufw enable
 <a id="part5-2"><h2>5.2 การเชื่อมต่อ physical host เข้ากับ openvswitch switch เบื้องต้น </h2></a>
 <p><p>
 <p><p>
-ก่อนที่จะกล่าวถึงเรื่องของการเชื่อมต่อวิีเอ็มเข้ากับโอเพ่นวีสวิชต์ ผู้เขียนจะบรรยายโครงสร้างการเก็บข้อมูลไฟล์ต่างๆดังนี้
+สมมุติว่ามีเครื่องโฮสคอมพิวเตอร์สองเครื่องได้แก่ host1 และ host2 ซึ่งทั้งคู่มีโฮสโอเอสคือ Ubuntu 20.04 server
+และ host1 มีไอพีแอดเดรสคือ 10.100.20.151 และ host2 มีไอพีแอดเดรสคือ 10.100.20.152
+<p>
+ก่อนที่จะกล่าวถึงเรื่องของการเชื่อมต่อวิีเอ็มเข้ากับโอเพ่นวีสวิชต์ 
+ผู้เขียนจะเริ่มต้นด้วยการติดตั้งวีเอ็มและส่วนประกอบต่างๆบนเครื่องโฮส host1 
+ซึ่งมีการเก็บข้อมูลสำหรับการประมวลผลคอมพิวเตอร์เสมือนและระบบเครือข่ายเสมือนดังนี้
 <ul>
 <li>ไดเรกตอรี่ /srv/kasidit/bookhosts/etc เก็บสคริปไฟล์สำหรับเชื่อมต่อและยกเลิกการเชื่อมต่อแทบอินเตอร์เฟสเข้ากับเวอ์ชวลสวิชต์ ได้แก่
 ไฟล์ ovs-ifup และ ovs-ifdown ซึ่งมีเพอมิสชัน 755 เพื่อให้ประมวลผลได้ เนื้อหาของไฟล์ทั้งสองมีดังต่อไปนี้
@@ -1206,15 +1211,126 @@ host2$
   <img src="documents/ch5ovs02.png" width="700" height="350"> <br>
 ภาพที่ 9
 <p><p> 
-<!--
+ภาพที่ 9 แสดงการสร้างวีเอ็มรสองีเอ็มได้แก่ vm1.sh และ vm2.sh ให้เชื่อมต่อกับเวอร์ชวลสวิชต์ br-int
+บนเครื่องโฮส host1 และสร้าง vm3.sh และ vm4.sh เข้ากับเวอร์ชวลสวิชต์ br-int บนเครื่อง host2 
+ซึ่ง br-int ของเครื่องทั้งสองจะเชื่อมต่อเข้าด้วยกันผ่านอินเตอร์เฟส enp68s0f0 ของเครื่องโฮสทั้งสองเครื่อง
 <p><p>
-  <img src="documents/ovs5.PNG" width="700" height="400"> <br>
-ภาพที่ 9
+<b>การสร้างอิมเมจของคอมพิวเตอร์เสมือนบนเครื่องโฮสหลายเครื่อง</b>
+<p>
 <p><p>
-<p><p>
-  <img src="documents/ovs6.PNG" width="700" height="400"> <br>
+  <img src="documents/ch5ovs03.png" width="700" height="350"> <br>
 ภาพที่ 10
 <p><p> 
+ในการสร้างอิมเมจสำหรับรองรับการประมวลผลคอมพิวเตอร์เสมือนที่เป็นวีเอ็มที่ใช้เกสโอเอสและมีขนาดของ
+อิมเมจไฟล์สำหรับวีเอ็มเหล่านั้นเท่ากัน และผู้อ่านต้องการประมวลผลวีเอ้ฒเหล่านั้นบนโฮสคอมพิวเตอร์หลายๆเครื่องนั้น 
+การทำสำเนาอิมเมจไฟล์จากอิมเมจต้นแบบให้กับแต่ละวีเอ็มอาจทำให้สิ้นเปลืองเนื้อที่ของหน่วยเก็บข้อมูล
+และต้องใช้แบนวิดต์ของระบบเครือข่ายรวมทั้งเวลาของซีพียูสำหรับการทำสำเนาเป็นปริมาณมาก วิธีการที่ศูนย์ข้อมูล
+สำหรับการประมวลผลกลุ่มเมฆใช้กันมากวิธีหนึ่งคือการใช้คุณสมบัติแบบ Copy-on-Write โดยใช้ระบบจัดการไฟล์
+อิมเมจที่มีความสามารถเช่นนี้ เช่นเครื่องมือ qemu-img สำหรับจัดการ qcow2 อิมเมจของ qemu-kvm ซอฟต์แวร์เป็นต้น
+
+โดยหลักการแล้ว เราจะทำสำเนาหลักของไฟล์อิมเมจขนาดใหญ่หนึ่งอิมเมจต่อหนึ่งโฮสแล้วหลังจากนั้นจะสร้างอิมเมจแบบ
+overlay สำหรับแต่ละวีเอ็มบนโฮสแต่ละเครื่อง ภาพที่ 10 แสดงตัวอย่างของไฟล์อิมเมจ vm1.sh ซึ่งมีเนื้อหาของ
+ubuntu 20.04 จริงอยู่ ไฟล์นี้จะถูกทำให้เป็น base overlay image ซึ่งจะไม่มีการเปลี่ยนแปลงค่า และจะมีการสร้าง
+ไฟล์แบบ overlay image ที่อ้างอิง vm1.img คือ vm1.ovl และ vm2.ovl เพื่อรองรับการประมวลผลของ 
+วีเอ็ม vm1.sh และ vm2.sh ตามลำดับ เวลาที่ต้องการประมวลผลวีเอ็มแบบเดียวกันนี้บนเครื่องโฮสอื่น เช่น host2 
+ในภาพ ผู้เขียนก็เพียงแค่ทำสำเนาของ vm1.img เพียงไฟล์เดียวไปยังเครื่องโอสเครื่องนั้น และใช้ไฟล์นั้นเป็น 
+base overlay image ของเครื่องปลายทาง เมื่อผู้เขียนต้องการประมวลผล vm3.sh และ vm4.sh บนเครื่อง 
+host2 ผู้เขียนก็จะสร้างไฟล์ vm3.ovl และ vm4.ovl เป็น overlay image ที่มี ิbase image คือ vm1.img ดังภาพ 
+
+ผู้เขีบนใช้คำสั่งต่อไปในการสร้างอิมเมจดังภาพที่ 10 เพื่อรองรับการประมวลผลแบบกระจายของวีเอ็มบนเครื่องโฮสสองเครื่อง
+ในภาพที่ 9 ในอันดับแรก ผู้เขียนจะสร้างไดเรกทอรี่ /srv/kasidit/bookhosts บนเครือง host2 และสร้างสับไดเรกทอรี่ 
+etc images และ script ในนั้น และหลังจากนั้นจะถ่ายโอนไฟล์จากเครื่อง host1 ไปยัง host2
+โดยทำสำเนาไฟล์อิมเมจ vm1.img ไปยัง host2 ภายใต้ชื่อ vm1.img และทำสำเนาไฟล์ vm1.sh 
+ไปไว้ที่ host2 ในชื่อ vm3.sh
+<pre>
+On host1: 
+host1$ cd /srv/kasidit/bookhosts
+host1$ scp etc/\* 10.100.20.152:/srv/kasidit/bookhosts/etc
+host1$ scp images/vm1.img 10.100.20.152:/srv/kasidit/bookhosts/images/vm1.img
+host1$ scp scripts/vm1.sh 10.100.20.152:/srv/kasidit/bookhosts/scripts/vm3.sh
+host1$
+</pre> 
+หลังจากนั้น ผู้เขียนจะสร้างเ้นื้อหาของวีเอ็มใหม่อีกเครื่องหนึ่งบนเครื่อง host1 คือเครื่อง vm2 ดังนี้
+<pre>
+On host1: 
+host1$ cd /srv/kasidit/bookhosts/images
+host1$ qemu-img create -f qcow2 -b vm1.img vm1.ovl
+host1$ qemu-img create -f qcow2 -b vm1.img vm2.ovl
+host1$ cd ../scripts
+host1$ cp vm1.sh vm2.sh
+</pre>
+จากคำสั่งข้างต้น ผู้เขียนได้สร้างไฟล์อิมเมจแบบ qcow2 และ overlayed ขึ้นสองไฟล์คือ vm1.ovl และ vm2.ovl ซึ่งมี
+base file หรือไฟล์อ้างอิงคือ vm1.img นอกจากนั้นยังได้สร้างสำเนาของ vm1.sh ชื่อ vm2.sh 
+<p>
+ในอันดับถัดไปผู้เขียนจะเปลี่ยนแปลงเนื้อหาของ  vm1.sh และ vm2.sh โดยที่ใน vm1.sh ผู้เขียนจะเปลี่ยนิอมเมจไฟล์
+ที่ qemu-kvm จะใช้จาก vm1.img ให้เป็น vm1.ovl 
+<pre>
+host1$ vi vm1.sh 
+host1$ cat vm1.sh
+$ cat vm1.sh
+#!/bin/bash
+numsmp="6"
+memsize="8G"
+etcloc=/srv/kasidit/bookhosts/etc
+imgloc=/srv/kasidit/bookhosts/images/
+<b>imgfile="vm1.ovl"</b>
+#
+exeloc="/usr/bin"
+#
+sudo ${exeloc}/qemu-system-x86_64 \
+     -enable-kvm \
+     -cpu host,kvm=off \
+     -smp ${numsmp} \
+     -m ${memsize} \
+     -drive file=${imgloc}/${imgfile},format=qcow2 \
+     -boot c \
+     -vnc :11 \
+     -qmp tcp::9111,server,nowait \
+     -monitor tcp::9112,server,nowait \
+     -netdev type=tap,script=${etcloc}/ovs-ifup,downscript=${etcloc}/ovs-ifdown,id=hostnet1 \
+     -device virtio-net-pci,romfile=,netdev=hostnet1,mac=00:81:50:b0:01:94 \
+     -rtc base=localtime,clock=vm 
+
+host1$
+</pre>
+และในสคริปต์ไฟล์ vm2.sh ผู้เขียนจะต้องเปลี่ยนสิ่งต่างๆดังต่อไปนี้ 
+<ul>
+<li>เปลี่ยนชื่ออิมเมจไฟล์จาก vm1.img ให้เป็น vm2.ovl 
+<li>เปลี่ยน vnc server port ของวีเอ็มให้เป็น "-vnc :12" เนื่องจากพอรต์ 5509+11 หรือ :11 ถูกใช้โดย vm1.sh แล้ว
+<li>เปลี่ยนค่า port ที่จะใช้ส่งคำสั่งแบบ QMP ของ qemu-kvm ให้ไม่เหมือนกับของวีเอ็มอื่น (tcp:9121)
+<li>เปลี่ยนค่า port ที่จะใช้ออกคำสั่งแบบ Qemu Monitor ให้ไม่เหมือนกับของวีเอ็มอื่น (tcp:9122)
+<li>เปลี่ยน MAC address ของ tap เนตเวอร์อินเตอร์เฟสที่วีเอ็มจะใช้เขื่อมต่อกับเครือข่ายเสมือนให้ไม่ซ้ำกับของวีเอ็มอื่น 
+ที่ได้รับการเช่อมต่อเข้ากับระบบเครือข่ายเสมือนเดียวกัน โดยเปลี่ยนค่าเป็น 00:81:50:b0:02:94    
+</ul>
+<pre>
+host1$ vi vm2.sh 
+host1$ cat vm2.sh
+#!/bin/bash
+numsmp="6"
+memsize="8G"
+etcloc=/srv/kasidit/bookhosts/etc
+imgloc=/srv/kasidit/bookhosts/images/
+<b>imgfile="vm2.ovl"</b>
+#
+exeloc="/usr/bin"
+#
+sudo ${exeloc}/qemu-system-x86_64 \
+     -enable-kvm \
+     -cpu host,kvm=off \
+     -smp ${numsmp} \
+     -m ${memsize} \
+     -drive file=${imgloc}/${imgfile},format=qcow2 \
+     -boot c \
+     <b>-vnc :12 </b> \
+     <b>-qmp tcp::9121,server,nowait </b>\
+     <b>-monitor tcp::9122,server,nowait </b> \
+     -netdev type=tap,script=${etcloc}/ovs-ifup,downscript=${etcloc}/ovs-ifdown,id=hostnet1 \
+     <b>-device virtio-net-pci,romfile=,netdev=hostnet1,mac=00:81:50:b0:02:94 </b>\
+     -rtc base=localtime,clock=vm 
+
+host1$
+</pre>
+<!--
 <p><p>
   <img src="documents/ovs7.PNG" width="700" height="400"> <br>
 ภาพที่ 11

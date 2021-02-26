@@ -1290,7 +1290,7 @@ host1$
 และในสคริปต์ไฟล์ vm2.sh ผู้เขียนจะต้องเปลี่ยนสิ่งต่างๆดังต่อไปนี้ 
 <ul>
 <li>เปลี่ยนชื่ออิมเมจไฟล์จาก vm1.img ให้เป็น vm2.ovl 
-<li>เปลี่ยน vnc server port ของวีเอ็มให้เป็น "-vnc :12" เนื่องจากพอรต์ 5509+11 หรือ :11 ถูกใช้โดย vm1.sh แล้ว
+<li>เปลี่ยน vnc server port ของวีเอ็มให้เป็น "-vnc :12" หรือ 5900+12 เนื่องจากพอรต์ 5900+11 หรือ :11 ถูกใช้โดย vm1.sh แล้ว
 <li>เปลี่ยนค่า port ที่จะใช้ส่งคำสั่งแบบ QMP ของ qemu-kvm ให้ไม่เหมือนกับของวีเอ็มอื่น (tcp:9121)
 <li>เปลี่ยนค่า port ที่จะใช้ออกคำสั่งแบบ Qemu Monitor ให้ไม่เหมือนกับของวีเอ็มอื่น (tcp:9122)
 <li>เปลี่ยน MAC address ของ tap เนตเวอร์อินเตอร์เฟสที่วีเอ็มจะใช้เขื่อมต่อกับเครือข่ายเสมือนให้ไม่ซ้ำกับของวีเอ็มอื่น 
@@ -1379,7 +1379,37 @@ $ sudo reboot
 ถ้าผู้อ่านไม่ต้องการรีบูทเครื่องก็ต้องใช้คำสั่ง systemctl เปลี่ยนชื่อ และใช้ netpla apply เพื่อเปลี่ยนค่าไอพี
 บนคอมมานไลน์) 
 <p>
-
+บนเครื่อง host1 ผู้เขียนจะรัน vm1.sh เพิ่มเพื่อให้มีทั้ง vm1.sh และ vm2.sh รันอยู่บน host1 ดังภาพที่ 9 
+จากภาพจะเห็นว่าวีเอ็มทั้งสองได้สร้าง tap อินเตอร์เฟส tap1 และ tap0 เพื่อเชือมต่อวีเอ็มกับ br-int 
+สวิชต์ตามลำดับ และผู้เขียนสามารถใช้คำสั่ง ovs-vsctl เพื่อดูสถานะการเชื่อมต่อนั้นได้
+<pre>
+On host1: 
+$ cd /srv/kasidit/bookhosts/scripts
+$
+$ ./vm1.sh &
+$
+$ sudo ovs-vsctl show
+...
+    Bridge br-int
+        Port gw1
+            Interface gw1
+                type: internal
+        Port xif1
+            Interface xif1
+                type: internal
+        Port tap0
+            Interface tap0
+        Port enp68s0f0
+            Interface enp68s0f0
+        Port tap1
+            Interface tap1
+        Port br-int
+            Interface br-int
+                type: internal
+...
+    ovs_version: "2.13.1"
+$
+</pre>
 <p><p>
 <b>5.2.4 การเตรียมอิมเมจและสคริปบนเครื่อง host2</b>
 <p>

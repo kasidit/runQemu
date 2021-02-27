@@ -1349,6 +1349,7 @@ $ ./vm2.sh &
 เสร็จแล้ว ผู้เขียนสามารถล้อกอินเข้าสู่ vm1 ได้หลายวิธี วิธีหนึ่งคือการใช้ vnc client เพื่อล้อกอินเข้าสู่เครื่อง vm2 ซึ่ง 
 ก่อนอื่นผู้เขียนต้องเช็คให้แน่ใจก่อนว่าพอรต์ 5912 ของเครื่อง host1 นั้นเปิดอยู่หรือเปล่า ถ้าไม่ก็ต้องใช้คำสั่ง 
 <pre>
+On host1: 
 $ sudo ufw allow 5912 
 </pre>
 เพื่อเปิดพอร์ตนั้น อีกวิธีหนึ่งคือ การเข้าถึงโดยใช้ ssh ไปที่ 10.90.0.11 เหมือนเข้าใช้งาน vm1 เพราะผู้เขียนเพิ่ง
@@ -1431,7 +1432,136 @@ host1$
 vm3 และ vm4 และจัดเตรียม vm3.sh และ vm4.sh เพื่อการประมวลผลในภาพที่ 9 
 <pre>
 On host2: 
-$ 
+$ cd /srv/kasidit/bookhosts/images
+$ qemu-img create -f qcow2 -b vm1.img vm3.ovl
+$ qemu-img create -f qcow2 -b vm1.img vm4.ovl
+$ cd ../scripts
+$ cp vm3.sh vm4.sh 
+</pre>
+
+<pre>
+On host2: 
+$ vi vm3.sh
+$ cat vm3.sh
+#!/bin/bash
+numsmp="6"
+memsize="8G"
+etcloc=/srv/kasidit/bookhosts/etc
+imgloc=/srv/kasidit/bookhosts/images/
+<b>imgfile="vm3.ovl"</b>
+#
+exeloc="/usr/bin"
+#
+sudo ${exeloc}/qemu-system-x86_64 \
+     -enable-kvm \
+     -cpu host,kvm=off \
+     -smp ${numsmp} \
+     -m ${memsize} \
+     -drive file=${imgloc}/${imgfile},format=qcow2 \
+     -boot c \
+     <b>-vnc :13</b> \
+     <b>-qmp tcp::9131,server,nowait</b> \
+     <b>-monitor tcp::9132,server,nowait</b> \
+     -netdev type=tap,script=${etcloc}/ovs-ifup,downscript=${etcloc}/ovs-ifdown,id=hostnet1 \
+     <b>-device virtio-net-pci,romfile=,netdev=hostnet1,mac=00:81:50:b0:03:94</b> \
+     -rtc base=localtime,clock=vm 
+$
+</pre>
+
+<pre>
+On host2: 
+$ vi vm4.sh 
+$ cat vm4.sh
+#!/bin/bash
+numsmp="6"
+memsize="8G"
+etcloc=/srv/kasidit/bookhosts/etc
+imgloc=/srv/kasidit/bookhosts/images/
+<b>imgfile="vm4.ovl"</b>
+#
+exeloc="/usr/bin"
+#
+sudo ${exeloc}/qemu-system-x86_64 \
+     -enable-kvm \
+     -cpu host,kvm=off \
+     -smp ${numsmp} \
+     -m ${memsize} \
+     -drive file=${imgloc}/${imgfile},format=qcow2 \
+     -boot c \
+     <b>-vnc :14</b> \
+     <b>-qmp tcp::9141,server,nowait</b> \
+     <b>-monitor tcp::9142,server,nowait</b> \
+     -netdev type=tap,script=${etcloc}/ovs-ifup,downscript=${etcloc}/ovs-ifdown,id=hostnet1 \
+     <b>-device virtio-net-pci,romfile=,netdev=hostnet1,mac=00:81:50:b0:04:94</b> \
+     -rtc base=localtime,clock=vm 
+$
+</pre>
+
+<pre>
+On host2: 
+$ sudo apt install openvswitch-switch
+$ sudo ovs-vsctl add-br br-int
+</pre>
+
+<pre>
+On host2:
+$ sudo ip address del 10.0.0.11/24 dev enp68s0f0
+</pre>
+
+<pre>
+On host2: 
+$ sudo ovs-vsctl add-port br-int xif2 -- set interface xif2 type=internal
+$ sudo ip address add 10.0.0.11/24 dev xif2 
+$ sudo ifconfig xif2 up
+</pre>
+
+<pre>
+On host2: 
+$ sudo ovs-vsctl add-port br-int enp68s0f0
+$ sudo ifconfig enp68s0f0 up
+$ sudo ovs-vsctl show
+</pre> 
+
+<pre>
+On host2: 
+$ ping -c 1 10.0.0.10
+PING 10.0.0.10 (10.0.0.10) 56(84) bytes of data.
+64 bytes from 10.0.0.10: icmp_seq=1 ttl=64 time=2.61 ms
+...
+</pre>
+
+<pre>
+On host2: 
+$ sudo ufw allow 5913 
+$ sudo ufw allow 5914 
+</pre>
+
+<pre>
+On vm3: 
+$ sudo vi /etc/hostname
+$ cat /etc/hostname
+vm3
+$ sudo vi /etc/hosts
+$ cat /etc/hosts
+127.0.0.1 localhost
+127.0.1.1 vm3
+...
+snip
+...
+$ cat /etc/netplan/00-installer-config.yaml | grep 10.90.0.11
+        - 10.90.0.11/24
+$ sudo sed -i "s/10.90.0.11/10.90.0.13/g" /etc/netplan/00-installer-config.yaml
+$ cat /etc/netplan/00-installer-config.yaml | grep 10.90.0.13
+        - 10.90.0.13/24
+$ sudo reboot  
+</pre>
+
+<pre>
+On vm3: 
+$ ping -c 1 www.google.com
+PING www.google.com (172.217.31.68) 56(84) bytes of data.
+64 bytes from kul08s07-in-f4.1e100.net (172.217.31.68): icmp_seq=1 ttl=109 time=21.6 ms
+...
 </pre>
 <!--
 <p><p>

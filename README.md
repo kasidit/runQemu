@@ -1427,7 +1427,12 @@ host1$ scp images/vm1.img 10.100.20.152:/srv/kasidit/bookhosts/images/vm1.img
 host1$ scp scripts/vm1.sh 10.100.20.152:/srv/kasidit/bookhosts/scripts/vm3.sh
 host1$
 </pre> 
-
+ในอันดับถัดไปผู้เขียนล้อกอินเข้าเครื่อง host2 เพื่อสร้าง overlay image แบบ qcow2 สำหรับ 
+vm3 และ vm4 และจัดเตรียม vm3.sh และ vm4.sh เพื่อการประมวลผลในภาพที่ 9 
+<pre>
+On host2: 
+$ 
+</pre>
 <!--
 <p><p>
   <img src="documents/ovs7.PNG" width="700" height="400"> <br>

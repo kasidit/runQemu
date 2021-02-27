@@ -1520,6 +1520,17 @@ On host2:
 $ sudo ovs-vsctl add-port br-int enp68s0f0
 $ sudo ifconfig enp68s0f0 up
 $ sudo ovs-vsctl show
+...
+    Bridge br-int
+        Port xif2
+            Interface xif2
+                type: internal
+        Port br-int
+            Interface br-int
+                type: internal
+        Port enp68s0f0
+            Interface enp68s0f0
+...
 </pre> 
 
 <pre>

@@ -1620,6 +1620,91 @@ $
 <p><p> 
 การกำหนดค่าวีแลนแทกบนวีเอ็มพอร์ตโดยตรง
 
+<pre>
+On host1: 
+$ sudo ovs-vsctl show
+...
+    Bridge br-int
+        Port gw1
+            Interface gw1
+                type: internal
+        Port xif1
+            Interface xif1
+                type: internal
+        Port tap0
+            Interface tap0
+        Port enp68s0f0
+            Interface enp68s0f0
+        Port tap1
+            Interface tap1
+        Port br-int
+            Interface br-int
+                type: internal
+...
+$ sudo ovs-vsctl set port tap1 tag=1
+$ sudo ovs-vsctl set port tap0 tag=2
+$ sudo ovs-vsctl set port gw1 tag=2
+$ sudo ovs-vsctl show
+    Bridge br-int
+        Port gw1
+            tag: 2
+            Interface gw1
+                type: internal
+        Port xif1
+            Interface xif1
+                type: internal
+        Port tap0
+            tag: 2
+            Interface tap0
+        Port enp68s0f0
+            Interface enp68s0f0
+        Port tap1
+            tag: 1
+            Interface tap1
+        Port br-int
+            Interface br-int
+                type: internal
+...
+$
+</pre>
+
+<pre>
+On host1: 
+$ ping 10.90.0.11
+PING 10.90.0.11 (10.90.0.11) 56(84) bytes of data.
+^C
+--- 10.90.0.11 ping statistics ---
+2 packets transmitted, 0 received, 100% packet loss, time 1023ms
+
+$ ping -c 1 10.90.0.12
+PING 10.90.0.12 (10.90.0.12) 56(84) bytes of data.
+64 bytes from 10.90.0.12: icmp_seq=1 ttl=64 time=0.941 ms
+
+--- 10.90.0.12 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 0.941/0.941/0.941/0.000 ms
+$
+</pre>
+
+<pre>
+On host1: 
+$ sudo ovs-vsctl remove port gw1 tag 2
+$ sudo ovs-vsctl set port gw1 tag=1
+$ ping -c 1 10.90.0.11
+PING 10.90.0.11 (10.90.0.11) 56(84) bytes of data.
+64 bytes from 10.90.0.11: icmp_seq=1 ttl=64 time=1.79 ms
+
+--- 10.90.0.11 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 1.789/1.789/1.789/0.000 ms
+$ ping -c 1 10.90.0.12
+PING 10.90.0.12 (10.90.0.12) 56(84) bytes of data.
+^C
+--- 10.90.0.12 ping statistics ---
+1 packets transmitted, 0 received, 100% packet loss, time 0ms
+$
+</pre>
+
 การกำหนดค่าวีแลนแทกโดยใช้เฟกบริดจ์ 
 
 <p><p>

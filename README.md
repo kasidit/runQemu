@@ -1856,7 +1856,116 @@ $ sudo netplan apply
 
 -- การกำหนดค่าแทกบน trunk ports
 
+<pre>
+On host1: 
+$ sudo ovs-vsctl set port enp68s0f0 trunks=1
+$ sudo ovs-vsctl show
+    Bridge br-int
+        Port gw1
+            tag: 1
+            Interface gw1
+                type: internal
+        Port xif1
+            Interface xif1
+                type: internal
+        Port tap0
+            tag: 2
+            Interface tap0
+        Port enp68s0f0
+            trunks: [1]
+            Interface enp68s0f0
+        Port tap1
+            tag: 1
+            Interface tap1
+        Port br-int
+            Interface br-int
+                type: internal
+...
+$
+</pre> 
+
+<pre>
+On host2: 
+$ ping -c 1 10.90.0.11
+PING 10.90.0.11 (10.90.0.11) 56(84) bytes of data.
+^C
+--- 10.90.0.11 ping statistics ---
+1 packets transmitted, 0 received, 100% packet loss, time 0ms
+$
+</pre>
+
+<pre>
+On host1: 
+$ ping -c 1 10.90.0.13
+PING 10.90.0.13 (10.90.0.13) 56(84) bytes of data.
+64 bytes from 10.90.0.13: icmp_seq=1 ttl=64 time=1.87 ms
+
+--- 10.90.0.13 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 1.865/1.865/1.865/0.000 ms
+$
+</pre>
+
+<pre>
+On host1: 
+$ sudo ovs-vsctl set port enp68s0f0 trunks=1,2
+$ sudo ovs-vsctl show
+    Bridge br-int
+        Port gw1
+            tag: 1
+            Interface gw1
+                type: internal
+        Port xif1
+            Interface xif1
+                type: internal
+        Port tap0
+            tag: 2
+            Interface tap0
+        Port enp68s0f0
+            trunks: [1, 2]
+            Interface enp68s0f0
+        Port tap1
+            tag: 1
+            Interface tap1
+        Port br-int
+            Interface br-int
+                type: internal
+...
+$
+</pre>
+
+<pre>
+On host2: 
+$ $ ping -c 1 10.90.0.11
+PING 10.90.0.11 (10.90.0.11) 56(84) bytes of data.
+64 bytes from 10.90.0.11: icmp_seq=1 ttl=64 time=1.58 ms
+
+--- 10.90.0.11 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 1.582/1.582/1.582/0.000 ms
+$
+</pre>
+
+<pre>
+On host1: 
+$ $ ping -c 1 10.90.0.13
+PING 10.90.0.13 (10.90.0.13) 56(84) bytes of data.
+64 bytes from 10.90.0.13: icmp_seq=1 ttl=64 time=1.71 ms
+
+--- 10.90.0.13 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 1.705/1.705/1.705/0.000 ms
+$ 
+</pre>
+
+<pre>
+On host2: 
+$ sudo ovs-vsctl set port enp68s0f0 trunks=1,2
+</pre>
+
 การกำหนดค่าวีแลนแทกโดยใช้เฟกบริดจ์ 
+
+
 
 <p><p>
 <a id="part5-3"><h2>5.4 การสร้างและใช้งาน GRE tunneling บนระบบเครือข่ายเสมือน </h2></a>

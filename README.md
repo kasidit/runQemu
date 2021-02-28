@@ -1620,6 +1620,7 @@ $
 <p><p> 
 การกำหนดค่าวีแลนแทกบนวีเอ็มพอร์ตโดยตรง
 
+-- การกำหนดค่าวีแลนด์เสมือนบนเครื่อง host1
 <pre>
 On host1: 
 $ sudo ovs-vsctl show
@@ -1726,6 +1727,134 @@ PING 10.90.0.12 (10.90.0.12) 56(84) bytes of data.
 1 packets transmitted, 0 received, 100% packet loss, time 0ms
 $
 </pre>
+
+<pre>
+On any host in 10.100.20.0/24 subnet: 
+$ 
+$ xtightvncviewer 10.100.20.151:12 &
+$
+</pre>
+
+<pre>
+On vm2: 
+$ cat /etc/netplan/00-installer-config.yaml | grep 10.90.0.12
+        - 10.90.0.12/24
+$ sudo sed -i "s/10.90.0.12/10.90.0.11/g" /etc/netplan/00-installer-config.yaml
+$ cat /etc/netplan/00-installer-config.yaml | grep 10.90.0.11
+        - 10.90.0.11/24
+$ sudo netplan apply
+</pre>
+
+<pre>
+On host1: 
+$ ssh openstack@10.90.0.11 hostname
+vm1
+$ 
+</pre>
+
+-- การกำหนดค่าวีแลนด์เสมือนบนเครื่อง host2
+<pre>
+On host2: 
+$ sudo ovs-vsctl set port xif2 tag=2
+$ sudo ovs-vsctl set port tap0 tag=1
+$ sudo ovs-vsctl set port tap1 tag=2
+$ sudo ovs-vsctl show
+...
+    Bridge br-int
+        Port tap1
+            tag: 2
+            Interface tap1
+        Port xif2
+            tag: 2
+            Interface xif2
+                type: internal
+        Port br-int
+            Interface br-int
+                type: internal
+        Port tap0
+            tag: 1
+            Interface tap0
+        Port enp68s0f0
+            Interface enp68s0f0
+...
+$ 
+</pre>
+
+<pre>
+On host2: 
+$ route -n
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+0.0.0.0         10.100.20.1     0.0.0.0         UG    0      0        0 br0
+10.90.0.0       0.0.0.0         255.255.255.0   U     0      0        0 xif2
+10.100.20.0     0.0.0.0         255.255.255.0   U     0      0        0 br0
+$
+$ ping -c 1 10.90.0.13
+PING 10.90.0.13 (10.90.0.13) 56(84) bytes of data.
+^C
+--- 10.90.0.13 ping statistics ---
+1 packets transmitted, 0 received, 100% packet loss, time 0ms
+$ ping -c 1 10.90.0.14
+PING 10.90.0.14 (10.90.0.14) 56(84) bytes of data.
+64 bytes from 10.90.0.14: icmp_seq=1 ttl=64 time=0.920 ms
+
+--- 10.90.0.14 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 0.920/0.920/0.920/0.000 ms
+$ ping -c 1 10.90.0.11
+PING 10.90.0.11 (10.90.0.11) 56(84) bytes of data.
+64 bytes from 10.90.0.11: icmp_seq=1 ttl=64 time=1.62 ms
+
+--- 10.90.0.11 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 1.615/1.615/1.615/0.000 ms
+$
+</pre>
+
+<pre>
+On host1: 
+$ $ route -n
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+0.0.0.0         10.100.20.1     0.0.0.0         UG    0      0        0 br0
+10.0.0.0        0.0.0.0         255.255.255.0   U     0      0        0 xif1
+10.90.0.0       0.0.0.0         255.255.255.0   U     0      0        0 gw1
+10.100.20.0     0.0.0.0         255.255.255.0   U     0      0        0 br0
+$
+$ ping -c 1 10.90.0.13
+PING 10.90.0.13 (10.90.0.13) 56(84) bytes of data.
+64 bytes from 10.90.0.13: icmp_seq=1 ttl=64 time=1.67 ms
+
+--- 10.90.0.13 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 1.673/1.673/1.673/0.000 ms
+$ ping -c 1 10.90.0.14
+PING 10.90.0.14 (10.90.0.14) 56(84) bytes of data.
+^C
+--- 10.90.0.14 ping statistics ---
+1 packets transmitted, 0 received, 100% packet loss, time 0ms
+$
+</pre>
+
+<pre>
+On any host in 10.100.20.0/24 subnet: 
+$ 
+$ xtightvncviewer 10.100.20.152:14 &
+$
+</pre>
+
+<pre>
+On vm4: 
+$ 
+$ cat /etc/netplan/00-installer-config.yaml | grep 10.90.0.14
+        - 10.90.0.14/24
+$ sudo sed -i "s/10.90.0.14/10.90.0.13/g" /etc/netplan/00-installer-config.yaml
+$ cat /etc/netplan/00-installer-config.yaml | grep 10.90.0.13
+        - 10.90.0.13/24
+$ sudo netplan apply
+</pre>
+
+-- การกำหนดค่าแทกบน trunk ports
 
 การกำหนดค่าวีแลนแทกโดยใช้เฟกบริดจ์ 
 

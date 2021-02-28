@@ -1690,6 +1690,28 @@ $
 On host1: 
 $ sudo ovs-vsctl remove port gw1 tag 2
 $ sudo ovs-vsctl set port gw1 tag=1
+$ sudo ovs-vsctl show
+...
+    Bridge br-int
+        Port gw1
+            tag: 1
+            Interface gw1
+                type: internal
+        Port xif1
+            Interface xif1
+                type: internal
+        Port tap0
+            tag: 2
+            Interface tap0
+        Port enp68s0f0
+            Interface enp68s0f0
+        Port tap1
+            tag: 1
+            Interface tap1
+        Port br-int
+            Interface br-int
+                type: internal
+...
 $ ping -c 1 10.90.0.11
 PING 10.90.0.11 (10.90.0.11) 56(84) bytes of data.
 64 bytes from 10.90.0.11: icmp_seq=1 ttl=64 time=1.79 ms

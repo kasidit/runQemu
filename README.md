@@ -1609,13 +1609,13 @@ $
 <p><p>
 
 <p><p>
-  <img src="documents/ch5ovs04.png" width="700" height="350"> <br>
+  <img src="documents/ch5ovs04.png" width="700" height="380"> <br>
 ภาพที่ 11
 <p><p> 
 หลักการของวีแลนในระบบเครือข่ายดั้งเดิม
 
 <p><p>
-  <img src="documents/ch5ovs05.png" width="700" height="350"> <br>
+  <img src="documents/ch5ovs05.png" width="700" height="380"> <br>
 ภาพที่ 12
 <p><p> 
 การกำหนดค่าวีแลนแทกบนวีเอ็มพอร์ตโดยตรง

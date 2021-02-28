@@ -1347,9 +1347,10 @@ $ cd /srv/kasidit/bookhosts/scripts
 $ ./vm2.sh &
 </pre>
 เสร็จแล้ว ผู้เขียนสามารถล้อกอินเข้าสู่ vm1 ได้หลายวิธี วิธีหนึ่งคือการใช้ vnc client เพื่อล้อกอินเข้าสู่เครื่อง vm2 ซึ่ง 
-ก่อนอื่นผู้เขียนต้องเช็คให้แน่ใจก่อนว่าพอรต์ 5912 ของเครื่อง host1 นั้นเปิดอยู่หรือเปล่า ถ้าไม่ก็ต้องใช้คำสั่ง 
+ก่อนอื่นผู้เขียนต้องเช็คให้แน่ใจก่อนว่าพอรต์ 5901 และ 5912 ของเครื่อง host1 นั้นเปิดอยู่หรือเปล่า ถ้าไม่ก็ต้องใช้คำสั่ง 
 <pre>
 On host1: 
+$ sudo ufw allow 5911 
 $ sudo ufw allow 5912 
 </pre>
 เพื่อเปิดพอร์ตนั้น อีกวิธีหนึ่งคือ การเข้าถึงโดยใช้ ssh ไปที่ 10.90.0.11 เหมือนเข้าใช้งาน vm1 เพราะผู้เขียนเพิ่ง
@@ -1497,6 +1498,9 @@ sudo ${exeloc}/qemu-system-x86_64 \
 $
 </pre>
 
+<p><p>
+<b>5.2.5 การสร้างระบบเครือข่ายเสมือนบนเครื่อง host2</b>
+<p>
 <pre>
 On host2: 
 $ sudo apt install openvswitch-switch
@@ -1541,6 +1545,9 @@ PING 10.0.0.10 (10.0.0.10) 56(84) bytes of data.
 ...
 </pre>
 
+<p><p>
+<b>5.2.6 การกำหนดค่าในเกสโอเอสของ vm3 และ vm4</b>
+<p>
 <pre>
 On host2: 
 $ sudo ufw allow 5913 
@@ -1574,6 +1581,51 @@ PING www.google.com (172.217.31.68) 56(84) bytes of data.
 64 bytes from kul08s07-in-f4.1e100.net (172.217.31.68): icmp_seq=1 ttl=109 time=21.6 ms
 ...
 </pre>
+
+<pre>
+On host2: 
+$ sudo ovs-vsctl show 
+...
+    Bridge br-int
+        Port tap1
+            Interface tap1
+        Port xif2
+            Interface xif2
+                type: internal
+        Port br-int
+            Interface br-int
+                type: internal
+        Port tap0
+            Interface tap0
+        Port enp68s0f0
+            Interface enp68s0f0
+...
+$
+</pre>
+
+<p><p>
+<a id="part5-3"><h2>5.3 การสร้างและใช้งาน VLAN บนระบบเครือข่ายเสมือน </h2></a>
+<p><p>
+<p><p>
+
+<p><p>
+  <img src="documents/ch5ovs04.png" width="700" height="350"> <br>
+ภาพที่ 11
+<p><p> 
+หลักการของวีแลนในระบบเครือข่ายดั้งเดิม
+
+<p><p>
+  <img src="documents/ch5ovs05.png" width="700" height="350"> <br>
+ภาพที่ 12
+<p><p> 
+การกำหนดค่าวีแลนแทกบนวีเอ็มพอร์ตโดยตรง
+
+การกำหนดค่าวีแลนแทกโดยใช้เฟกบริดจ์ 
+
+<p><p>
+<a id="part5-3"><h2>5.4 การสร้างและใช้งาน GRE tunneling บนระบบเครือข่ายเสมือน </h2></a>
+<p><p>
+<p><p>
 <!--
 <p><p>
   <img src="documents/ovs7.PNG" width="700" height="400"> <br>

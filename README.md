@@ -1973,7 +1973,7 @@ $ sudo ovs-vsctl set port enp68s0f0 trunks=1,2
 การกำหนดค่าวีแลนแทกโดยใช้เฟกบริดจ์ 
 
 <pre>
-ovs-vsctl add-br \<fake bridge\> \<parent bridge\> \<VLAN\>
+ovs-vsctl add-br <fake bridge> <parent bridge> <VLAN>
 </pre>
 
 <pre>
@@ -2124,7 +2124,7 @@ $ $ sudo ovs-vsctl show
             Interface enp68s0f0
         <b>Port tap1
             tag: 1
-            Interface tap1<b>
+            Interface tap1</b>
         Port br-int
             Interface br-int
                 type: internal

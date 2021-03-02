@@ -1622,6 +1622,11 @@ $
 <p><p> 
 การกำหนดค่าวีแลนแทกบนวีเอ็มพอร์ตโดยตรง
 
+<pre>
+ovs-vsctl set port \<port name\> tag=\<tag id\>
+ovs-vsctl set port \<port name\> tranks=\<tag id1\>,\<tag id2\>,...
+</pre>
+
 -- การกำหนดค่าวีแลนด์เสมือนบนเครื่อง host1
 <pre>
 On host1: 
@@ -1967,12 +1972,229 @@ $ sudo ovs-vsctl set port enp68s0f0 trunks=1,2
 
 การกำหนดค่าวีแลนแทกโดยใช้เฟกบริดจ์ 
 
+<pre>
+ovs-vsctl add-br \<fake bridge\> \<parent bridge\> \<VLAN\>
+</pre>
+
+<pre>
+On host1: 
+$ ssh openstack@10.90.0.11
+vm1$ sudo poweroff
+$
+</pre>
+
+<pre>
+On host1: 
+$ sudo ovs-vsctl show
+...
+    Bridge br-int
+        Port gw1
+            tag: 1
+            Interface gw1
+                type: internal
+        Port xif1
+            Interface xif1
+                type: internal
+        Port tap0
+            tag: 2
+            Interface tap0
+        Port enp68s0f0
+            trunks: [1, 2]
+            Interface enp68s0f0
+        Port br-int
+            Interface br-int
+                type: internal
+...
+$
+</pre>
+
+<pre>
+On host1: 
+$ sudo ovs-vsctl add-br vlan1 br-int 1
+</pre>
+
+<pre>
+On host1: 
+$ sudo ovs-vsctl show
+    Bridge br-int
+        Port gw1
+            tag: 1
+            Interface gw1
+                type: internal
+        Port xif1
+            Interface xif1
+                type: internal
+        Port tap0
+            tag: 2
+            Interface tap0
+        <b>Port vlan1
+            tag: 1
+            Interface vlan1
+                type: internal</b>
+        Port enp68s0f0
+            trunks: [1, 2]
+            Interface enp68s0f0
+        Port br-int
+            Interface br-int
+                type: internal
+...
+$
+</pre>
+
+<pre>
+On host1: 
+$ cd /srv/kasidit/bookhosts/etc
+$ cp ovs-ifup ovs-vlan1-ifup
+$ cp ovs-ifdown ovs-vlan1-ifdown
+$
+$  vi ovs-vlan1-ifup
+$ cat ovs-vlan1-ifup
+#!/bin/sh
+switch='vlan1'
+/usr/sbin/ifconfig $1 0.0.0.0 up
+/usr/bin/ovs-vsctl add-port ${switch} $1
+$
+$ vi ovs-vlan1-ifdown
+$ cat ovs-vlan1-ifdown
+#!/bin/sh
+switch='vlan1'
+/usr/sbin/ifconfig $1 0.0.0.0 down
+/usr/bin/ovs-vsctl del-port ${switch} $1
+$ 
+</pre>
+
+<pre>
+On host1: 
+$ cd /srv/kasidit/bookhosts/scripts
+$ cp vm1.sh vm1-fb.sh
+$ vi vm1-fb.sh 
+$
+$ cat vm1-fb.sh 
+#!/bin/bash
+numsmp="6"
+memsize="8G"
+etcloc=/srv/kasidit/bookhosts/etc
+imgloc=/srv/kasidit/bookhosts/images/
+imgfile="vm1.ovl"
+#
+exeloc="/usr/bin"
+#
+sudo ${exeloc}/qemu-system-x86_64 \
+     -enable-kvm \
+     -cpu host,kvm=off \
+     -smp ${numsmp} \
+     -m ${memsize} \
+     -drive file=${imgloc}/${imgfile},format=qcow2 \
+     -boot c \
+     -vnc :11 \
+     -qmp tcp::9111,server,nowait \
+     -monitor tcp::9112,server,nowait \
+     -netdev type=tap,script=${etcloc}/<b>ovs-vlan1-ifup</b>,downscript=${etcloc}/<b>ovs-vlan1-ifdown</b>,id=hostnet1 \
+     -device virtio-net-pci,romfile=,netdev=hostnet1,mac=00:81:50:b0:01:94 \
+     -rtc base=localtime,clock=vm 
+$ 
+</pre>
+
+<pre>
+On host1: 
+$ ./vm1-fb.sh & 
+</pre>
+
+<pre>
+On host1: 
+$ $ sudo ovs-vsctl show
+...
+    Bridge br-int
+        Port gw1
+            tag: 1
+            Interface gw1
+                type: internal
+        Port xif1
+            Interface xif1
+                type: internal
+        Port tap0
+            tag: 2
+            Interface tap0
+        Port vlan1
+            tag: 1
+            Interface vlan1
+                type: internal
+        Port enp68s0f0
+            trunks: [1, 2]
+            Interface enp68s0f0
+        <b>Port tap1
+            tag: 1
+            Interface tap1<b>
+        Port br-int
+            Interface br-int
+                type: internal
+...
+$ 
+</pre>
+
+<pre>
+On host1: 
+$ ssh openstack@10.90.0.11 hostname
+vm1
+$
+</pre>
+
+การเปลี่ยนค่าไอพีแอดเดรสและวีแลนแทกกลับให้เป็นแบบภาพที่ 9
+
+ถ้าจะใช้ ssh ล้อกอินเข้า vm2 และ vm4 ต้อง ssh จาก host1 หรือ host2
+
+ใช้ vnc เปลี่ยนค่าไอพีแอดเดรสกลับให้เป็น 10.90.0.13 และ 10.90.0.15 ตามลำดับ
+
+<pre>
+On vm2: 
+$ sudo sed -i "s/10.90.0.11/10.90.0.12/g" /etc/netplan/00-installer-config.yaml
+$ cat /etc/netplan/00-installer-config.yaml | grep 10.90.0.12
+        - 10.90.0.12/24
+$ sudo netplan apply
+</pre>
+ทำแบบเดียวกันกับ vm4
+
+<pre>
+On host1: 
+$ sudo ovs-vsctl remove port gw1 tag 1
+$ sudo ovs-vsctl remove port tap0 tag 2
+$ sudo ovs-vsctl remove port tap1 tag 1
+$ sudo ovs-vsctl del-br vlan1
+$ sudo ovs-vsctl remove port enp68s0f0 trunks 1
+$ sudo ovs-vsctl remove port enp68s0f0 trunks 2
+$ sudo ovs-vsctl show
+...
+    Bridge br-int
+        Port gw1
+            Interface gw1
+                type: internal
+        Port xif1
+            Interface xif1
+                type: internal
+        Port tap0
+            Interface tap0
+        Port enp68s0f0
+            Interface enp68s0f0
+        Port tap1
+            Interface tap1
+        Port br-int
+            Interface br-int
+                type: internal
+...
+$ 
+</pre>
 
 
 <p><p>
 <a id="part5-3"><h2>5.4 การสร้างและใช้งาน GRE tunneling บนระบบเครือข่ายเสมือน </h2></a>
 <p><p>
 <p><p>
+
+
+
+
+
+
 <!--
 <p><p>
   <img src="documents/ovs7.PNG" width="700" height="400"> <br>

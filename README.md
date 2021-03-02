@@ -1623,8 +1623,8 @@ $
 การกำหนดค่าวีแลนแทกบนวีเอ็มพอร์ตโดยตรง
 
 <pre>
-ovs-vsctl set port \<port name\> tag=\<tag id\>
-ovs-vsctl set port \<port name\> tranks=\<tag id1\>,\<tag id2\>,...
+ovs-vsctl set port port-name tag=tag-id
+ovs-vsctl set port port-name tranks=tag-id1,tag-id2,...
 </pre>
 
 -- การกำหนดค่าวีแลนด์เสมือนบนเครื่อง host1
@@ -1973,7 +1973,7 @@ $ sudo ovs-vsctl set port enp68s0f0 trunks=1,2
 การกำหนดค่าวีแลนแทกโดยใช้เฟกบริดจ์ 
 
 <pre>
-ovs-vsctl add-br <fake bridge> <parent bridge> <VLAN>
+ovs-vsctl add-br fake-bridge parent-bridge VLAN
 </pre>
 
 <pre>

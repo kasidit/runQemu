@@ -2201,8 +2201,13 @@ $ sudo ip address add 10.0.0.11/24 dev xif2
 <p><p>
 
 <p><p>
-  <img src="documents/ch5ovs06.png" width="700" height="380"> <br>
+  <img src="documents/ch5ovs10.png" width="700" height="380"> <br>
 ภาพที่ 13
+<p><p> 
+
+<p><p>
+  <img src="documents/ch5ovs06.png" width="700" height="380"> <br>
+ภาพที่ 14
 <p><p> 
 
 <pre>
@@ -2223,7 +2228,7 @@ $ sudo ovs-vsctl del-port br-int enp68s0f0
 
 <p><p>
   <img src="documents/ch5ovs07.png" width="700" height="380"> <br>
-ภาพที่ 14
+ภาพที่ 15
 <p><p> 
 
 <pre>
@@ -2266,7 +2271,7 @@ $
 
 <p><p>
   <img src="documents/ch5ovs08.png" width="700" height="380"> <br>
-ภาพที่ 15
+ภาพที่ 16
 <p><p> 
 
 <pre>
@@ -2349,7 +2354,7 @@ $
 
 <p><p>
   <img src="documents/ch5ovs09.png" width="700" height="380"> <br>
-ภาพที่ 16
+ภาพที่ 17
 <p><p> 
 
 <pre>

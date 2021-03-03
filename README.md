@@ -2226,8 +2226,219 @@ $ sudo ovs-vsctl del-port br-int enp68s0f0
 ภาพที่ 14
 <p><p> 
 
+<pre>
+On host1: 
+$ sudo ovs-vsctl add-br br-tun
+$ sudo ovs-vsctl add-port br-tun enp68s0f0
+$ sudo ovs-vsctl add-port br-tun tep1 -- set interface tep1 type=internal
+$ sudo ip address add 192.168.1.11/24 dev tep1 
+$ sudo ifconfig enp68s0f0 up
+$ sudo ifconfig tep1 up
+$
+$ ping 192.168.1.12
+PING 192.168.1.12 (192.168.1.12) 56(84) bytes of data.
+64 bytes from 192.168.1.12: icmp_seq=1 ttl=64 time=2.77 ms
+^C
+--- 192.168.1.12 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1002ms
+rtt min/avg/max/mdev = 0.258/1.515/2.772/1.257 ms
+$
+</pre>
 
+<pre>
+On host2: 
+$ sudo ovs-vsctl add-br br-tun
+$ sudo ovs-vsctl add-port br-tun enp68s0f0
+$ sudo ovs-vsctl add-port br-tun tep1 -- set interface tep1 type=internal
+$ sudo ip address add 192.168.1.12/24 dev tep1 
+$ sudo ifconfig enp68s0f0 up 
+$ sudo ifconfig tep1 up
+$
+$ ping 192.168.1.11
+PING 192.168.1.11 (192.168.1.11) 56(84) bytes of data.
+64 bytes from 192.168.1.11: icmp_seq=1 ttl=64 time=0.277 ms
+^C
+--- 192.168.1.11 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1010ms
+rtt min/avg/max/mdev = 0.198/0.237/0.277/0.039 ms
+$
+</pre>
 
+<p><p>
+  <img src="documents/ch5ovs08.png" width="700" height="380"> <br>
+ภาพที่ 15
+<p><p> 
+
+<pre>
+On host1: 
+$ sudo ovs-vsctl add-port br-int gre1 -- set interface gre1 type=gre \
+  options:remote_ip=192.168.1.12
+$
+</pre>
+
+<pre>
+On host2: 
+$ sudo ovs-vsctl add-port br-int gre1 -- set interface gre1 type=gre \
+  options:remote_ip=192.168.1.11
+$
+</pre>
+
+<pre>
+On host1: 
+$ sudo ovs-vsctl show 
+...
+    Bridge br-int
+        Port gw1
+            Interface gw1
+                type: internal
+        Port tap0
+            Interface tap0
+        Port gre1
+            Interface gre1
+                type: gre
+                options: {remote_ip="192.168.1.12"}
+        Port tap1
+            Interface tap1
+        Port br-int
+            Interface br-int
+                type: internal
+    Bridge br-tun
+        Port enp68s0f0
+            Interface enp68s0f0
+        Port tep1
+            Interface tep1
+                type: internal
+        Port br-tun
+            Interface br-tun
+                type: internal
+...
+$
+</pre>
+
+<pre>
+On host2: 
+$ sudo ovs-vsctl show
+...
+    Bridge br-tun
+        Port enp68s0f0
+            Interface enp68s0f0
+        Port tep1
+            Interface tep1
+                type: internal
+        Port br-tun
+            Interface br-tun
+                type: internal
+    Bridge br-int
+        Port gre1
+            Interface gre1
+                type: gre
+                options: {remote_ip="192.168.1.11"}
+        Port tap1
+            Interface tap1
+        Port xif2
+            Interface xif2
+                type: internal
+        Port br-int
+            Interface br-int
+                type: internal
+        Port tap0
+            Interface tap0
+...
+$
+</pre>
+
+<p><p>
+  <img src="documents/ch5ovs09.png" width="700" height="380"> <br>
+ภาพที่ 16
+<p><p> 
+
+<pre>
+On host1: 
+$ sudo ip link set dev gw1 mtu 1450
+</pre>
+
+<pre>
+host1: 
+$ sudo vi /etc/netplan/00-installer-config.yaml
+$ cat /etc/netplan/00-installer-config.yaml
+$ cat /etc/netplan/00-installer-config.yaml
+...
+network:
+  ethernets:
+    eno1:
+      dhcp4: false
+    enp67s0f0:
+      addresses:
+      - 10.0.1.3/24
+    gw1: 
+      addresses: 
+      - 10.90.0.1/24
+      <b>mtu: 1450</b>
+...
+$ sudo netplan apply
+$
+</pre>
+
+<pre>
+On host2: 
+$ sudo ip link set dev xif2 mtu 1450
+</pre>
+
+<pre>
+On vm1: 
+$
+$ sudo vi /etc/netplan/00-installer-config.yaml 
+$ cat /etc/netplan/00-installer-config.yaml
+...
+network:
+  ethernets:
+    ens3:
+      addresses:
+        - 10.90.0.11/24
+      gateway4: 10.90.0.1
+      <b>mtu: 1450</b>
+      nameservers: 
+        addresses: 
+        - 8.8.8.8
+        search: 
+        - tu.ac.th
+  version: 2
+$
+$ sudo netplan apply
+$ ifconfig ens3
+ens3: flags=4163\\<UP,BROADCAST,RUNNING,MULTICAST\\>  mtu 1450
+        inet 10.90.0.11  netmask 255.255.255.0  broadcast 10.90.0.255
+        inet6 fe80::281:50ff:feb0:194  prefixlen 64  scopeid 0x20<link>
+        ether 00:81:50:b0:01:94  txqueuelen 1000  (Ethernet)
+        RX packets 1168918  bytes 20659032157 (20.6 GB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 1031423  bytes 76083869 (76.0 MB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+$
+</pre>
+
+<pre>
+On vm3: 
+$
+$ sudo vi /etc/netplan/00-installer-config.yaml 
+$ cat /etc/netplan/00-installer-config.yaml
+...
+network:
+  ethernets:
+    ens3:
+      addresses:
+        - 10.90.0.13/24
+      gateway4: 10.90.0.1
+      <b>mtu: 1450</b>
+      nameservers: 
+        addresses: 
+        - 8.8.8.8
+        search: 
+        - tu.ac.th
+  version: 2
+$
+$ sudo netplan apply
+</pre>
 
 <!--
 <p><p>

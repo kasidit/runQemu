@@ -2184,13 +2184,47 @@ $ sudo ovs-vsctl show
 $ 
 </pre>
 
+<pre>
+On host2: 
+$ sudo ovs-vsctl remove port tap0 tag 1
+$ sudo ovs-vsctl remove port tap1 tag 2
+$ sudo ovs-vsctl remove port xif2 tag 2
+$ sudo ovs-vsctl remove port enp68s0f0 trunks 1
+$ sudo ovs-vsctl remove port enp68s0f0 trunks 2
+$ sudo ip address del 10.90.0.22/24 dev xif2 
+$ sudo ip address add 10.0.0.11/24 dev xif2 
+</pre>
 
 <p><p>
 <a id="part5-3"><h2>5.4 การสร้างและใช้งาน GRE tunneling บนระบบเครือข่ายเสมือน </h2></a>
 <p><p>
 <p><p>
 
+<p><p>
+  <img src="documents/ch5ovs06.png" width="700" height="380"> <br>
+ภาพที่ 13
+<p><p> 
 
+<pre>
+On host2: 
+$ sudo ip address del 10.0.0.11/24 dev xif2
+$ sudo ip address add 10.90.0.22/24 dev xif2
+</pre>
+
+<pre>
+On host1: 
+$ sudo ovs-vsctl del-port xif1
+</pre>
+
+<pre>
+On host1, host2: 
+$ sudo ovs-vsctl del-port br-int enp68s0f0
+</pre>
+
+<p><p>
+  <img src="documents/ch5ovs07.png" width="700" height="380"> <br>
+ภาพที่ 14
+<p><p> 
 
 
 

@@ -2445,6 +2445,176 @@ $
 $ sudo netplan apply
 </pre>
 
+<p><p>
+<a id="part5-3"><h2>5.5 การสร้าง GRE tunneling เชื่อมต่อหลาย hosts </h2></a>
+<p><p>
+<p><p>
+
+<p><p>
+  <img src="documents/ch5ovs11.png" width="700" height="380"> <br>
+ภาพที่ 13
+<p><p> 
+
+<pre>
+On host1: 
+openstack@vm1:~$ sudo ovs-vsctl add-br br-int
+openstack@vm1:~$ sudo ovs-vsctl add-br br-tun
+openstack@vm1:~$ sudo ip address del 10.0.0.11/24 dev ens4
+openstack@vm1:~$ sudo ovs-vsctl add-port br-tun ens4
+openstack@vm1:~$ sudo ovs-vsctl add-port br-tun tep1 -- set interface tep1 type=internal
+openstack@vm1:~$ sudo ip address add 10.0.0.11/24 dev tep1
+openstack@vm1:~$ sudo ifconfig ens4 up
+openstack@vm1:~$ sudo ifconfig tep1 up
+</pre>
+
+<pre>
+On host2: 
+openstack@vm2:~$ sudo ovs-vsctl add-br br-int
+openstack@vm2:~$ sudo ovs-vsctl add-br br-tun
+openstack@vm2:~$ sudo ip address del 10.0.0.12/24 dev ens4
+openstack@vm2:~$ sudo ovs-vsctl add-port br-tun ens4
+openstack@vm2:~$ sudo ovs-vsctl add-port br-tun tep1 -- set interface tep1 type=internal
+openstack@vm2:~$ sudo ip address add 10.0.0.12/24 dev tep1
+openstack@vm2:~$ sudo ifconfig ens4 up
+openstack@vm2:~$ sudo ifconfig tep1 up
+</pre>
+
+<pre>
+On host3: 
+openstack@vm3:~$ sudo ovs-vsctl add-br br-int
+openstack@vm3:~$ sudo ovs-vsctl add-br br-tun
+openstack@vm3:~$ sudo ip address del 10.0.0.13/24 dev ens4
+openstack@vm3:~$ sudo ovs-vsctl add-port br-tun ens4
+openstack@vm3:~$ sudo ovs-vsctl add-port br-tun tep1 -- set interface tep1 type=internal
+openstack@vm3:~$ sudo ip address add 10.0.0.13/24 dev tep1
+openstack@vm3:~$ sudo ifconfig ens4 up
+openstack@vm3:~$ sudo ifconfig tep1 up
+</pre>
+
+<pre>
+On host1: 
+$ ping 10.0.0.12
+$ ping 10.0.0.13
+</pre>
+
+<pre>
+On host1: 
+openstack@vm1:~$ sudo ovs-vsctl add-port br-int gre1 -- set interface gre1 type=gre \
+  options:remote_ip=10.0.0.12
+$ 
+openstack@vm1:~$ sudo ovs-vsctl show
+f8763b9e-36d7-4018-b5eb-8a712445f867
+    Bridge br-int
+        Port gre1
+            Interface gre1
+                type: gre
+                options: {remote_ip="10.0.0.12"}
+        Port br-int
+            Interface br-int
+                type: internal
+    Bridge br-tun
+        Port tep1
+            Interface tep1
+                type: internal
+        Port br-tun
+            Interface br-tun
+                type: internal
+        Port ens4
+            Interface ens4
+    ovs_version: "2.13.1"
+openstack@vm1:~$ 
+</pre>
+
+<pre>
+On host2: 
+$ sudo ovs-vsctl add-port br-int gre1 -- set interface gre1 type=gre \
+   options:remote_ip=10.0.0.11
+$ sudo ovs-vsctl add-port br-int gre2 -- set interface gre2 type=gre   options:remote_ip=10.0.0.13
+$
+openstack@vm2:~$ sudo ovs-vsctl show
+5a6c6f7b-77e5-44c1-8bc9-843ffafabd09
+    Bridge br-int
+        Port gre1
+            Interface gre1
+                type: gre
+                options: {remote_ip="10.0.0.11"}
+        Port br-int
+            Interface br-int
+                type: internal
+        Port gre2
+            Interface gre2
+                type: gre
+                options: {remote_ip="10.0.0.13"}
+    Bridge br-tun
+        Port tep1
+            Interface tep1
+                type: internal
+        Port br-tun
+            Interface br-tun
+                type: internal
+        Port ens4
+            Interface ens4
+    ovs_version: "2.13.1"
+openstack@vm2:~$ 
+
+</pre>
+
+<pre>
+On host3: 
+$ sudo ovs-vsctl add-port br-int gre2 -- set interface gre2 type=gre   options:remote_ip=10.0.0.12
+$
+$ sudo ovs-vsctl show
+8f04d918-c900-499a-85a5-f077c5cc4fd1
+    Bridge br-int
+        Port gre2
+            Interface gre2
+                type: gre
+                options: {remote_ip="10.0.0.12"}
+        Port br-int
+            Interface br-int
+                type: internal
+    Bridge br-tun
+        Port tep1
+            Interface tep1
+                type: internal
+        Port br-tun
+            Interface br-tun
+                type: internal
+        Port ens4
+            Interface ens4
+    ovs_version: "2.13.1"
+
+</pre>
+
+<pre>
+On host1: 
+openstack@vm1:~$ sudo ovs-vsctl add-port br-int gw1 -- set interface gw1 type=internal
+openstack@vm1:~$ sudo vi /etc/netplan/00-installer-config.yaml 
+openstack@vm1:~$ 
+openstack@vm1:~$ 
+openstack@vm1:~$ 
+openstack@vm1:~$ cat /etc/netplan/00-installer-config.yaml
+# This is the network config written by 'subiquity'
+network:
+  ethernets:
+    ens3:
+      addresses:
+        - 10.100.20.51/24
+      gateway4: 10.100.20.1
+      mtu: 1450
+      nameservers: 
+        addresses: 
+        - 8.8.8.8
+        search: 
+        - tu.ac.th
+    gw1:
+      addresses:
+        - 10.90.0.1/24
+      mtu: 1450
+  version: 2
+openstack@vm1:~$ sudo netplan apply
+</pre>
+
 <!--
 <p><p>
   <img src="documents/ovs7.PNG" width="700" height="400"> <br>

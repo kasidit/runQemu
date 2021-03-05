@@ -3102,6 +3102,19 @@ rtt min/avg/max/mdev = 25.930/25.930/25.930/0.000 ms
 $ 
 </pre>
 
+ติดตั้ง MPI (ทำใหม่บน saburo และ โคจิ)
+
+<pre>
+On vm1: 
+$ vi /etc/hosts
+$ cat /etc/hosts
+127.0.0.1 localhost
+127.0.1.1 vm1
+10.90.0.11 vm1
+10.90.0.12 vm2
+10.90.0.13 vm3
+...
+</pre>
 
 
 

@@ -2964,6 +2964,12 @@ $
 </pre>
 
 <p><p>
+<a id="part5-3"><h2>5.6 การใช้ STP เพื่อป้องกันการเกิดลูปในระบบเครือข่ายเสมือน </h2></a>
+<p><p>
+<p><p>
+
+<p><p>
+<p><p>
   <img src="documents/ch5ovs13.png" width="700" height="380"> <br>
 ภาพที่ 15
 <p><p> 
@@ -3102,7 +3108,17 @@ rtt min/avg/max/mdev = 25.930/25.930/25.930/0.000 ms
 $ 
 </pre>
 
-ติดตั้ง MPI (ทำใหม่บน saburo และ โคจิ)
+<p><p>
+<a id="part5-3"><h2>5.7 การติดตั้ง MPI บนระบบคลัสเตอร์ของคอมพิวเตอร์เสมือน </h2></a>
+<p><p>
+<p><p>
+
+ติดตั้ง MPI (ทำใหม่บน saburo และ koji)
+
+<p><p>
+  <img src="documents/ch5ovs15.png" width="700" height="380"> <br>
+ภาพที่ 17
+<p><p> 
 
 <pre>
 On vm1: 

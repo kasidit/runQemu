@@ -2462,38 +2462,38 @@ $ sudo netplan apply
 
 <pre>
 On host1: 
-openstack@vm1:~$ sudo ovs-vsctl add-br br-int
-openstack@vm1:~$ sudo ovs-vsctl add-br br-tun
-openstack@vm1:~$ sudo ip address del 10.0.0.11/24 dev ens4
-openstack@vm1:~$ sudo ovs-vsctl add-port br-tun ens4
-openstack@vm1:~$ sudo ovs-vsctl add-port br-tun tep1 -- set interface tep1 type=internal
-openstack@vm1:~$ sudo ip address add 10.0.0.11/24 dev tep1
-openstack@vm1:~$ sudo ifconfig ens4 up
-openstack@vm1:~$ sudo ifconfig tep1 up
+$ sudo ovs-vsctl add-br br-int
+$ sudo ovs-vsctl add-br br-tun
+$ sudo ovs-vsctl add-port br-tun ens4
+$ sudo ovs-vsctl add-port br-tun tep1 -- set interface tep1 type=internal
+$ sudo ip address add 10.0.0.11/24 dev tep1
+$
+$ sudo ifconfig ens4 up
+$ sudo ifconfig tep1 up
 </pre>
 
 <pre>
 On host2: 
-openstack@vm2:~$ sudo ovs-vsctl add-br br-int
-openstack@vm2:~$ sudo ovs-vsctl add-br br-tun
-openstack@vm2:~$ sudo ip address del 10.0.0.12/24 dev ens4
-openstack@vm2:~$ sudo ovs-vsctl add-port br-tun ens4
-openstack@vm2:~$ sudo ovs-vsctl add-port br-tun tep1 -- set interface tep1 type=internal
-openstack@vm2:~$ sudo ip address add 10.0.0.12/24 dev tep1
-openstack@vm2:~$ sudo ifconfig ens4 up
-openstack@vm2:~$ sudo ifconfig tep1 up
+$ sudo ovs-vsctl add-br br-int
+$ sudo ovs-vsctl add-br br-tun
+$ sudo ovs-vsctl add-port br-tun ens4
+$ sudo ovs-vsctl add-port br-tun tep1 -- set interface tep1 type=internal
+$ sudo ip address add 10.0.0.12/24 dev tep1
+$
+$ sudo ifconfig ens4 up
+$ sudo ifconfig tep1 up
 </pre>
 
 <pre>
 On host3: 
-openstack@vm3:~$ sudo ovs-vsctl add-br br-int
-openstack@vm3:~$ sudo ovs-vsctl add-br br-tun
-openstack@vm3:~$ sudo ip address del 10.0.0.13/24 dev ens4
-openstack@vm3:~$ sudo ovs-vsctl add-port br-tun ens4
-openstack@vm3:~$ sudo ovs-vsctl add-port br-tun tep1 -- set interface tep1 type=internal
-openstack@vm3:~$ sudo ip address add 10.0.0.13/24 dev tep1
-openstack@vm3:~$ sudo ifconfig ens4 up
-openstack@vm3:~$ sudo ifconfig tep1 up
+$ sudo ovs-vsctl add-br br-int
+$ sudo ovs-vsctl add-br br-tun
+$ sudo ovs-vsctl add-port br-tun ens4
+$ sudo ovs-vsctl add-port br-tun tep1 -- set interface tep1 type=internal
+$ sudo ip address add 10.0.0.13/24 dev tep1
+$
+$ sudo ifconfig ens4 up
+$ sudo ifconfig tep1 up
 </pre>
 
 <pre>
@@ -2504,10 +2504,10 @@ $ ping 10.0.0.13
 
 <pre>
 On host1: 
-openstack@vm1:~$ sudo ovs-vsctl add-port br-int gre1 -- set interface gre1 type=gre \
+$ sudo ovs-vsctl add-port br-int gre1 -- set interface gre1 type=gre \
   options:remote_ip=10.0.0.12
 $ 
-openstack@vm1:~$ sudo ovs-vsctl show
+$ sudo ovs-vsctl show
 f8763b9e-36d7-4018-b5eb-8a712445f867
     Bridge br-int
         Port gre1
@@ -2534,7 +2534,8 @@ openstack@vm1:~$
 On host2: 
 $ sudo ovs-vsctl add-port br-int gre1 -- set interface gre1 type=gre \
    options:remote_ip=10.0.0.11
-$ sudo ovs-vsctl add-port br-int gre2 -- set interface gre2 type=gre   options:remote_ip=10.0.0.13
+$ sudo ovs-vsctl add-port br-int gre2 -- set interface gre2 type=gre \
+   options:remote_ip=10.0.0.13
 $
 openstack@vm2:~$ sudo ovs-vsctl show
 5a6c6f7b-77e5-44c1-8bc9-843ffafabd09
@@ -2566,7 +2567,8 @@ openstack@vm2:~$
 
 <pre>
 On host3: 
-$ sudo ovs-vsctl add-port br-int gre2 -- set interface gre2 type=gre   options:remote_ip=10.0.0.12
+$ sudo ovs-vsctl add-port br-int gre2 -- set interface gre2 type=gre \
+   options:remote_ip=10.0.0.12
 $
 $ sudo ovs-vsctl show
 8f04d918-c900-499a-85a5-f077c5cc4fd1
@@ -2588,7 +2590,7 @@ $ sudo ovs-vsctl show
         Port ens4
             Interface ens4
     ovs_version: "2.13.1"
-
+$
 </pre>
 
 <pre>
@@ -2613,6 +2615,9 @@ network:
       addresses:
         - 10.90.0.1/24
       mtu: 1450
+    tep1:
+      addresses:
+        - 10.0.0.11/24
   version: 2
 $ sudo netplan apply
 </pre>
@@ -2727,6 +2732,37 @@ $
 
 <pre>
 On host2: 
+$ sudo ovs-vsctl add-port br-int locif -- set interface locif type=internal
+$
+$ sudo vi /etc/netplan/00-installer-config.yaml 
+$ cat /etc/netplan/00-installer-config.yaml
+...
+network:
+  ethernets:
+    ens3:
+      addresses:
+        - 10.100.20.52/24
+      gateway4: 10.100.20.1
+      mtu: 1450
+      nameservers: 
+        addresses: 
+        - 8.8.8.8
+        search: 
+        - tu.ac.th
+    locif:
+      addresses:
+        - 10.90.0.22/24
+      mtu: 1450
+    tep1:
+      addresses:
+        - 10.0.0.12/24
+  version: 2
+$
+$ sudo netplan apply
+</pre>
+
+<pre>
+On host2: 
 $ pwd
 /home/openstack
 $ ls
@@ -2816,6 +2852,37 @@ $
 
 <pre>
 On host3: 
+$ sudo ovs-vsctl add-port br-int locif -- set interface locif type=internal
+$
+$ sudo vi /etc/netplan/00-installer-config.yaml 
+$ cat /etc/netplan/00-installer-config.yaml
+...
+network:
+  ethernets:
+    ens3:
+      addresses:
+        - 10.100.20.53/24
+      gateway4: 10.100.20.1
+      mtu: 1450
+      nameservers: 
+        addresses: 
+        - 8.8.8.8
+        search: 
+        - tu.ac.th
+    locif:
+      addresses:
+        - 10.90.0.23/24
+      mtu: 1450
+    tep1:
+      addresses:
+        - 10.0.0.13/24
+  version: 2
+...
+$
+</pre>
+
+<pre>
+On host3: 
 $ pwd
 /home/openstack
 $ ls
@@ -2896,71 +2963,163 @@ rtt min/avg/max/mdev = 32.378/32.378/32.378/0.000 ms
 $ 
 </pre>
 
-<!--
 <p><p>
-  <img src="documents/ovs7.PNG" width="700" height="400"> <br>
-ภาพที่ 11
-<p><p>
-<p><p>
-  <img src="documents/ovs8.PNG" width="700" height="400"> <br>
-ภาพที่ 12
-<p><p> 
-<p><p>
-  <img src="documents/ovs9.PNG" width="700" height="400"> <br>
-ภาพที่ 13
-<p><p>
-<p><p>
-  <img src="documents/ovs10.PNG" width="700" height="400"> <br>
-ภาพที่ 14
-<p><p> 
-<p><p>
-  <img src="documents/ovs11.PNG" width="700" height="400"> <br>
-ภาพที่ 7
-<p><p>
-<p><p>
-  <img src="documents/ovs12.PNG" width="700" height="400"> <br>
-ภาพที่ 8
-<p><p> 
-<p><p>
-  <img src="documents/ovs13.PNG" width="700" height="400"> <br>
-ภาพที่ 9
-<p><p>
-<p><p>
-  <img src="documents/ovs14.PNG" width="700" height="400"> <br>
-ภาพที่ 10
-<p><p> 
-<p><p>
-  <img src="documents/ovs15.PNG" width="700" height="400"> <br>
-ภาพที่ 11
-<p><p>
-<p><p>
-  <img src="documents/ovs16.PNG" width="700" height="400"> <br>
-ภาพที่ 12
-<p><p> 
-<p><p>
-  <img src="documents/ovs17.PNG" width="700" height="400"> <br>
-ภาพที่ 13
-<p><p>
-<p><p>
-  <img src="documents/ovs18.PNG" width="700" height="400"> <br>
-ภาพที่ 14
-<p><p> 
-<p><p>
-  <img src="documents/ovs19.PNG" width="700" height="400"> <br>
+  <img src="documents/ch5ovs13.png" width="700" height="380"> <br>
 ภาพที่ 15
 <p><p> 
+
 <p><p>
-  <img src="documents/ovs20.PNG" width="700" height="400"> <br>
+  <img src="documents/ch5ovs14.png" width="700" height="380"> <br>
 ภาพที่ 16
-<p><p>
-<p><p>
-  <img src="documents/ovs21.PNG" width="700" height="400"> <br>
-ภาพที่ 17
 <p><p> 
-<p><p>
-  <img src="documents/ovs22.PNG" width="700" height="400"> <br>
-ภาพที่ 18
--->
+
+<pre>
+On host1: 
+$ sudo ovs-vsctl add-port br-int gre3 -- set interface gre3 type=gre \ 
+    options:remote_ip=10.0.0.13
+$
+$ sudo ovs-vsctl show
+...
+    Bridge br-int
+        Port gw1
+            Interface gw1
+                type: internal
+        Port gre1
+            Interface gre1
+                type: gre
+                options: {remote_ip="10.0.0.12"}
+        Port br-int
+            Interface br-int
+                type: internal
+        Port tap0
+            Interface tap0
+        Port gre3
+            Interface gre3
+                type: gre
+                options: {remote_ip="10.0.0.13"}
+    Bridge br-tun
+        Port tep1
+            Interface tep1
+                type: internal
+        Port br-tun
+            Interface br-tun
+                type: internal
+        Port ens4
+            Interface ens4
+    ovs_version: "2.13.1"
+$ 
+</pre>
+
+<pre>
+On host3: 
+$ sudo ovs-vsctl add-port br-int gre3 -- set interface gre3 type=gre \ 
+    options:remote_ip=10.0.0.11
+$ 
+$ sudo ovs-vsctl show
+...
+    Bridge br-int
+        Port gre2
+            Interface gre2
+                type: gre
+                options: {remote_ip="10.0.0.12"}
+        Port tap0
+            Interface tap0
+        Port br-int
+            Interface br-int
+                type: internal
+        Port gre3
+            Interface gre3
+                type: gre
+                options: {remote_ip="10.0.0.11"}
+        Port locif
+            Interface locif
+                type: internal
+    Bridge br-tun
+        Port tep1
+            Interface tep1
+                type: internal
+        Port br-tun
+            Interface br-tun
+                type: internal
+        Port ens4
+            Interface ens4
+    ovs_version: "2.13.1"
+$ 
+</pre>
+
+<pre>
+On vm1 (via VNC): 
+$ ping 10.90.0.1
+...(stalled)
+^C
+$ ping 10.90.0.12
+...(stalled)
+^C
+$ ping 10.90.0.13
+...(stalled)
+^C
+</pre>
+
+<pre>
+On host1: 
+$ sudo ovs-vsctl set Bridge br-int stp_enable=true
+</pre>
+
+<pre>
+On host2: 
+$ sudo ovs-vsctl set Bridge br-int stp_enable=true
+</pre>
+
+<pre>
+On host3: 
+$ sudo ovs-vsctl set Bridge br-int stp_enable=true
+</pre>
+
+<pre>
+On vm1: 
+$ ping -c 1 10.90.0.1
+PING 10.90.0.1 (10.90.0.1) 56(84) bytes of data.
+64 bytes from 10.90.0.1: icmp_seq=1 ttl=64 time=0.978 ms
+
+--- 10.90.0.1 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 0.978/0.978/0.978/0.000 ms
+...
+$ ping -c 1 10.90.0.13
+PING 10.90.0.13 (10.90.0.13) 56(84) bytes of data.
+64 bytes from 10.90.0.13: icmp_seq=1 ttl=64 time=6.33 ms
+
+--- 10.90.0.13 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 6.329/6.329/6.329/0.000 ms
+$ ping -c 1 www.google.com
+PING www.google.com (172.217.31.100) 56(84) bytes of data.
+64 bytes from kul08s08-in-f4.1e100.net (172.217.31.100): icmp_seq=1 ttl=108 time=25.9 ms
+
+--- www.google.com ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 25.930/25.930/25.930/0.000 ms
+$ 
+</pre>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <p><p>
 <p><p>
 <a id="part7"><h2>7. กำหนดให้ ubuntu 16.04 host สนับสนุนการทำงานแบบ nested virtualization</h2></a>

@@ -2455,6 +2455,11 @@ $ sudo netplan apply
 ภาพที่ 13
 <p><p> 
 
+<p><p>
+  <img src="documents/ch5ovs12.png" width="700" height="380"> <br>
+ภาพที่ 14
+<p><p> 
+
 <pre>
 On host1: 
 openstack@vm1:~$ sudo ovs-vsctl add-br br-int
@@ -2588,13 +2593,10 @@ $ sudo ovs-vsctl show
 
 <pre>
 On host1: 
-openstack@vm1:~$ sudo ovs-vsctl add-port br-int gw1 -- set interface gw1 type=internal
-openstack@vm1:~$ sudo vi /etc/netplan/00-installer-config.yaml 
-openstack@vm1:~$ 
-openstack@vm1:~$ 
-openstack@vm1:~$ 
-openstack@vm1:~$ cat /etc/netplan/00-installer-config.yaml
-# This is the network config written by 'subiquity'
+$ sudo ovs-vsctl add-port br-int gw1 -- set interface gw1 type=internal
+$
+$ sudo vi /etc/netplan/00-installer-config.yaml 
+$ cat /etc/netplan/00-installer-config.yaml
 network:
   ethernets:
     ens3:
@@ -2612,7 +2614,286 @@ network:
         - 10.90.0.1/24
       mtu: 1450
   version: 2
-openstack@vm1:~$ sudo netplan apply
+$ sudo netplan apply
+</pre>
+
+<pre>
+On host1: 
+$ pwd
+/home/openstack
+$ ls
+etc  images  scripts
+$ ls etc
+ovs-ifdown  ovs-ifup  
+$
+$ cat etc/ovs-ifup
+#!/bin/sh
+switch='br-int'
+/usr/sbin/ifconfig $1 0.0.0.0 up
+/usr/bin/ovs-vsctl add-port ${switch} $1
+$ cat etc/ovs-ifdown
+#!/bin/sh
+switch='br-int'
+/usr/sbin/ifconfig $1 0.0.0.0 down
+/usr/bin/ovs-vsctl del-port ${switch} $1
+$
+$ ls -l images/
+total 20849968
+-rw-r--r-- 1 openstack openstack 21350318080 Mar  5 10:21 vm1.img
+$
+</pre>
+
+<pre>
+On host1: 
+$ ls scripts/
+vm1.sh
+$ 
+$ cd scripts/
+$ vi vm1.sh
+$
+$ cat vm1.sh
+#!/bin/bash
+numsmp="4"
+memsize="4G"
+etcloc=/home/openstack/etc
+imgloc=/home/openstack/images/
+imgfile="vm1.img"
+#
+exeloc="/usr/bin"
+#
+sudo ${exeloc}/qemu-system-x86_64 \
+     -enable-kvm \
+     -cpu host,kvm=off \
+     -smp ${numsmp} \
+     -m ${memsize} \
+     -drive file=${imgloc}/${imgfile},format=qcow2 \
+     -boot c \
+     -vnc :11 \
+     -qmp tcp::9111,server,nowait \
+     -monitor tcp::9112,server,nowait \
+     -netdev type=tap,script=${etcloc}/ovs-ifup,downscript=${etcloc}/ovs-ifdown,id=hostnet1 \
+     -device virtio-net-pci,romfile=,netdev=hostnet1,mac=00:71:50:b0:01:94 \
+     -rtc base=localtime,clock=vm 
+$
+</pre>
+
+<pre>
+On host1: 
+$ sudo ufw allow 5911
+$ ./vm1.sh & 
+</pre>
+
+<pre>
+On vm1: 
+$ sudo vi /etc/netplan/00-installer-config.yaml 
+$ cat /etc/netplan/00-installer-config.yaml 
+...
+network:
+  ethernets:
+    ens3:
+      addresses:
+        - 10.90.0.11/24
+      gateway4: 10.90.0.1
+      mtu: 1450
+      nameservers: 
+        addresses: 
+        - 8.8.8.8
+        search: 
+        - tu.ac.th
+  version: 2
+$ 
+$ sudo netplan apply
+$
+</pre>
+
+<pre>
+$ ping -c 1 10.90.0.1
+PING 10.90.0.1 (10.90.0.1) 56(84) bytes of data.
+64 bytes from 10.90.0.1: icmp_seq=1 ttl=64 time=0.866 ms
+
+--- 10.90.0.1 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 0.866/0.866/0.866/0.000 ms
+$ 
+$ ping -c 1 www.google.com
+PING www.google.com (172.217.31.68) 56(84) bytes of data.
+64 bytes from kul08s07-in-f4.1e100.net (172.217.31.68): icmp_seq=1 ttl=109 time=21.8 ms
+
+--- www.google.com ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 21.832/21.832/21.832/0.000 ms
+$ 
+</pre>
+
+<pre>
+On host2: 
+$ pwd
+/home/openstack
+$ ls
+etc  images  scripts
+$ ls etc
+ovs-ifdown  ovs-ifup 
+$ ls -l images
+total 20417676
+-rw-r--r-- 1 openstack openstack 20907687936 Mar  5 10:57 vm2.img
+$ cd scripts/
+$ ls
+vm2.sh
+$
+$ vi vm2.sh
+$ cat vm2.sh
+#!/bin/bash
+numsmp="4"
+memsize="4G"
+etcloc=/home/openstack/etc
+imgloc=/home/openstack/images/
+imgfile="vm2.img"
+#
+exeloc="/usr/bin"
+#
+sudo ${exeloc}/qemu-system-x86_64 \
+     -enable-kvm \
+     -cpu host,kvm=off \
+     -smp ${numsmp} \
+     -m ${memsize} \
+     -drive file=${imgloc}/${imgfile},format=qcow2 \
+     -boot c \
+     -vnc :12 \
+     -qmp tcp::9121,server,nowait \
+     -monitor tcp::9122,server,nowait \
+     -netdev type=tap,script=${etcloc}/ovs-ifup,downscript=${etcloc}/ovs-ifdown,id=hostnet1 \
+     -device virtio-net-pci,romfile=,netdev=hostnet1,mac=00:71:50:b0:02:94 \
+     -rtc base=localtime,clock=vm 
+$ 
+</pre>
+
+<pre>
+On host2: 
+$ sudo ufw allow 5912
+$ ./vm2.sh & 
+</pre>
+
+<pre>
+On vm2: 
+$ sudo vi /etc/netplan/00-installer-config.yaml 
+$ cat /etc/netplan/00-installer-config.yaml 
+...
+network:
+  ethernets:
+    ens3:
+      addresses:
+        - 10.90.0.12/24
+      gateway4: 10.90.0.1
+      mtu: 1450
+      nameservers: 
+        addresses: 
+        - 8.8.8.8
+        search: 
+        - tu.ac.th
+  version: 2
+$ 
+$ sudo netplan apply
+</pre>
+
+<pre>
+On vm2: 
+$ ping -c 1 10.90.0.11
+PING 10.90.0.11 (10.90.0.11) 56(84) bytes of data.
+64 bytes from 10.90.0.11: icmp_seq=1 ttl=64 time=4.15 ms
+
+--- 10.90.0.11 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 4.153/4.153/4.153/0.000 ms
+$ ping -c 1 www.google.com
+PING www.google.com (172.217.174.164) 56(84) bytes of data.
+64 bytes from kul08s11-in-f4.1e100.net (172.217.174.164): icmp_seq=1 ttl=108 time=23.2 ms
+
+--- www.google.com ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 23.224/23.224/23.224/0.000 ms
+$ 
+</pre>
+
+<pre>
+On host3: 
+$ pwd
+/home/openstack
+$ ls
+etc  images  scripts
+$ ls etc
+ovs-ifdown  ovs-ifup
+$ 
+$ ls -l images
+total 19890244
+-rw-r--r-- 1 openstack openstack 20367605760 Mar  5 11:33 vm3.img
+$ 
+$ cd scripts/
+$ ls
+backup  vm3.sh
+$ vi vm3.sh
+$ cat vm3.sh
+#!/bin/bash
+numsmp="4"
+memsize="4G"
+etcloc=/home/openstack/etc
+imgloc=/home/openstack/images/
+imgfile="vm3.img"
+#
+exeloc="/usr/bin"
+#
+sudo ${exeloc}/qemu-system-x86_64 \
+     -enable-kvm \
+     -cpu host,kvm=off \
+     -smp ${numsmp} \
+     -m ${memsize} \
+     -drive file=${imgloc}/${imgfile},format=qcow2 \
+     -boot c \
+     -vnc :13 \
+     -qmp tcp::9131,server,nowait \
+     -monitor tcp::9132,server,nowait \
+     -netdev type=tap,script=${etcloc}/ovs-ifup,downscript=${etcloc}/ovs-ifdown,id=hostnet1 \
+     -device virtio-net-pci,romfile=,netdev=hostnet1,mac=00:71:50:b0:03:94 \
+     -rtc base=localtime,clock=vm 
+$ 
+</pre>
+
+<pre>
+On host3: 
+$ sudo ufw allow 5912
+$ ./vm3.sh & 
+</pre>
+
+<pre>
+On vm3: 
+$ vi /etc/netplan/00-installer-config.yaml 
+$ cat /etc/netplan/00-installer-config.yaml 
+network:
+  ethernets:
+    ens3:
+      addresses:
+        - 10.90.0.13/24
+      mtu: 1450
+      gateway4: 10.90.0.1
+      nameservers: 
+        addresses: 
+        - 8.8.8.8
+        search: 
+        - tu.ac.th
+  version: 2
+$  
+$ sudo netplan apply
+</pre>
+
+<pre>
+On vm3: 
+$ ping -c 1 www.google.com
+PING www.google.com (172.217.174.164) 56(84) bytes of data.
+64 bytes from kul08s11-in-f4.1e100.net (172.217.174.164): icmp_seq=1 ttl=108 time=32.4 ms
+
+--- www.google.com ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 32.378/32.378/32.378/0.000 ms
+$ 
 </pre>
 
 <!--

@@ -3109,11 +3109,10 @@ $
 </pre>
 
 <p><p>
-<a id="part5-3"><h2>5.7 การติดตั้ง MPI บนระบบคลัสเตอร์ของคอมพิวเตอร์เสมือน </h2></a>
+<a id="part5-3"><h2>5.7 การสร้างระบบคลัสเตอร์ของคอมพิวเตอร์เสมือน </h2></a>
 <p><p>
 <p><p>
 
-ติดตั้ง MPI (ทำใหม่บน saburo และ koji)
 
 <p><p>
   <img src="documents/ch5ovs15.png" width="700" height="380"> <br>
@@ -3121,16 +3120,258 @@ $
 <p><p> 
 
 <pre>
-On vm1: 
-$ vi /etc/hosts
-$ cat /etc/hosts
-127.0.0.1 localhost
-127.0.1.1 vm1
-10.90.0.11 vm1
-10.90.0.12 vm2
-10.90.0.13 vm3
-...
+On host h1: 
+$ kasidit@koji:~$ sudo ovs-vsctl add-br br-int1
+kasidit@koji:~$ sudo ovs-vsctl add-port br-int1 gw2 -- set interface gw2 type=internal
+kasidit@koji:~$ 
+kasidit@koji:~$ sudo vi /etc/netplan/00-installer-config.yaml 
+kasidit@koji:~$ cat /etc/netplan/00-installer-config.yaml
+# This is the network config written by 'subiquity'
+network:
+  ethernets:
+    eno1:
+      dhcp4: false
+    enp67s0f0:
+      addresses:
+      - 10.0.1.3/24
+    gw2: 
+      addresses: 
+      - 10.20.2.1/24
+      mtu: 1450
+  bridges:
+    br0:
+      interfaces: [ eno1 ]
+      parameters:
+        stp: true
+        forward-delay: 0
+      addresses:
+      - 10.100.20.3/24
+      gateway4: 10.100.20.1
+      nameservers:
+        addresses:
+        - 8.8.8.8
+        search:
+        - tu.ac.th
+  version: 2
+kasidit@koji:~$ 
 </pre>
+
+<pre>
+On host h1: 
+$ $ sudo nano /etc/sysctl.conf
+...เปลี่ยนบรรทัดนี้ดังข้างล่าง
+net.ipv4.ip_forward = 1
+...save ไฟล์
+$
+$ sudo sysctl -p 
+$
+$ sudo apt install ufw
+$ sudo ufw status
+Status: inactive
+$ sudo ufw allow ssh
+Rules updated
+Rules updated (v6)
+$ 
+$ sudo ufw enable
+$
+$ sudo vi /etc/default/ufw
+... เปลี่ยนค่าให้เป็นข้างล่าง
+DEFAULT_FORWARD_POLICY="ACCEPT"
+...
+...save ไฟล์
+$ 
+</pre>
+
+<pre>
+On host h1: 
+$ kasidit@koji:~$ sudo vi /etc/ufw/before.rules
+kasidit@koji:~$ sudo cat /etc/ufw/before.rules
+#
+# rules.before
+#
+# Rules that should be run before the ufw command line added rules. Custom
+# rules should be added to one of these chains:
+#   ufw-before-input
+#   ufw-before-output
+#   ufw-before-forward
+#
+# nat IP masquerade table
+\*nat
+:POSTROUTING ACCEPT [0:0]
+
+# Forward packets from the local network to br0
+-A POSTROUTING -s 10.20.2.0/24 -o br0 -j MASQUERADE
+
+COMMIT
+...
+$
+</pre>
+
+<pre>
+On host h1: 
+$ sudo ufw disable 
+$ sudo ufw enable
+</pre>
+
+<p><p>
+  <img src="documents/ch5ovs16.png" width="700" height="380"> <br>
+ภาพที่ 18
+<p><p> 
+
+<pre>
+On host h1: 
+$ cd /srv/kasidit/bookhosts/images
+$ cp vm1.img ubuntu2004.img
+$ qemu-img create -f qcow2 -b ubuntu2004.img mpi1.ovl
+Formatting 'mpi1.ovl', fmt=qcow2 size=536870912000 backing_file=ubuntu2004.img cluster_size=65536 lazy_refcounts=off refcount_bits=16
+$ qemu-img create -f qcow2 -b ubuntu2004.img mpi2.ovl
+Formatting 'mpi2.ovl', fmt=qcow2 size=536870912000 backing_file=ubuntu2004.img cluster_size=65536 lazy_refcounts=off refcount_bits=16
+$ 
+</pre>
+
+<pre> 
+ON host h2:
+$ cd /srv/kasidit/bookhosts/images
+$ cp vm1.img ubuntu2004.img
+$ qemu-img create -f qcow2 -b ubuntu2004.img mpi3.ovl
+Formatting 'mpi3.ovl', fmt=qcow2 size=536870912000 backing_file=ubuntu2004.img cluster_size=65536 lazy_refcounts=off refcount_bits=16
+$ qemu-img create -f qcow2 -b ubuntu2004.img mpi4.ovl
+Formatting 'mpi4.ovl', fmt=qcow2 size=536870912000 backing_file=ubuntu2004.img cluster_size=65536 lazy_refcounts=off refcount_bits=16
+$ 
+</pre>
+
+<pre>
+On host h1: 
+$ sudo ovs-vsctl add-br br-int1
+$ sudo ovs-vsctl add-br br-tun1
+$ sudo ovs-vsctl add-port br-tun1 eno4
+$ sudo ovs-vsctl add-port br-tun1 mtep1 -- set interface mtep1 type=internal
+$ sudo ip address add 192.168.7.11/24 dev mtep1
+$ sudo ifconfig eno4 up
+$ sudo ifconfig mtep1 up
+$ sudo vi /etc/netplan/00-installer-config.yaml 
+$ cat /etc/netplan/00-installer-config.yaml
+# This is the network config written by 'subiquity'
+network:
+  ethernets:
+    eno1:
+      dhcp4: false
+    gw2: 
+      addresses: 
+      - 10.20.2.1/24
+      mtu: 1450
+    mtep1: 
+      addresses: 
+      - 192.168.7.11/24
+      mtu: 1450
+  bridges:
+    br0:
+      interfaces: [ eno1 ]
+      parameters:
+        stp: true
+        forward-delay: 0
+      addresses:
+      - 10.100.20.3/24
+      gateway4: 10.100.20.1
+      nameservers:
+        addresses:
+        - 8.8.8.8
+        search:
+        - tu.ac.th
+  version: 2
+</pre>
+
+<pre>
+On host h1: 
+$ sudo netplan apply 
+</pre>
+
+<pre>
+On host h2: 
+$
+$ sudo ovs-vsctl add-br br-int1
+$ sudo ovs-vsctl add-br br-tun1
+$ sudo ovs-vsctl add-port br-tun1 eno4
+$ sudo ovs-vsctl add-port br-tun1 mtep1 -- set interface mtep1 type=internal
+$ sudo ip address add 192.168.7.12/24 dev mtep1
+$ sudo ifconfig eno4 up
+$ sudo ifconfig mtep1 up
+$ sudo vi /etc/netplan/00-installer-config.yaml
+$ cat /etc/netplan/00-installer-config.yaml
+# This is the network config written by 'subiquity'
+network:
+  ethernets:
+    eno1:
+      dhcp4: false
+    mtep1:
+      addresses:
+      - 191.168.7.12/24
+      mtu: 1450
+  bridges:
+    br0:
+      interfaces: [ eno1 ]
+      parameters:
+        stp: true
+        forward-delay: 0
+      addresses:
+        - 10.100.20.2/24
+      gateway4: 10.100.20.1
+      nameservers:
+        addresses:
+        - 8.8.8.8
+        search:
+        - tu.ac.th
+  version: 2
+$
+</pre>
+
+<pre>
+On host h2: 
+$ sudo netplan apply
+</pre>
+
+<pre>
+On host h1: 
+$ sudo ovs-vsctl add-port br-int1 mgre1 -- set interface mgre1 \
+  type=gre options:remote_ip=192.168.7.12
+$ sudo ifconfig gw2 up
+$ sudo ifconfig mtep1 up
+</pre>
+
+<pre>
+On host h2: 
+$ sudo ovs-vsctl add-port br-int1 mgre1 -- set interface mgre1  type=gre options:remote_ip=192.168.7.11
+$ sudo ovs-vsctl add-port br-int1 locif -- set interface locif type=internal
+$ sudo ip address add 10.20.2.22/24 dev locif
+$ sudo ifconfig locif up
+$ sudo ifconfig mtep1 up
+</pre>
+
+<pre>
+On host h1: 
+$ kasidit@koji:~$ ping -c 1 10.20.2.22
+PING 10.20.2.22 (10.20.2.22) 56(84) bytes of data.
+64 bytes from 10.20.2.22: icmp_seq=1 ttl=64 time=2.02 ms
+
+--- 10.20.2.22 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 2.022/2.022/2.022/0.000 ms
+$
+</pre>
+
+<pre>
+On host h2: 
+$ ping -c 1 10.20.2.1
+PING 10.20.2.1 (10.20.2.1) 56(84) bytes of data.
+64 bytes from 10.20.2.1: icmp_seq=1 ttl=64 time=1.49 ms
+
+--- 10.20.2.1 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 1.488/1.488/1.488/0.000 ms
+$
+</pre>
+
+
 
 
 

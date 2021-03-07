@@ -3184,11 +3184,11 @@ $
 
 <pre>
 On host h1: 
-$ kasidit@koji:~$ sudo ovs-vsctl add-br br-int1
-kasidit@koji:~$ sudo ovs-vsctl add-port br-int1 gw2 -- set interface gw2 type=internal
-kasidit@koji:~$ 
-kasidit@koji:~$ sudo vi /etc/netplan/00-installer-config.yaml 
-kasidit@koji:~$ cat /etc/netplan/00-installer-config.yaml
+$ sudo ovs-vsctl add-br br-int1
+$ sudo ovs-vsctl add-port br-int1 gw2 -- set interface gw2 type=internal
+$ 
+$ sudo vi /etc/netplan/00-installer-config.yaml 
+$ cat /etc/netplan/00-installer-config.yaml
 # This is the network config written by 'subiquity'
 network:
   ethernets:
@@ -3213,7 +3213,7 @@ network:
       - 10.20.2.1/24
       mtu: 1450
   version: 2
-kasidit@koji:~$ 
+$ 
 </pre>
 
 <pre>
@@ -3244,8 +3244,8 @@ $
 
 <pre>
 On host h1: 
-$ kasidit@koji:~$ sudo vi /etc/ufw/before.rules
-kasidit@koji:~$ sudo cat /etc/ufw/before.rules
+$ sudo vi /etc/ufw/before.rules
+$ sudo cat /etc/ufw/before.rules
 #
 # rules.before
 #
@@ -3408,7 +3408,7 @@ $ sudo ifconfig mtep1 up
 
 <pre>
 On host h1: 
-$ kasidit@koji:~$ ping -c 1 10.20.2.22
+$ ping -c 1 10.20.2.22
 PING 10.20.2.22 (10.20.2.22) 56(84) bytes of data.
 64 bytes from 10.20.2.22: icmp_seq=1 ttl=64 time=2.02 ms
 

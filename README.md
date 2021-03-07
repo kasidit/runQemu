@@ -1043,7 +1043,7 @@ $ sudo nano /etc/ufw/before.rules
 #   ufw-before-forward
 #
 # nat IP masquerade table
-*nat
+\*nat
 :POSTROUTING ACCEPT [0:0]
 
 #Forward packets from the local network to br0
@@ -1371,6 +1371,21 @@ $ cat /etc/hosts
 ...
 snip
 ...
+$ cat /etc/netplan/00-installer-config.yaml
+...
+network:
+  ethernets:
+    ens3:
+      addresses:
+        - 10.90.0.11/24
+      gateway4: 10.90.0.1
+      nameservers: 
+        addresses: 
+        - 8.8.8.8
+        search: 
+        - tu.ac.th
+  version: 2
+$
 $ cat /etc/netplan/00-installer-config.yaml | grep 10.90.0.11
         - 10.90.0.11/24
 $ sudo sed -i "s/10.90.0.11/10.90.0.12/g" /etc/netplan/00-installer-config.yaml
@@ -1568,6 +1583,21 @@ $ cat /etc/hosts
 ...
 snip
 ...
+$ cat /etc/netplan/00-installer-config.yaml
+...
+network:
+  ethernets:
+    ens3:
+      addresses:
+        - 10.90.0.11/24
+      gateway4: 10.90.0.1
+      nameservers: 
+        addresses: 
+        - 8.8.8.8
+        search: 
+        - tu.ac.th
+  version: 2
+$
 $ cat /etc/netplan/00-installer-config.yaml | grep 10.90.0.11
         - 10.90.0.11/24
 $ sudo sed -i "s/10.90.0.11/10.90.0.13/g" /etc/netplan/00-installer-config.yaml
@@ -1744,6 +1774,21 @@ $
 
 <pre>
 On vm2: 
+$ cat /etc/netplan/00-installer-config.yaml
+...
+network:
+  ethernets:
+    ens3:
+      addresses:
+        - 10.90.0.12/24
+      gateway4: 10.90.0.1
+      nameservers: 
+        addresses: 
+        - 8.8.8.8
+        search: 
+        - tu.ac.th
+  version: 2
+$
 $ cat /etc/netplan/00-installer-config.yaml | grep 10.90.0.12
         - 10.90.0.12/24
 $ sudo sed -i "s/10.90.0.12/10.90.0.11/g" /etc/netplan/00-installer-config.yaml
@@ -1853,6 +1898,21 @@ $
 <pre>
 On vm4: 
 $ 
+$ cat /etc/netplan/00-installer-config.yaml
+...
+network:
+  ethernets:
+    ens3:
+      addresses:
+        - 10.90.0.14/24
+      gateway4: 10.90.0.1
+      nameservers: 
+        addresses: 
+        - 8.8.8.8
+        search: 
+        - tu.ac.th
+  version: 2
+$
 $ cat /etc/netplan/00-installer-config.yaml | grep 10.90.0.14
         - 10.90.0.14/24
 $ sudo sed -i "s/10.90.0.14/10.90.0.13/g" /etc/netplan/00-installer-config.yaml
@@ -2366,7 +2426,6 @@ $ sudo ip link set dev gw1 mtu 1450
 host1: 
 $ sudo vi /etc/netplan/00-installer-config.yaml
 $ cat /etc/netplan/00-installer-config.yaml
-$ cat /etc/netplan/00-installer-config.yaml
 ...
 network:
   ethernets:
@@ -2375,6 +2434,7 @@ network:
     enp67s0f0:
       addresses:
       - 10.0.1.3/24
+  bridges:
     gw1: 
       addresses: 
       - 10.90.0.1/24
@@ -2611,6 +2671,7 @@ network:
         - 8.8.8.8
         search: 
         - tu.ac.th
+  bridges:
     gw1:
       addresses:
         - 10.90.0.1/24
@@ -2749,6 +2810,7 @@ network:
         - 8.8.8.8
         search: 
         - tu.ac.th
+  bridges:
     locif:
       addresses:
         - 10.90.0.22/24
@@ -2869,6 +2931,7 @@ network:
         - 8.8.8.8
         search: 
         - tu.ac.th
+  bridges:
     locif:
       addresses:
         - 10.90.0.23/24
@@ -3131,13 +3194,6 @@ network:
   ethernets:
     eno1:
       dhcp4: false
-    enp67s0f0:
-      addresses:
-      - 10.0.1.3/24
-    gw2: 
-      addresses: 
-      - 10.20.2.1/24
-      mtu: 1450
   bridges:
     br0:
       interfaces: [ eno1 ]
@@ -3152,6 +3208,10 @@ network:
         - 8.8.8.8
         search:
         - tu.ac.th
+    gw2: 
+      addresses: 
+      - 10.20.2.1/24
+      mtu: 1450
   version: 2
 kasidit@koji:~$ 
 </pre>
@@ -3256,14 +3316,6 @@ network:
   ethernets:
     eno1:
       dhcp4: false
-    gw2: 
-      addresses: 
-      - 10.20.2.1/24
-      mtu: 1450
-    mtep1: 
-      addresses: 
-      - 192.168.7.11/24
-      mtu: 1450
   bridges:
     br0:
       interfaces: [ eno1 ]
@@ -3278,6 +3330,13 @@ network:
         - 8.8.8.8
         search:
         - tu.ac.th
+    gw2: 
+      addresses: 
+      - 10.20.2.1/24
+      mtu: 1450
+    mtep1: 
+      addresses: 
+      - 192.168.7.11/24
   version: 2
 </pre>
 
@@ -3303,10 +3362,6 @@ network:
   ethernets:
     eno1:
       dhcp4: false
-    mtep1:
-      addresses:
-      - 191.168.7.12/24
-      mtu: 1450
   bridges:
     br0:
       interfaces: [ eno1 ]
@@ -3321,6 +3376,9 @@ network:
         - 8.8.8.8
         search:
         - tu.ac.th
+    mtep1:
+      addresses:
+      - 191.168.7.12/24
   version: 2
 $
 </pre>
@@ -3340,7 +3398,8 @@ $ sudo ifconfig mtep1 up
 
 <pre>
 On host h2: 
-$ sudo ovs-vsctl add-port br-int1 mgre1 -- set interface mgre1  type=gre options:remote_ip=192.168.7.11
+$ sudo ovs-vsctl add-port br-int1 mgre1 -- set interface mgre1 \
+  type=gre options:remote_ip=192.168.7.11
 $ sudo ovs-vsctl add-port br-int1 locif -- set interface locif type=internal
 $ sudo ip address add 10.20.2.22/24 dev locif
 $ sudo ifconfig locif up
@@ -3371,10 +3430,197 @@ rtt min/avg/max/mdev = 1.488/1.488/1.488/0.000 ms
 $
 </pre>
 
+<pre>
+On host h1: 
+$ sudo ovs-vsctl show
+    Bridge br-tun1
+        Port mtep1
+            Interface mtep1
+                type: internal
+        Port eno4
+            Interface eno4
+        Port br-tun1
+            Interface br-tun1
+                type: internal
+    Bridge br-int1
+        Port gw2
+            Interface gw2
+                type: internal
+        Port br-int1
+            Interface br-int1
+                type: internal
+        Port mgre1
+            Interface mgre1
+                type: gre
+                options: {remote_ip="192.168.7.12"}
+...
+$
+</pre>
 
+<pre>
+On host h2: 
+$
+$ sudo ovs-vsctl show
+...
+    Bridge br-int1
+        Port br-int1
+            Interface br-int1
+                type: internal
+        Port locif
+            Interface locif
+                type: internal
+        Port mgre1
+            Interface mgre1
+                type: gre
+                options: {remote_ip="192.168.7.11"}
+    Bridge br-tun1
+        Port mtep1
+            Interface mtep1
+                type: internal
+        Port br-tun1
+            Interface br-tun1
+                type: internal
+        Port eno4
+            Interface eno4
+...
+$
+</pre>
 
+<pre>
+On host h1: 
+$ sudo ovs-vsctl add-port br-int2 mgre2 -- set interface mgre2  type=gre options:remote_ip=192.168.2.12
+$ sudo ovs-vsctl add-port br-int2 locif2 -- set interface locif2 type=internal
+$ sudo ip address add 10.0.8.11/24 dev locif2
+$ sudo ifconfig locif2 up
+</pre>
 
+<pre>
+On host h2: 
+$ sudo ovs-vsctl add-port br-int2 mgre2 -- set interface mgre2  type=gre options:remote_ip=192.168.2.11
+$ sudo ovs-vsctl add-port br-int2 locif2 -- set interface locif2 type=internal
+$ sudo ip address add 10.0.8.22/24 dev locif2
+$ sudo ifconfig locif2 up
+</pre>
 
+<pre>
+On host h1: 
+$ ping -c 1 10.0.8.22
+PING 10.0.8.22 (10.0.8.22) 56(84) bytes of data.
+64 bytes from 10.0.8.22: icmp_seq=1 ttl=64 time=1.65 ms
+
+--- 10.0.8.22 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 1.646/1.646/1.646/0.000 ms
+$
+</pre>
+
+<pre>
+On host h2:
+$ ping -c 1 10.0.8.11
+PING 10.0.8.11 (10.0.8.11) 56(84) bytes of data.
+64 bytes from 10.0.8.11: icmp_seq=1 ttl=64 time=1.93 ms
+
+--- 10.0.8.11 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 1.927/1.927/1.927/0.000 ms
+$
+</pre>
+
+<pre>
+On host h1: 
+$ $ sudo ovs-vsctl show
+bf1234bc-a7da-4a73-b6ca-b1a3fd27b8d1
+    Bridge br-tun1
+        Port mtep1
+            Interface mtep1
+                type: internal
+        Port eno4
+            Interface eno4
+        Port br-tun1
+            Interface br-tun1
+                type: internal
+    Bridge br-int2
+        Port br-int2
+            Interface br-int2
+                type: internal
+        Port mgre2
+            Interface mgre2
+                type: gre
+                options: {remote_ip="192.168.2.12"}
+        Port locif2
+            Interface locif2
+                type: internal
+    Bridge br-int1
+        Port gw2
+            Interface gw2
+                type: internal
+        Port br-int1
+            Interface br-int1
+                type: internal
+        Port mgre1
+            Interface mgre1
+                type: gre
+                options: {remote_ip="192.168.7.12"}
+    Bridge br-tun2
+        Port mtep2
+            Interface mtep2
+                type: internal
+        Port br-tun2
+            Interface br-tun2
+                type: internal
+        Port enp68s0f1
+            Interface enp68s0f1
+...
+$ 
+</pre>
+
+<pre>
+On host h2: 
+$ sudo ovs-vsctl show
+...
+    Bridge br-int2
+        Port mgre2
+            Interface mgre2
+                type: gre
+                options: {remote_ip="192.168.2.11"}
+        Port locif2
+            Interface locif2
+                type: internal
+        Port br-int2
+            Interface br-int2
+                type: internal
+    Bridge br-int1
+        Port br-int1
+            Interface br-int1
+                type: internal
+        Port locif
+            Interface locif
+                type: internal
+        Port mgre1
+            Interface mgre1
+                type: gre
+                options: {remote_ip="192.168.7.11"}
+    Bridge br-tun2
+        Port enp68s0f1
+            Interface enp68s0f1
+        Port br-tun2
+            Interface br-tun2
+                type: internal
+        Port mtep2
+            Interface mtep2
+                type: internal
+    Bridge br-tun1
+        Port mtep1
+            Interface mtep1
+                type: internal
+        Port br-tun1
+            Interface br-tun1
+                type: internal
+        Port eno4
+            Interface eno4
+...
+$
+</pre>
 
 
 

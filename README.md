@@ -3528,8 +3528,8 @@ $
 
 <pre>
 On host h1: 
-$ $ sudo ovs-vsctl show
-bf1234bc-a7da-4a73-b6ca-b1a3fd27b8d1
+$ sudo ovs-vsctl show
+...
     Bridge br-tun1
         Port mtep1
             Interface mtep1

@@ -3490,7 +3490,7 @@ $
 On host h1: 
 $ sudo ovs-vsctl add-port br-int2 mgre2 -- set interface mgre2  type=gre options:remote_ip=192.168.2.12
 $ sudo ovs-vsctl add-port br-int2 locif2 -- set interface locif2 type=internal
-$ sudo ip address add 10.0.8.11/24 dev locif2
+$ sudo ip address add 10.0.8.21/24 dev locif2
 $ sudo ifconfig locif2 up
 </pre>
 
@@ -3516,11 +3516,11 @@ $
 
 <pre>
 On host h2:
-$ ping -c 1 10.0.8.11
-PING 10.0.8.11 (10.0.8.11) 56(84) bytes of data.
-64 bytes from 10.0.8.11: icmp_seq=1 ttl=64 time=1.93 ms
+$ ping -c 1 10.0.8.21
+PING 10.0.8.21 (10.0.8.21) 56(84) bytes of data.
+64 bytes from 10.0.8.21: icmp_seq=1 ttl=64 time=1.93 ms
 
---- 10.0.8.11 ping statistics ---
+--- 10.0.8.21 ping statistics ---
 1 packets transmitted, 1 received, 0% packet loss, time 0ms
 rtt min/avg/max/mdev = 1.927/1.927/1.927/0.000 ms
 $
@@ -3622,6 +3622,48 @@ $ sudo ovs-vsctl show
 $
 </pre>
 
+<pre>
+On host h1 and h2: 
+$ cd /srv/kasidit/bookhosts/etc
+$
+$ which ifconfig
+/usr/sbin/ifconfig
+$ which ovs-vsctl
+/usr/bin/ovs-vsctl
+$
+$ cp ovs-ifup ovs-int1-ifup
+$ cp ovs-ifdown ovs-int1-ifdown
+$ vi ovs-int1-ifup
+$ cat ovs-int1-ifup
+#!/bin/sh
+switch='br-int1'
+/usr/sbin/ifconfig $1 0.0.0.0 up
+/usr/bin/ovs-vsctl add-port ${switch} $1
+$
+$ vi ovs-int1-ifdown
+$ cat ovs-int1-ifdown
+#!/bin/sh
+switch='br-int1'
+/usr/sbin/ifconfig $1 0.0.0.0 down
+/usr/bin/ovs-vsctl del-port ${switch} $1
+$
+$ cp ovs-ifup ovs-int2-ifup
+$ cp ovs-ifdown ovs-int2-ifdown
+$ vi ovs-int2-ifup
+$ vi ovs-int2-ifdown
+$ cat ovs-int2-ifup
+#!/bin/sh
+switch='br-int2'
+/usr/sbin/ifconfig $1 0.0.0.0 up
+/usr/bin/ovs-vsctl add-port ${switch} $1
+$
+$ cat ovs-int2-ifdown
+#!/bin/sh
+switch='br-int2'
+/usr/sbin/ifconfig $1 0.0.0.0 down
+/usr/bin/ovs-vsctl del-port ${switch} $1
+$ 
+</pre>
 
 
 

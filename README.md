@@ -3665,8 +3665,163 @@ switch='br-int2'
 $ 
 </pre>
 
+<pre>
+On host h1: 
+$
+$ cd /srv/kasidit/bookhosts/scripts
+$  ls -l ../images/
+total 89425352
+-rw-r--r-- 1 kasidit kasidit      204608 Mar  6 16:24 mpi1.ovl
+-rw-r--r-- 1 kasidit kasidit      204608 Mar  6 16:24 mpi2.ovl
+-rw-r--r-- 1 kasidit kasidit 20483211264 Mar  6 16:23 ubuntu2004.img
+$
+$ vi mpi1.sh
+$ cat mpi1.sh
+#!/bin/bash
+numsmp="6"
+memsize="8G"
+etcloc=/srv/kasidit/bookhosts/etc
+imgloc=/srv/kasidit/bookhosts/images/
+imgfile="mpi1.ovl"
+#
+exeloc="/usr/bin"
+#
+sudo ${exeloc}/qemu-system-x86_64 \
+     -enable-kvm \
+     -cpu host,kvm=off \
+     -smp ${numsmp} \
+     -m ${memsize} \
+     -drive file=${imgloc}/${imgfile},format=qcow2 \
+     -boot c \
+     -vnc :21 \
+     -qmp tcp::9211,server,nowait \
+     -monitor tcp::9212,server,nowait \
+     -netdev type=tap,script=${etcloc}/ovs-int1-ifup,downscript=${etcloc}/ovs-int1-ifdown,id=hostnet0 \
+     -device virtio-net-pci,romfile=,netdev=hostnet0,mac=00:81:ff:b1:01:94 \
+     -netdev type=tap,script=${etcloc}/ovs-int2-ifup,downscript=${etcloc}/ovs-int2-ifdown,id=hostnet1 \
+     -device virtio-net-pci,romfile=,netdev=hostnet1,mac=00:81:ff:b0:01:94 \
+     -rtc base=localtime,clock=vm 
+$
+</pre>
 
+<pre>
+On host h1: 
+$  sudo ufw allow 5921
+Rule added
+Rule added (v6)
+$ 
+$ ./mpi1.sh &
+$
+</pre>
 
+<pre>
+On any host in 10.100.20.0/24 subnet: 
+$
+$ xtightvncviewer 10.100.20.3:21 &
+</pre>
+
+<pre>
+On vm mpi1: 
+$ sudo vi /etc/hostname
+$ cat /etc/hostname
+mpi1
+$ sudo vi /etc/hosts
+$ cat /etc/hosts
+127.0.0.1 localhost
+127.0.1.1 mpi1
+...
+$ sudo reboot
+</pre>
+
+<pre>
+On vm mpi1:
+$ sudo vi /etc/netplan/00-installer-config.yaml 
+$ 
+$ cat /etc/netplan/00-installer-config.yaml
+...
+network:
+  ethernets:
+    ens3:
+      addresses:
+        - 10.20.2.11/24
+      mtu: 1450
+      gateway4: 10.20.2.1
+      nameservers: 
+        addresses: 
+        - 8.8.8.8
+        search: 
+        - tu.ac.th
+    ens4:
+      addresses:
+        - 10.0.8.11/24
+      mtu: 1450
+  version: 2
+openstack@vm1:~$ 
+$
+$ sudo netplan apply
+</pre>
+
+<pre>
+On vm mpi1: 
+$ ifconfig
+ens3: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1450
+        inet 10.20.2.11  netmask 255.255.255.0  broadcast 10.20.2.255
+        inet6 fe80::281:ffff:feb1:194  prefixlen 64  scopeid 0x20<link>
+        ether 00:81:ff:b1:01:94  txqueuelen 1000  (Ethernet)
+        RX packets 6087  bytes 28619734 (28.6 MB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 2429  bytes 197501 (197.5 KB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+ens4: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1450
+        inet 10.0.8.11  netmask 255.255.255.0  broadcast 10.0.8.255
+        inet6 fe80::281:ffff:feb0:194  prefixlen 64  scopeid 0x20<link>
+        ether 00:81:ff:b0:01:94  txqueuelen 1000  (Ethernet)
+        RX packets 22  bytes 1600 (1.6 KB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 20  bytes 1496 (1.4 KB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+        inet 127.0.0.1  netmask 255.0.0.0
+        inet6 ::1  prefixlen 128  scopeid 0x10<host>
+        loop  txqueuelen 1000  (Local Loopback)
+        RX packets 118  bytes 9599 (9.5 KB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 118  bytes 9599 (9.5 KB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+$ ping -c 1 www.google.com
+PING www.google.com (216.58.196.4) 56(84) bytes of data.
+64 bytes from kul01s11-in-f4.1e100.net (216.58.196.4): icmp_seq=1 ttl=108 time=22.3 ms
+
+--- www.google.com ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 22.261/22.261/22.261/0.000 ms
+
+$ ping -c 1 10.20.2.22
+PING 10.20.2.22 (10.20.2.22) 56(84) bytes of data.
+64 bytes from 10.20.2.22: icmp_seq=1 ttl=64 time=2.23 ms
+
+--- 10.20.2.22 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 2.226/2.226/2.226/0.000 ms
+$ ping -c 1 10.0.8.21
+PING 10.0.8.21 (10.0.8.21) 56(84) bytes of data.
+64 bytes from 10.0.8.21: icmp_seq=1 ttl=64 time=0.575 ms
+
+--- 10.0.8.21 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 0.575/0.575/0.575/0.000 ms
+$ ping -c 1 10.0.8.22
+PING 10.0.8.22 (10.0.8.22) 56(84) bytes of data.
+64 bytes from 10.0.8.22: icmp_seq=1 ttl=64 time=2.22 ms
+
+--- 10.0.8.22 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 2.224/2.224/2.224/0.000 ms
+$ 
+</pre>
 
 
 

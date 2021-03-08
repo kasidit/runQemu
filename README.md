@@ -3762,6 +3762,12 @@ $ sudo netplan apply
 </pre>
 
 <pre>
+On host h1: 
+$
+$ ssh openstack@10.20.2.11
+</pre>
+
+<pre>
 On vm mpi1: 
 $ ifconfig
 ens3: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1450

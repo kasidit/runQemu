@@ -1043,7 +1043,7 @@ $ sudo nano /etc/ufw/before.rules
 #   ufw-before-forward
 #
 # nat IP masquerade table
-\*nat
+*nat
 :POSTROUTING ACCEPT [0:0]
 
 #Forward packets from the local network to br0
@@ -3256,7 +3256,7 @@ $ sudo cat /etc/ufw/before.rules
 #   ufw-before-forward
 #
 # nat IP masquerade table
-\*nat
+*nat
 :POSTROUTING ACCEPT [0:0]
 
 # Forward packets from the local network to br0

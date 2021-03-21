@@ -176,9 +176,6 @@ $
 <p><p>
 หลังจากนั้นก็ compile ด้วยคำสั่ง "make" ซึ่งจะใช้เวลาพอสมควร และติดตั้งสู่ prefix directory ด้วย "make install"
 <pre>
-$ mkdir $HOME/qemu
-$ echo $HOME
-/home/openstack
 $ ../configure --prefix=$HOME/qemu --target-list=x86_64-softmmu,x86_64-linux-user --enable-kvm
 ...
 $

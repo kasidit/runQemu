@@ -1,4 +1,4 @@
-<h1>Tutorial: การใช้งาน QEMU-KVM และการสร้าง Virtual Network เบื้องต้น</h1>
+<h1>Tutorial: การใช้งาน QEMU-KVM และการสร้างและใช้งาน Virtual Network เบื้องต้น</h1>
 <ul>
  <li> <a href="#part1">1. ติดตั้ง qemu-kvm บน host server </a>
        <ul>

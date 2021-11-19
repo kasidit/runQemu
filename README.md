@@ -1,4 +1,4 @@
-<a href=""><h1>Tutorial: การใช้งาน QEMU-KVM บน Ubuntu 20.04 เบื้องต้น (version ใหม่บน wiki)</h1></a>
+<a href="https://github.com/kasidit/runQemu/wiki"><h1>Tutorial: การใช้งาน QEMU-KVM บน Ubuntu 20.04 เบื้องต้น (version ใหม่บน wiki)</h1></a>
 <h1>Tutorial: การใช้งาน QEMU-KVM และการสร้างและใช้งาน Virtual Network เบื้องต้น (Ubuntu 16.04)</h1>
 <ul>
  <li> <a href="#part1">1. ติดตั้ง qemu-kvm บน host server </a>

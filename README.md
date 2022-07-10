@@ -111,7 +111,7 @@ $
 ในกรณีติดตั้งโดยใช้ apt นศ สามารถใช้คำสั่งต่อไปนี้ แต่ถ้าจะติดตั้งโดยการ compile source code ขอให้ข้ามสองคำสั่งนี้ไป เพื่อความรวดเร็วขอให้กำหนดค่า repository ใน /etc/apt/sources.list ให้ใช้ th.archive.ubuntu.com repository 
 <pre>
 $ sudo apt-get update
-$ sudo apt-get install qemu-kvm libvirt-bin ubuntu-vm-builder 
+$ sudo apt-get install qemu-kvm  
 $
 </pre>
 <p><p>
@@ -301,8 +301,7 @@ sudo ${exeloc}/qemu-system-x86_64 \
      -drive file=${imgloc}/${imgfile},format=qcow2 \
      -boot d -cdrom ${isoloc}/ubuntu-16.04.6-server-amd64.iso \
      -vnc :95 \
-     -net nic -net user \
-     -localtime
+     -net nic -net user 
 $
 </pre>
 เราใช้คำสั่ง which เพื่อเช็คว่า qemu-system-x86_64 executable อยู่ใน directory ใด และพารามีเตอร์ที่กำหนดใช้กับคำสั่ง qemu-system-x86_64 ใน script มีความหมายดังนี้
@@ -532,8 +531,7 @@ sudo ${exeloc}/qemu-system-x86_64 \
      -drive file=${imgloc}/${imgfile},format=qcow2 \
      <b>-boot c </b> \
      -vnc :95 \
-     -net nic -net user \
-     -localtime
+     -net nic -net user 
 $
 </pre>
 ขอให้ นศ สังเกตุว่า "-boot c" หมายถึง boot vm จาก hard disk image แทนที่จะเป็นจาก cdrom
@@ -626,8 +624,7 @@ sudo ${exeloc}/qemu-system-x86_64 \
      -m ${memsize} -drive file=${imgloc}/${imgfile},format=qcow2 \
      -boot c \
      -vnc :95 \
-     -net nic -net user \
-     -localtime
+     -net nic -net user 
 $
 $ ./runQemu-on-base-qcow2-ovl.sh &
 [1] 19540
@@ -858,7 +855,7 @@ sudo ${exeloc}/qemu-system-x86_64 \
      -vnc :95 \
      -netdev type=tap,script=${HOME}/etc/qemu-ifup,downscript=${HOME}/etc/qemu-ifdown,id=hostnet10 \
      -device virtio-net-pci,romfile=,netdev=hostnet10,mac=00:71:50:00:01:51 \
-     -localtime
+     
 $
 $ ./runQemu-on-br-network.sh &
 ...
@@ -967,8 +964,8 @@ sudo ${exeloc}/qemu-system-x86_64 \
      -boot c \
      -vnc :95 \
      <b>-netdev type=tap,script=${HOME}/etc/ovs-ifup,downscript=${HOME}/etc/ovs-ifdown,id=hostnet10 \</b>
-     -device virtio-net-pci,romfile=,netdev=hostnet10,mac=00:71:50:00:01:51 \
-     -localtime
+     -device virtio-net-pci,romfile=,netdev=hostnet10,mac=00:71:50:00:01:51 
+     
 $
 $ ./vm.sh &
 ...

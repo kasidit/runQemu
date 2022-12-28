@@ -22,7 +22,5 @@
 <li><a href="https://github.com/kasidit/container-study/wiki/1-structure-of-container">01.โครงสร้างของคอนเทนเนอร์เบื้องต้น</a>
 <li><a href="https://github.com/kasidit/container-study/wiki/2-build-a-toy-container">02.ทดลองสร้างคอนเทนเนอร์ด้วยตนเอง</a>
 </ul>
-<ul>
 <li><a href="https://github.com/kasidit/runQemu/blob/master/basic-qemu-on-ubuntu-16.04">Tutorial: การใช้งาน QEMU-KVM และ Network Virtualization เบื้องต้น (บน Ubuntu 16.04)</a>
-</ul>
 </ul>

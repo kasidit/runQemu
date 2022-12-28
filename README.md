@@ -26,33 +26,33 @@
 <ul>
  <li> <a href="https://github.com/kasidit/runQemu/blob/master/basic-qemu-on-ubuntu-16.04.md#part1">1. ติดตั้ง qemu-kvm บน host server </a>
        <ul>
-       <li> <a href="#part1-1">1.1 ติดตั้งจาก ubuntu repository</a>
-       <li> <a href="#part1-2">1.2 compile และติดตั้งจาก source code</a>
+       <li> <a href="https://github.com/kasidit/runQemu/blob/master/basic-qemu-on-ubuntu-16.04.md#part1-1">1.1 ติดตั้งจาก ubuntu repository</a>
+       <li> <a href="https://github.com/kasidit/runQemu/blob/master/basic-qemu-on-ubuntu-16.04.md#part1-2">1.2 compile และติดตั้งจาก source code</a>
       </ul>
- <li> <a href="#part2">2. สร้าง virtual hard disk ด้วย qemu-img</a> 
+ <li> <a href="https://github.com/kasidit/runQemu/blob/master/basic-qemu-on-ubuntu-16.04.md#part2">2. สร้าง virtual hard disk ด้วย qemu-img</a> 
       <ul>
-       <li> <a href="#part2-2">2.1 disk format แบบ raw</a>
-       <li> <a href="#part2-1">2.2 disk format แบบ qcow2</a>
+       <li> <a href="https://github.com/kasidit/runQemu/blob/master/basic-qemu-on-ubuntu-16.04.md#part2-2">2.1 disk format แบบ raw</a>
+       <li> <a href="https://github.com/kasidit/runQemu/blob/master/basic-qemu-on-ubuntu-16.04.md#part2-1">2.2 disk format แบบ qcow2</a>
       </ul>
-<li> <a href="#part3">3 การติดตั้ง Guest OS แบบ ubuntu 16.04 บน virtual disks</a> 
+<li> <a href="https://github.com/kasidit/runQemu/blob/master/basic-qemu-on-ubuntu-16.04.md#part3">3 การติดตั้ง Guest OS แบบ ubuntu 16.04 บน virtual disks</a> 
       <ul>
-       <li> <a href="#part3-1">3.1 การใช้ vnc console</a>
-       <li> <a href="#part3-2">3.2 แนะนำ qemu monitor</a>
-       <li> <a href="#part3-3">3.3 ติดตั้ง guest OS แบบ btrfs file system บน raw disk</a>
-       <li> <a href="#part3-4">3.4 รัน vm หลังจากการติดตั้ง และใช้ NAT network</a>
-       <li> <a href="#part3-5">3.5 สร้าง disk แบบ qcow2 overlay</a>
+       <li> <a href="https://github.com/kasidit/runQemu/blob/master/basic-qemu-on-ubuntu-16.04.md#part3-1">3.1 การใช้ vnc console</a>
+       <li> <a href="https://github.com/kasidit/runQemu/blob/master/basic-qemu-on-ubuntu-16.04.md#part3-2">3.2 แนะนำ qemu monitor</a>
+       <li> <a href="https://github.com/kasidit/runQemu/blob/master/basic-qemu-on-ubuntu-16.04.md#part3-3">3.3 ติดตั้ง guest OS แบบ btrfs file system บน raw disk</a>
+       <li> <a href="https://github.com/kasidit/runQemu/blob/master/basic-qemu-on-ubuntu-16.04.md#part3-4">3.4 รัน vm หลังจากการติดตั้ง และใช้ NAT network</a>
+       <li> <a href="https://github.com/kasidit/runQemu/blob/master/basic-qemu-on-ubuntu-16.04.md#part3-5">3.5 สร้าง disk แบบ qcow2 overlay</a>
       </ul>
 <li> <a href="#part4">4. การเชื่อมต่อ kvm เข้ากับ L2 Network ด้วย Linux Bridge</a>
       <ul>
-       <li> <a href="#part4-1">4.1 ติดตั้ง bridge-utils และกำหนดค่า bridge br0 บน host</a>
-       <li> <a href="#part4-2">4.2 กำหนดให้ kvm เชือมต่อกับ bridge br0 และรัน kvm</a>
+       <li> <a href="https://github.com/kasidit/runQemu/blob/master/basic-qemu-on-ubuntu-16.04.md#part4-1">4.1 ติดตั้ง bridge-utils และกำหนดค่า bridge br0 บน host</a>
+       <li> <a href="https://github.com/kasidit/runQemu/blob/master/basic-qemu-on-ubuntu-16.04.md#part4-2">4.2 กำหนดให้ kvm เชือมต่อกับ bridge br0 และรัน kvm</a>
       </ul>
-<li> <a href="#part5">5. การเชื่อมต่อ kvm เข้ากับ L2 Network ด้วย openvswitch</a> 
+<li> <a href="https://github.com/kasidit/runQemu/blob/master/basic-qemu-on-ubuntu-16.04.md#part5">5. การเชื่อมต่อ kvm เข้ากับ L2 Network ด้วย openvswitch</a> 
       <ul>
-       <li> <a href="#part5-1">5.1 การเชื่อมต่อ switch สู่ Internet ด้วย IP Masqurade</a>
-       <li> <a href="#part5-2">5.2 การเชื่อมต่อ physical host เข้ากับ openvswitch switch เบื้องต้น</a>
+       <li> <a href="https://github.com/kasidit/runQemu/blob/master/basic-qemu-on-ubuntu-16.04.md#part5-1">5.1 การเชื่อมต่อ switch สู่ Internet ด้วย IP Masqurade</a>
+       <li> <a href="https://github.com/kasidit/runQemu/blob/master/basic-qemu-on-ubuntu-16.04.md#part5-2">5.2 การเชื่อมต่อ physical host เข้ากับ openvswitch switch เบื้องต้น</a>
       </ul>
-<li> <a href="#part7">7. กำหนดให้ ubuntu 16.04 host สนับสนุนการทำงานแบบ nested virtualization</a>
-<li> <a href="#part8">8. การทำ live migration ของ vm</a> <br>
+<li> <a href="https://github.com/kasidit/runQemu/blob/master/basic-qemu-on-ubuntu-16.04.md#part7">7. กำหนดให้ ubuntu 16.04 host สนับสนุนการทำงานแบบ nested virtualization</a>
+<li> <a href="https://github.com/kasidit/runQemu/blob/master/basic-qemu-on-ubuntu-16.04.md#part8">8. การทำ live migration ของ vm</a> <br>
 </ul>
 </ul>

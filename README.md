@@ -13,7 +13,7 @@
 <li><a href="https://github.com/kasidit/runQemu/wiki/09-using-IP-masquarade">09.การสร้างและใช้งานเร้าเตอร์เสมือนด้วยไอพีมาสควอเรด</a>
 <li><a href="https://github.com/kasidit/runQemu/wiki/10-ovs-connections">10.การเชื่อมต่อเครื่องโฮสต์เข้ากับซอฟต์แวร์สวิตช์แบบโอเพนวีสวิตช์</a>
 <li><a href="https://github.com/kasidit/runQemu/wiki/11-connecting-bridges-across-hosts">11.การเชื่อมต่อสวิตช์เสมือนข้ามเครื่องโฮสต์เพื่อขยายระบบเครือข่ายเสมือน</a>
-<li><a href="https://github.com/kasidit/runQemu/wiki/12-using-VLAN">12.การสร้างและใช้งาน VLAN บนระบบเครือข่ายเสมือ</a>
+<li><a href="https://github.com/kasidit/runQemu/wiki/12-using-VLAN">12.การสร้างและใช้งาน VLAN บนระบบเครือข่ายเสมือน</a>
 <li><a href="https://github.com/kasidit/runQemu/wiki/13-GRE-tunneling">13.การสร้างและใช้งานจีอาร์อีทันเนิลบนระบบเครือข่ายเสมือน</a>
 <li><a href="https://github.com/kasidit/runQemu/wiki/14-summary">14.บทสรุป</a>
 </ul>

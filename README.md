@@ -10,6 +10,7 @@
 <li><a href="https://github.com/kasidit/runQemu/wiki/06-Linux-bridge-network">06.การเชื่อมต่อ คิวอีมู เข้ากับ L2 Network ด้วยลินุกซ์บริดจ์</a>
 <li><a href="https://github.com/kasidit/notes-on-distributed-computing/wiki/4.-How-to-set-an-ovs-bridge-port-(internal-interface)-as-the-default-network-interface-of-a-host-computer">---> 06.5. การใช้โอเพ่นวีสวิตช์เป็น บริดจ์สวิตช์แทนที่จะใช้ลินุกซ์บริดจ์ </a>
 <li><a href="https://github.com/kasidit/runQemu/wiki/07-using-cloud-init">07.การสร้างวีเอ็มโดยใช้อิมเมจที่กำหนดค่าด้วยระบบคลาวด์อินนิต (cloud init)</a>
+<li><a href="https://github.com/kasidit/notes-on-distributed-computing/wiki/Giving-commands-to-QEMU-KVM-using-QMP-and-QEMU-monitor">---> 07.5. การป้อนคำสั่ง QEMU monitor ให้กับ QEMU-KVM hypervisor ทางไกล โดยใช้ HMP และ QMP protocol</a>
 <li><a href="https://github.com/kasidit/runQemu/wiki/08-openvswitch-network">08.การเชื่อมต่อวีเอ็มเข้ากับซอฟต์แวร์สวิตช์เสมือนด้วยโอเพนวีสวิตช์</a>
 <li><a href="https://github.com/kasidit/runQemu/wiki/09-using-IP-masquarade">09.การสร้างและใช้งานเร้าเตอร์เสมือนด้วยไอพีมาสควอเรด</a>
 <li><a href="https://github.com/kasidit/runQemu/wiki/10-ovs-connections">10.การเชื่อมต่อเครื่องโฮสต์เข้ากับซอฟต์แวร์สวิตช์แบบโอเพนวีสวิตช์</a>

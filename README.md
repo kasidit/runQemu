@@ -5,6 +5,7 @@
 <li><a href="https://github.com/kasidit/runQemu/wiki/01-qemu-installation">01.การติดตั้งคิวอีมู</a>
 <li><a href="https://github.com/kasidit/runQemu/wiki/02-using-qemu-img">02.สร้างฮาร์ดดิสค์อิมเมจแบบเสมือนด้วยคำสั่ง qemu img</a>
 <li><a href="https://github.com/kasidit/runQemu/wiki/03-install-guest-OS">03.การติดตั้งเกสท์โอเอสบนฮาร์ดดิสค์เสมือน</a>
+<li><a href="https://github.com/kasidit/notes-on-distributed-computing/wiki/LVM-and-Logical-Volume-Extension">---> 03.5. การขยายขนาดของ Default Ubuntu LVM บนเครื่องโฮสต์เพื่อให้เพียงพอสำหรับติดตั้งวีเอ็ม</a>
 <li><a href="https://github.com/kasidit/runQemu/wiki/04-using-NAT-network">04.การประมวลผลวีเอ็มและใช้ระบบเครือข่ายแบบ NAT เฉพาะเครื่อง</a>
 <li><a href="https://github.com/kasidit/runQemu/wiki/05-using-qcow2-overlay">05.การสร้างดิสค์อิมเมจแบบ qcow2 overlay</a>
 <li><a href="https://github.com/kasidit/runQemu/wiki/06-Linux-bridge-network">06.การเชื่อมต่อ คิวอีมู เข้ากับ L2 Network ด้วยลินุกซ์บริดจ์</a>

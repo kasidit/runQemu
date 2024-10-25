@@ -1,5 +1,5 @@
 <ul>
-<li><a href="https://github.com/kasidit/runQemu/wiki">Tutorial: การใช้งาน QEMU-KVM และ Network Virtualization เบื้องต้น (บน Ubuntu 20.04)</a>
+<li><a href="https://github.com/kasidit/runQemu/wiki">Tutorial: การใช้งาน QEMU-KVM และ Network Virtualization เบื้องต้น (บน Ubuntu 20.04/22.04)</a>
 <ul>
 <li><a href="https://github.com/kasidit/runQemu/wiki/00-introduction">00.อารัมภบท: เรียนรู้และใช้งานซอฟต์แวร์ คิวอีมู</a>
 <li><a href="https://github.com/kasidit/runQemu/wiki/01-qemu-installation">01.การติดตั้งคิวอีมู</a>
